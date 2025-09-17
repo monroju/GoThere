@@ -1,225 +1,144 @@
-package com.example.gothere.ui.auth
+package com.example.gothere.ui.auth   // <- change to your package if different
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material.icons.outlined.VisibilityOff
-import androidx.compose.material3.Icon
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gothere.R
-import com.example.gothere.viewmodel.AuthViewModel
+import com.example.gothere.ui.theme.GoThereTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    onLoggedIn: () -> Unit
+    darkTheme: Boolean,
+    onToggleTheme: () -> Unit,
+    onLogin: (email: String, password: String) -> Unit,
+    onNavigateToSignUp: () -> Unit
 ) {
-    val authVM: AuthViewModel = viewModel()
+    // UI state
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(false) }
-    var errorMsg by remember { mutableStateOf<String?>(null) }
-    var revealPw by remember { mutableStateOf(false) }
+    // brand teal for the whole screen background
+    val Teal = Color(0xFF17C9C0)
 
-    val focus = LocalFocusManager.current
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp, vertical = 16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+    GoThereTheme(darkTheme = darkTheme) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = Teal                                // <<< teal background
         ) {
-            Spacer(Modifier.height(32.dp))
-
-            // ── Logo ───────────────────────────────────────────────
-            Image(
-                painter = painterResource(id = R.drawable.ic_gothere_logo),
-                contentDescription = "GoThere logo",
+            Box(
                 modifier = Modifier
-                    .size(96.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-
-            Spacer(Modifier.height(24.dp))
-            Text("GoThere — Sign in", style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
-                )
-            )
-
-            Spacer(Modifier.height(12.dp))
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                visualTransformation = if (revealPw) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    val cd = if (revealPw) "Hide password" else "Show password"
-                    Icon(
-                        imageVector = if (revealPw) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
-                        contentDescription = cd,
-                        modifier = Modifier
-                            .size(22.dp)
-                            .clickable { revealPw = !revealPw }
-                    )
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        focus.clearFocus()
-                        if (!isLoading) doSignIn(
-                            email, password, authVM,
-                            setBusy = { isLoading = it },
-                            setError = { errorMsg = it },
-                            onLoggedIn = onLoggedIn
-                        )
-                    }
-                )
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    focus.clearFocus()
-                    doSignIn(
-                        email, password, authVM,
-                        setBusy = { isLoading = it },
-                        setError = { errorMsg = it },
-                        onLoggedIn = onLoggedIn
-                    )
-                },
-                enabled = !isLoading && email.isNotBlank() && password.isNotBlank(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp),
+                contentAlignment = Alignment.Center
             ) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        strokeWidth = 2.dp,
-                        modifier = Modifier
-                            .size(20.dp)
-                            .semantics { contentDescription = "Signing in" }
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
                     )
-                } else {
-                    Text("Sign in")
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Logo
+                        Image(
+                            painter = painterResource(R.drawable.gothere_logo),
+                            contentDescription = "GoThere",
+                            modifier = Modifier
+                                .width(140.dp)
+                                .height(48.dp)
+                        )
+
+                        Spacer(Modifier.height(12.dp))
+
+                        Text(
+                            "GoThere — Sign in",
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+
+                        Spacer(Modifier.height(20.dp))
+
+                        // EMAIL
+                        OutlinedTextField(
+                            value = email,
+                            onValueChange = { email = it },
+                            label = { Text("Email", color = Color.Black) },   // <<< black label
+                            singleLine = true,
+                            textStyle = LocalTextStyle.current.copy(color = Color.Black), // <<< black text
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = Color.Black,
+                                unfocusedBorderColor = Color.Black.copy(alpha = 0.4f),
+                                cursorColor = Color.Black
+                            )
+                        )
+
+                        Spacer(Modifier.height(12.dp))
+
+                        // PASSWORD
+                        OutlinedTextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            label = { Text("Password", color = Color.Black) }, // <<< black label
+                            singleLine = true,
+                            visualTransformation = PasswordVisualTransformation(),
+                            textStyle = LocalTextStyle.current.copy(color = Color.Black), // <<< black text
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = Color.Black,
+                                unfocusedBorderColor = Color.Black.copy(alpha = 0.4f),
+                                cursorColor = Color.Black
+                            )
+                        )
+
+                        Spacer(Modifier.height(20.dp))
+
+                        Button(
+                            onClick = { onLogin(email, password) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text("Sign in")
+                        }
+
+                        Spacer(Modifier.height(8.dp))
+
+                        TextButton(onClick = onNavigateToSignUp) {
+                            Text("Create account")
+                        }
+
+                        Spacer(Modifier.height(8.dp))
+
+                        IconButton(onClick = onToggleTheme) {
+                            Icon(
+                                imageVector = if (darkTheme) Icons.Filled.LightMode else Icons.Filled.DarkMode,
+                                contentDescription = "Toggle Theme"
+                            )
+                        }
+                    }
                 }
             }
-
-            Spacer(Modifier.height(16.dp))
-
-            Text(
-                "Create account",
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .clickable(enabled = !isLoading) {
-                        focus.clearFocus()
-                        doSignUp(
-                            email, password, authVM,
-                            setBusy = { isLoading = it },
-                            setError = { errorMsg = it },
-                            onLoggedIn = onLoggedIn
-                        )
-                    }
-                    .padding(8.dp)
-            )
-
-            errorMsg?.let {
-                Spacer(Modifier.height(8.dp))
-                AssistChip(
-                    onClick = { errorMsg = null },
-                    label = { Text(it) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-    }
-}
-
-private fun doSignIn(
-    email: String,
-    password: String,
-    vm: AuthViewModel,
-    setBusy: (Boolean) -> Unit,
-    setError: (String?) -> Unit,
-    onLoggedIn: () -> Unit
-) {
-    if (email.isBlank() || password.isBlank()) {
-        setError("Enter email and password")
-        return
-    }
-    setBusy(true)
-    vm.signIn(email, password) { result ->
-        setBusy(false)
-        result.onSuccess {
-            setError(null)
-            onLoggedIn()
-        }.onFailure { e ->
-            setError(e.message ?: "Sign in failed")
-        }
-    }
-}
-
-private fun doSignUp(
-    email: String,
-    password: String,
-    vm: AuthViewModel,
-    setBusy: (Boolean) -> Unit,
-    setError: (String?) -> Unit,
-    onLoggedIn: () -> Unit
-) {
-    if (email.isBlank() || password.isBlank()) {
-        setError("Enter email and password")
-        return
-    }
-    setBusy(true)
-    vm.signUp(email, password) { result ->
-        setBusy(false)
-        result.onSuccess {
-            setError(null)
-            onLoggedIn()
-        }.onFailure { e ->
-            setError(e.message ?: "Sign up failed")
         }
     }
 }

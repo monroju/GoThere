@@ -25,27 +25,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.gothere.ui.calendar.CalendarScreen
+import com.example.gothere.ui.documents.DocumentsScreen
+import com.example.gothere.ui.forms.FormsScreen
+import com.example.gothere.ui.resources.ResourcesScreen
+import com.example.gothere.ui.tasks.TasksScreen
+import com.example.gothere.ui.notes.NotesScreen
 
-// Import your feature screens from ui/
-import com.example.gothere.ui.CalendarScreen
-import com.example.gothere.ui.DocumentsScreen
-import com.example.gothere.ui.NotesScreen
-import com.example.gothere.ui.ResourcesScreen
-import com.example.gothere.ui.TasksScreen
-
-data class HomeTab(val label: String, val icon: ImageVector)
+private data class HomeTab(val label: String, val icon: ImageVector)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onLogout: () -> Unit
 ) {
-    // Tabs (you can re-order or add/remove here)
+    // 🚫 No Progress tab(s) here
     val tabs = listOf(
         HomeTab("Tasks", Icons.Filled.Checklist),
         HomeTab("Calendar", Icons.Filled.Event),
         HomeTab("Documents", Icons.Filled.Folder),
-        HomeTab("Forms", Icons.Filled.PictureAsPdf),     // routes to DocumentsScreen for now
+        HomeTab("Forms", Icons.Filled.PictureAsPdf),
         HomeTab("Resources", Icons.Filled.Description),
         HomeTab("Notes", Icons.Filled.Edit)
     )
@@ -81,9 +80,9 @@ fun HomeScreen(
         ) {
             when (selectedIndex) {
                 0 -> TasksScreen()
-                1 -> CalendarScreen()              // ← Your interactive calendar screen
+                1 -> CalendarScreen()
                 2 -> DocumentsScreen()
-                3 -> DocumentsScreen()             // ← TEMP: “Forms” points to Documents until FormsScreen exists
+                3 -> FormsScreen()
                 4 -> ResourcesScreen()
                 5 -> NotesScreen()
             }
