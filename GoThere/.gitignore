@@ -10,3 +10,12 @@ android/app/google-services.json
 *.zip
 *.tar.gz
 .codesandbox/app-debug.apk
+# --- Android build/cache ---
+.android/
+.gradle/
+local.properties
+/build/
+app/build/
+**/*.dex
+**/*.lock
+**/*.bin
