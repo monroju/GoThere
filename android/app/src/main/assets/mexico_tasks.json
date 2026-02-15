@@ -1,0 +1,134 @@
+[
+  {
+    "title": "Choose the appropriate visa type for your situation",
+    "description": "Mexico offers Temporary Resident (1-4 years), Permanent Resident, and tourist visa (180 days). Research which fits your situation.",
+    "category": "Phase 1: Research & Planning",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Confirm your consulate jurisdiction",
+    "description": "Mexican visa applications are based on where you legally reside. Find your assigned consulate.",
+    "category": "Phase 1: Research & Planning",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Decide on a target city or region",
+    "description": "Mexico City, Guadalajara, Mérida, Puerto Vallarta, Oaxaca are popular. Consider climate, cost, and lifestyle.",
+    "category": "Phase 1: Research & Planning",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Create a relocation budget",
+    "description": "Factor in visa fees, flights, initial housing, health insurance, and 3-6 months of living expenses.",
+    "category": "Phase 1: Research & Planning",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Understand financial requirements",
+    "description": "Temporary Resident visa requires proof of income (~$2,500 USD/month) or savings (~$42,000 USD in bank for 12 months).",
+    "category": "Phase 1: Research & Planning",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Gather bank statements (12 months)",
+    "description": "Showing consistent income or sufficient savings. Statements must show your name, account number, and running balance.",
+    "category": "Phase 2: Documentation",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Get passport photos to Mexican specifications",
+    "description": "Mexican visa photos have specific requirements - white background, no glasses, specific dimensions.",
+    "category": "Phase 2: Documentation",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Prepare proof of address",
+    "description": "Utility bill, bank statement, or lease showing your current residence in your home country.",
+    "category": "Phase 2: Documentation",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Complete visa application form",
+    "description": "Download and fill out the application form from the Mexican consulate website.",
+    "category": "Phase 2: Documentation",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Schedule visa appointment at consulate",
+    "description": "Book appointment online. Wait times vary by consulate - plan ahead.",
+    "category": "Phase 3: Application",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Submit visa application",
+    "description": "Attend appointment with all documents. Visa is usually approved same day and ready in 1-2 weeks.",
+    "category": "Phase 3: Application",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Book temporary accommodation",
+    "description": "Airbnb or short-term rental for first few weeks while you find permanent housing.",
+    "category": "Phase 4: Arrival",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Enter Mexico and get FMM stamped",
+    "description": "Your visa sticker allows entry. Immigration will stamp your passport and process your entry.",
+    "category": "Phase 4: Arrival",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Exchange visa for Resident Card within 30 days",
+    "description": "Visit INM (Instituto Nacional de Migración) to exchange your visa sticker for a resident card. Must be done within 30 days of arrival.",
+    "category": "Phase 4: Arrival",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Get CURP (population registry number)",
+    "description": "Free ID number needed for many services. Can get at INM or RENAPO offices.",
+    "category": "Phase 4: Arrival",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Get RFC (tax ID) if planning to work/earn",
+    "description": "Required if you'll have Mexican income. Get at SAT (tax office) with CURP and proof of address.",
+    "category": "Phase 4: Arrival",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Open Mexican bank account",
+    "description": "Major banks: BBVA, Santander, Banorte, HSBC. Requires resident card, proof of address, and sometimes RFC.",
+    "category": "Phase 5: Settlement",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Find long-term housing",
+    "description": "Search on Inmuebles24, Segundamano, or Facebook groups. Consider furnished vs unfurnished.",
+    "category": "Phase 5: Settlement",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Set up utilities",
+    "description": "CFE (electricity), water (varies by city), gas, internet (Telmex, Izzi, Totalplay).",
+    "category": "Phase 5: Settlement",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Get Mexican phone number",
+    "description": "Major carriers: Telcel, AT&T, Movistar. Prepaid SIMs are easy and affordable.",
+    "category": "Phase 5: Settlement",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Research health insurance options",
+    "description": "Options include IMSS (public), private insurance (GNP, AXA), or international plans. Consider Seguro Popular for basic coverage.",
+    "category": "Phase 5: Settlement",
+    "countryId": "mexico"
+  },
+  {
+    "title": "Register for IMSS if eligible",
+    "description": "Public health insurance available to residents. Low cost and covers most needs.",
+    "category": "Phase 5: Settlement",
+    "countryId": "mexico"
+  }
+]

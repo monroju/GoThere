@@ -67,3 +67,12 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+# Android/Gradle build caches & IDE
+.gradle/
+.idea/
+android/.gradle/
+android/.idea/
+android/app/build/
+android/local.properties
+local.properties

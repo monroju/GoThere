@@ -1,0 +1,122 @@
+[
+  {
+    "title": "Choose the appropriate visa type for your situation",
+    "description": "Portugal offers D7 (passive income), D8 (digital nomad), Golden Visa, and other options. Research which fits your situation best.",
+    "category": "Phase 1: Research & Planning",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Confirm your consulate jurisdiction",
+    "description": "Portuguese visa applications are usually tied to where you legally reside. Confirm the correct consulate before preparing documents.",
+    "category": "Phase 1: Research & Planning",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Decide on a target city or region",
+    "description": "Lisbon, Porto, Algarve, and Madeira are popular choices. Consider cost of living, weather, and community.",
+    "category": "Phase 1: Research & Planning",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Create a relocation budget",
+    "description": "Factor in visa fees, flights, initial housing, health insurance, and 3-6 months of living expenses.",
+    "category": "Phase 1: Research & Planning",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Gather proof of income or savings",
+    "description": "D7 requires proof of passive income (pension, investments, rental). D8 requires proof of remote work income.",
+    "category": "Phase 2: Documentation",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Obtain criminal background check",
+    "description": "Get an FBI background check (for US citizens) and have it apostilled. Some consulates require it translated to Portuguese.",
+    "category": "Phase 2: Documentation",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Get birth/marriage certificates apostilled",
+    "description": "Obtain certified copies and apostilles from the issuing state. Translation may be required.",
+    "category": "Phase 2: Documentation",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Secure health insurance valid in Portugal",
+    "description": "Travel insurance is needed for the visa application. You'll switch to Portuguese health insurance (SNS or private) after arrival.",
+    "category": "Phase 2: Documentation",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Write a cover letter / statement of purpose",
+    "description": "Explain why you want to move to Portugal, your plans, and how you'll support yourself.",
+    "category": "Phase 2: Documentation",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Schedule visa appointment at consulate",
+    "description": "Book early - appointments can be limited. Bring all required documents in the specified format.",
+    "category": "Phase 3: Application",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Submit visa application",
+    "description": "Attend your appointment with all documents. Pay the visa fee. Processing takes 2-4 months typically.",
+    "category": "Phase 3: Application",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Book temporary accommodation for first weeks",
+    "description": "Airbnb or short-term rental for 2-4 weeks while you search for permanent housing and complete initial bureaucracy.",
+    "category": "Phase 4: Arrival",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Schedule SEF/AIMA appointment for residence permit",
+    "description": "After arriving, you need to schedule an appointment with immigration (SEF/AIMA) to get your residence card.",
+    "category": "Phase 4: Arrival",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Get NIF (tax identification number)",
+    "description": "Required for almost everything - banking, housing, utilities. Can be obtained at Finanças or through a fiscal representative.",
+    "category": "Phase 4: Arrival",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Open Portuguese bank account",
+    "description": "Major banks include Millennium BCP, Novo Banco, Santander. You'll need NIF and proof of address.",
+    "category": "Phase 4: Arrival",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Register with local health center",
+    "description": "Register at your local Centro de Saúde to access the Portuguese public health system (SNS).",
+    "category": "Phase 5: Settlement",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Find long-term housing",
+    "description": "Search on Idealista, Imovirtual, or Facebook groups. Be prepared for competitive market in Lisbon/Porto.",
+    "category": "Phase 5: Settlement",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Set up utilities",
+    "description": "Electricity (EDP), water, gas, internet. Some landlords include utilities in rent.",
+    "category": "Phase 5: Settlement",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Get Portuguese phone number",
+    "description": "Major carriers: MEO, NOS, Vodafone. Prepaid SIMs are easy to get; contracts require NIF.",
+    "category": "Phase 5: Settlement",
+    "countryId": "portugal"
+  },
+  {
+    "title": "Attend SEF/AIMA appointment for residence card",
+    "description": "Bring all required documents. You'll receive your residence card (Título de Residência) after approval.",
+    "category": "Phase 5: Settlement",
+    "countryId": "portugal"
+  }
+]

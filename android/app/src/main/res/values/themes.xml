@@ -1,0 +1,8 @@
+<resources>
+    <!-- App theme used by AndroidManifest -->
+    <style name="Theme.GoThere" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Optional surface tweaks; safe defaults -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

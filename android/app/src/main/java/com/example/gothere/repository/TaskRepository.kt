@@ -102,6 +102,9 @@ class TaskRepository {
 
                     val completed = doc.getBoolean("completed") ?: false
 
+                    // Read countryId - default to "spain" for legacy tasks
+                    val countryId = doc.getString("countryId") ?: "spain"
+
                     val createdAt = when (val v = doc.get("createdAt")) {
                         is Number -> v.toLong()
                         is Timestamp -> v.toDate().time
@@ -130,6 +133,7 @@ class TaskRepository {
                         completed = completed,
                         dueAt = dueAt,
                         createdAt = createdAt,
+                        countryId = countryId,
                         links = links
                     )
                 } catch (t: Throwable) {
@@ -227,15 +231,125 @@ class TaskRepository {
             val json = context.assets.open("tasks_seed.json").bufferedReader().use { it.readText() }
             val arr = JSONArray(json)
 
+            fun keyOf(title: String, category: String, countryId: String): String {
+                val t = title.trim()
+                val c = category.trim().ifBlank { "General" }
+                return "$countryId|$c|$t"
+            }
+
+            // Prefer "seedKey" if present; fall back to countryId|category|title if not.
+            val existingDocs = colFor(uid).get().await().documents
+            val existingKeys = existingDocs.mapNotNull { d ->
+                val seedKey = d.getString("seedKey")?.trim()
+                if (!seedKey.isNullOrBlank()) return@mapNotNull seedKey
+                val t = d.getString("title")?.trim()
+                val c = d.getString("category")?.trim()
+                val country = d.getString("countryId")?.trim() ?: "spain"
+                if (!t.isNullOrBlank()) keyOf(t, c ?: "General", country) else null
+            }.toHashSet()
+
+            var added = 0
+            var skipped = 0
+
+            val batch = db.batch()
+
+            for (i in 0 until arr.length()) {
+                val o = arr.optJSONObject(i) ?: continue
+
+                val title = o.optString("title").trim()
+                if (title.isBlank()) continue
+
+                val category = o.optString("category").trim().ifBlank { "General" }
+                // Read countryId from seed JSON, default to "spain"
+                val countryId = o.optString("countryId").trim().ifBlank { "spain" }
+                val seedKey = keyOf(title, category, countryId)
+
+                if (existingKeys.contains(seedKey)) {
+                    skipped++
+                    continue
+                }
+
+                val links = o.optJSONArray("links")?.let { linksArr ->
+                    (0 until linksArr.length()).mapNotNull { j ->
+                        val lo = linksArr.optJSONObject(j) ?: return@mapNotNull null
+                        val lab = lo.optString("label").trim()
+                        val url = lo.optString("url").trim()
+                        if (lab.isNotBlank() && url.isNotBlank()) Link(lab, url) else null
+                    }.takeIf { it.isNotEmpty() }
+                }
+
+                val task = Task(
+                    title = title,
+                    description = o.optString("description").trim().takeIf { it.isNotBlank() },
+                    category = category,
+                    completed = o.optBoolean("completed", false),
+                    countryId = countryId,
+                    links = links,
+                    // don't set dueAt from seed; leave null
+                    dueAt = null,
+                    // createdAt present to avoid nulls in Firestore map
+                    createdAt = System.currentTimeMillis()
+                )
+
+                val doc = colFor(uid).document()
+                val data = toFirestoreMap(task).toMutableMap()
+                data["seedKey"] = seedKey
+
+                batch.set(doc, data)
+                existingKeys.add(seedKey)
+                added++
+            }
+
+            if (added > 0) batch.commit().await()
+
+            Log.e("SeedImport", "importSeedFromAssetsIfMissing uid=$uid added=$added skipped=$skipped totalSeed=${arr.length()}")
+            Result.success(added to skipped)
+        } catch (e: Exception) {
+            Log.e("SeedImport", "importSeedFromAssetsIfMissing FAILED", e)
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Import tasks for a specific country from the appropriate seed file.
+     * Asset path expected:
+     * - spain: assets/tasks_seed.json (existing)
+     * - portugal: assets/portugal_tasks.json
+     * - mexico: assets/mexico_tasks.json
+     */
+    suspend fun importCountrySeedFromAssets(context: Context, countryId: String): Result<Pair<Int, Int>> {
+        val uid = auth.currentUser?.uid ?: return Result.failure(Exception("Not signed in"))
+
+        val seedFileName = when (countryId) {
+            "spain" -> "tasks_seed.json"
+            "portugal" -> "portugal_tasks.json"
+            "mexico" -> "mexico_tasks.json"
+            else -> return Result.failure(Exception("Unknown country: $countryId"))
+        }
+
+        return try {
+            // Check if the file exists
+            val assetFiles = context.assets.list("") ?: emptyArray()
+            if (!assetFiles.contains(seedFileName)) {
+                Log.w("SeedImport", "Seed file not found: $seedFileName")
+                return Result.failure(Exception("Seed file not found: $seedFileName"))
+            }
+
+            val json = context.assets.open(seedFileName).bufferedReader().use { it.readText() }
+            val arr = JSONArray(json)
+
             fun keyOf(title: String, category: String): String {
                 val t = title.trim()
                 val c = category.trim().ifBlank { "General" }
-                return "$c|$t"
+                return "$countryId|$c|$t"
             }
 
-            // Prefer "seedKey" if present; fall back to category|title if not.
+            // Get existing keys for this country
             val existingDocs = colFor(uid).get().await().documents
             val existingKeys = existingDocs.mapNotNull { d ->
+                val docCountry = d.getString("countryId") ?: "spain"
+                if (docCountry != countryId) return@mapNotNull null
+                
                 val seedKey = d.getString("seedKey")?.trim()
                 if (!seedKey.isNullOrBlank()) return@mapNotNull seedKey
                 val t = d.getString("title")?.trim()
@@ -276,10 +390,9 @@ class TaskRepository {
                     description = o.optString("description").trim().takeIf { it.isNotBlank() },
                     category = category,
                     completed = o.optBoolean("completed", false),
+                    countryId = countryId,
                     links = links,
-                    // don't set dueAt from seed; leave null
                     dueAt = null,
-                    // createdAt present to avoid nulls in Firestore map
                     createdAt = System.currentTimeMillis()
                 )
 
@@ -294,10 +407,10 @@ class TaskRepository {
 
             if (added > 0) batch.commit().await()
 
-            Log.e("SeedImport", "importSeedFromAssetsIfMissing uid=$uid added=$added skipped=$skipped totalSeed=${arr.length()}")
+            Log.e("SeedImport", "importCountrySeedFromAssets uid=$uid country=$countryId added=$added skipped=$skipped totalSeed=${arr.length()}")
             Result.success(added to skipped)
         } catch (e: Exception) {
-            Log.e("SeedImport", "importSeedFromAssetsIfMissing FAILED", e)
+            Log.e("SeedImport", "importCountrySeedFromAssets FAILED for $countryId", e)
             Result.failure(e)
         }
     }
@@ -311,6 +424,7 @@ class TaskRepository {
             "title" to task.title,
             "completed" to task.completed,
             "category" to (task.category ?: "General"),
+            "countryId" to (task.countryId ?: "spain"),
             "createdAt" to (task.createdAt ?: System.currentTimeMillis())
         )
         task.description?.let { data["description"] = it }
@@ -325,13 +439,13 @@ class TaskRepository {
         values.firstOrNull { !it.isNullOrBlank() }
 
     private fun builtInSeed(): List<Task> = listOf(
-        Task(title = "Define relocation budget", category = "Phase 1: Research & Planning"),
-        Task(title = "Research visa types", category = "Phase 1: Research & Planning"),
-        Task(title = "Gather birth/marriage certificates", category = "Phase 2: Documentation"),
-        Task(title = "Submit visa application", category = "Phase 2: Documentation"),
-        Task(title = "Book temporary accommodation", category = "Phase 3: Arrival"),
-        Task(title = "Apply for NIE/TIE", category = "Phase 3: Arrival"),
-        Task(title = "Find long-term housing", category = "Phase 4: Settlement"),
-        Task(title = "Open local bank account", category = "Phase 4: Settlement")
+        Task(title = "Define relocation budget", category = "Phase 1: Research & Planning", countryId = "spain"),
+        Task(title = "Research visa types", category = "Phase 1: Research & Planning", countryId = "spain"),
+        Task(title = "Gather birth/marriage certificates", category = "Phase 2: Documentation", countryId = "spain"),
+        Task(title = "Submit visa application", category = "Phase 2: Documentation", countryId = "spain"),
+        Task(title = "Book temporary accommodation", category = "Phase 3: Arrival", countryId = "spain"),
+        Task(title = "Apply for NIE/TIE", category = "Phase 3: Arrival", countryId = "spain"),
+        Task(title = "Find long-term housing", category = "Phase 4: Settlement", countryId = "spain"),
+        Task(title = "Open local bank account", category = "Phase 4: Settlement", countryId = "spain")
     )
 }

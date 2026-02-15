@@ -1,0 +1,292 @@
+[
+  {
+    "title": "Research Spain visa options",
+    "description": "Start with Non-Lucrative, Work, Student, or Digital Nomad basics.",
+    "category": "Phase 1: Research & Decision Making",
+    "completed": false,
+    "links": [
+      { "label": "Spain Consulates (US)", "url": "https://www.exteriores.gob.es/Consulados/" },
+      { "label": "Schengen / Long-stay overview", "url": "https://www.schengenvisainfo.com/long-stay-visas/" }
+    ]
+  },
+  {
+    "title": "Choose the appropriate visa type for your situation",
+    "category": "Phase 1: Research & Decision Making",
+    "completed": false
+  },
+  {
+    "title": "Research cost of living in different Spanish cities/regions",
+    "category": "Phase 1: Research & Decision Making",
+    "completed": false,
+    "links": [
+      { "label": "Numbeo Cost of Living", "url": "https://www.numbeo.com/cost-of-living/" }
+    ]
+  },
+  {
+    "title": "Decide on a target city or region in Spain",
+    "category": "Phase 1: Research & Decision Making",
+    "completed": false
+  },
+  {
+    "title": "Start learning Spanish (apps, courses, tutors)",
+    "category": "Phase 1: Research & Decision Making",
+    "completed": false,
+    "links": [
+      { "label": "Duolingo", "url": "https://www.duolingo.com" },
+      { "label": "Instituto Cervantes", "url": "https://www.cervantes.es/" }
+    ]
+  },
+
+  {
+    "title": "Ensure passport is valid 6+ months beyond intended stay",
+    "category": "Phase 2: Visa Application",
+    "completed": false
+  },
+  {
+    "title": "Complete visa application form (specific to your consulate)",
+    "description": "Fill the long-stay visa form required by the consulate handling your jurisdiction.",
+    "category": "Phase 2: Visa Application",
+    "completed": false,
+    "links": [
+      { "label": "National Visa Info (ES MFA)", "url": "https://www.exteriores.gob.es/Consulados/" }
+    ]
+  },
+  {
+    "title": "Obtain passport-sized photos (meeting specifications)",
+    "category": "Phase 2: Visa Application",
+    "completed": false
+  },
+  {
+    "title": "Gather proof of financial means (bank statements, investments)",
+    "category": "Phase 2: Visa Application",
+    "completed": false
+  },
+  {
+    "title": "Secure Spanish-compliant health insurance",
+    "category": "Phase 2: Visa Application",
+    "completed": false,
+    "links": [
+      { "label": "Health Insurance Guide", "url": "https://www.schengenvisainfo.com/visa-insurance/" }
+    ]
+  },
+  {
+    "title": "Obtain medical certificate (apostilled if required)",
+    "category": "Phase 2: Visa Application",
+    "completed": false
+  },
+  {
+    "title": "Obtain police clearance (FBI background check + apostille)",
+    "category": "Phase 2: Visa Application",
+    "completed": false,
+    "links": [
+      { "label": "FBI Background Check (eDO)", "url": "https://www.edo.cjis.gov/" }
+    ]
+  },
+  {
+    "title": "Arrange proof of accommodation in Spain (rental or invitation letter)",
+    "category": "Phase 2: Visa Application",
+    "completed": false
+  },
+  {
+    "title": "Get sworn translations for non-Spanish documents",
+    "category": "Phase 2: Visa Application",
+    "completed": false
+  },
+  {
+    "title": "Pay visa application fee",
+    "category": "Phase 2: Visa Application",
+    "completed": false
+  },
+  {
+    "title": "Schedule visa appointment at the Spanish consulate",
+    "category": "Phase 2: Visa Application",
+    "completed": false
+  },
+  {
+    "title": "Submit visa application and attend interview (if required)",
+    "category": "Phase 2: Visa Application",
+    "completed": false
+  },
+  {
+    "title": "Track visa application status",
+    "category": "Phase 2: Visa Application",
+    "completed": false
+  },
+
+  {
+    "title": "Receive visa approval and collect passport with visa",
+    "category": "Phase 3: Pre-Move Preparations (Post-Visa Approval)",
+    "completed": false
+  },
+  {
+    "title": "Book flights to Spain",
+    "category": "Phase 3: Pre-Move Preparations (Post-Visa Approval)",
+    "completed": false
+  },
+  {
+    "title": "Arrange temporary accommodation for arrival (if needed)",
+    "category": "Phase 3: Pre-Move Preparations (Post-Visa Approval)",
+    "completed": false,
+    "links": [
+      { "label": "Booking.com", "url": "https://www.booking.com" },
+      { "label": "Airbnb", "url": "https://www.airbnb.com" }
+    ]
+  },
+  {
+    "title": "Secure long-term housing",
+    "category": "Phase 3: Pre-Move Preparations (Post-Visa Approval)",
+    "completed": false,
+    "links": [
+      { "label": "Idealista", "url": "https://www.idealista.com/en/" },
+      { "label": "Fotocasa", "url": "https://www.fotocasa.es/en/" }
+    ]
+  },
+  {
+    "title": "Notify US banks and credit cards of international move",
+    "category": "Phase 3: Pre-Move Preparations (Post-Visa Approval)",
+    "completed": false
+  },
+  {
+    "title": "Set up USPS mail forwarding (or trusted mail solution)",
+    "category": "Phase 3: Pre-Move Preparations (Post-Visa Approval)",
+    "completed": false
+  },
+  {
+    "title": "Sell, donate, or store belongings",
+    "category": "Phase 3: Pre-Move Preparations (Post-Visa Approval)",
+    "completed": false
+  },
+  {
+    "title": "Arrange shipping of essential items",
+    "category": "Phase 3: Pre-Move Preparations (Post-Visa Approval)",
+    "completed": false
+  },
+  {
+    "title": "Obtain an International Driving Permit (IDP)",
+    "category": "Phase 3: Pre-Move Preparations (Post-Visa Approval)",
+    "completed": false,
+    "links": [
+      { "label": "AAA IDP Info", "url": "https://www.aaa.com/vacation/idpf.html" }
+    ]
+  },
+  {
+    "title": "Gather all important originals and apostilles for travel",
+    "category": "Phase 3: Pre-Move Preparations (Post-Visa Approval)",
+    "completed": false
+  },
+  {
+    "title": "Plan cancellation of US utilities, phone, subscriptions",
+    "category": "Phase 3: Pre-Move Preparations (Post-Visa Approval)",
+    "completed": false
+  },
+  {
+    "title": "Pack essentials for arrival and first 2–4 weeks",
+    "category": "Phase 3: Pre-Move Preparations (Post-Visa Approval)",
+    "completed": false
+  },
+
+  {
+    "title": "Arrive in Spain!",
+    "category": "Phase 4: Arrival & Settling In Spain",
+    "completed": false
+  },
+  {
+    "title": "Register on the Padrón (Empadronamiento) at local town hall",
+    "category": "Phase 4: Arrival & Settling In Spain",
+    "completed": false
+  },
+  {
+    "title": "Obtain NIE (Número de Identificación de Extranjero) if not issued with visa",
+    "description": "Often initiated alongside the TIE process; required for banking, contracts, etc.",
+    "category": "Phase 4: Arrival & Settling In Spain",
+    "completed": false,
+    "links": [
+      { "label": "Form EX-15 (NIE)", "url": "https://sede.policia.gob.es/portalCiudadano/extranjeria/ex15" }
+    ]
+  },
+  {
+    "title": "Obtain TIE (residency card) — schedule Cita Previa within 30 days",
+    "category": "Phase 4: Arrival & Settling In Spain",
+    "completed": false,
+    "links": [
+      { "label": "Cita Previa TIE", "url": "https://sede.administracionespublicas.gob.es/icpplustie/" }
+    ]
+  },
+  {
+    "title": "Obtain TIE — fill out EX-17 application form",
+    "category": "Phase 4: Arrival & Settling In Spain",
+    "completed": false,
+    "links": [
+      { "label": "Form EX-17 (TIE)", "url": "https://sede.policia.gob.es/portalCiudadano/extranjeria/ex17" }
+    ]
+  },
+  {
+    "title": "Obtain TIE — pay TASA 790-012 fee",
+    "category": "Phase 4: Arrival & Settling In Spain",
+    "completed": false,
+    "links": [
+      { "label": "TASA 790-012", "url": "https://sede.policia.gob.es/portalCiudadano/modelos790" }
+    ]
+  },
+  {
+    "title": "Attend TIE appointment with documents (passport, photos, EX-17, tasa receipt, padrón, visa copy)",
+    "category": "Phase 4: Arrival & Settling In Spain",
+    "completed": false
+  },
+  {
+    "title": "Open or finalize Spanish bank account",
+    "category": "Phase 4: Arrival & Settling In Spain",
+    "completed": false
+  },
+  {
+    "title": "Set up utilities (electricity, water, internet, gas)",
+    "category": "Phase 4: Arrival & Settling In Spain",
+    "completed": false
+  },
+  {
+    "title": "Get a Spanish phone number/SIM",
+    "category": "Phase 4: Arrival & Settling In Spain",
+    "completed": false
+  },
+  {
+    "title": "Register for public healthcare (if eligible) or confirm private coverage",
+    "category": "Phase 4: Arrival & Settling In Spain",
+    "completed": false
+  },
+  {
+    "title": "Register with local doctor (Centro de Salud)",
+    "category": "Phase 4: Arrival & Settling In Spain",
+    "completed": false
+  },
+  {
+    "title": "Register for a Digital Certificate (Certificado Digital) or Cl@ve",
+    "description": "Enables online trámites: tax, social security, padrón certificates, etc.",
+    "category": "Phase 4: Arrival & Settling In Spain",
+    "completed": false,
+    "links": [
+      { "label": "Cl@ve", "url": "https://clave.gob.es/" },
+      { "label": "FNMT Certificado Digital", "url": "https://www.sede.fnmt.gob.es/certificados" }
+    ]
+  },
+  {
+    "title": "Obtain Spanish Social Security number (if needed for work/health coverage)",
+    "category": "Phase 4: Arrival & Settling In Spain",
+    "completed": false,
+    "links": [
+      { "label": "Seguridad Social", "url": "https://www.seg-social.es/" }
+    ]
+  },
+  {
+    "title": "Enroll children in school (matrícula) and confirm immunization records",
+    "category": "Phase 4: Arrival & Settling In Spain",
+    "completed": false
+  },
+  {
+    "title": "Exchange US driver's license for Spanish one (if applicable, within 6 months)",
+    "category": "Phase 4: Arrival & Settling In Spain",
+    "completed": false,
+    "links": [
+      { "label": "DGT License Exchange", "url": "https://sede.dgt.gob.es/es/permisos-de-conducir/canje-de-permisos/" }
+    ]
+  }
+]
