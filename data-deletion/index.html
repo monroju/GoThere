@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data Deletion - GoThere: Relocation Guide</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #0f1b2e;
+      --text: #e9eef7;
+      --muted: #b8c3d6;
+      --accent: #22d3c5;
+      --rule: rgba(255,255,255,.12);
+      --link: #7dd3fc;
+      --max: 920px;
+      --radius: 18px;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 700px at 20% 0%, rgba(34,211,197,.18), transparent 55%),
+                  radial-gradient(1200px 700px at 80% 0%, rgba(125,211,252,.14), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    header {
+      padding: 48px 20px 18px;
+    }
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+    .title {
+      font-size: clamp(28px, 4vw, 40px);
+      margin: 0 0 8px;
+      letter-spacing: -0.02em;
+    }
+    .meta {
+      color: var(--muted);
+      margin: 0;
+      font-size: 15px;
+    }
+    .card {
+      background: rgba(15,27,46,.82);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius);
+      padding: 22px 22px 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      backdrop-filter: blur(10px);
+      margin: 18px 20px 48px;
+    }
+    h2 {
+      font-size: 18px;
+      margin: 18px 0 8px;
+    }
+    p, li { color: var(--text); }
+    .muted { color: var(--muted); }
+    hr {
+      border: 0;
+      border-top: 1px solid var(--rule);
+      margin: 18px 0;
+    }
+    ul {
+      margin: 8px 0 12px 20px;
+    }
+    a { color: var(--link); }
+    .footer {
+      color: var(--muted);
+      font-size: 13px;
+      padding: 0 2px 14px;
+    }
+    .btn {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 700;
+      font-size: 16px;
+      padding: 14px 32px;
+      border-radius: 12px;
+      text-decoration: none;
+      margin: 16px 0;
+      transition: opacity .2s;
+    }
+    .btn:hover { opacity: .85; }
+    .steps {
+      counter-reset: step;
+      list-style: none;
+      padding-left: 0;
+    }
+    .steps li {
+      counter-increment: step;
+      padding-left: 36px;
+      position: relative;
+      margin-bottom: 12px;
+    }
+    .steps li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 26px;
+      height: 26px;
+      background: var(--accent);
+      color: var(--bg);
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1 class="title">Data Deletion Request</h1>
+      <p class="meta"><strong>App name:</strong> GoThere: Relocation Guide<br/>
+        <strong>Developer:</strong> J.Gabriel Monroig
+      </p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <h2>Delete Your Data</h2>
+      <p>We respect your privacy and your right to control your personal data. You may request the deletion of all data associated with your GoThere account at any time.</p>
+
+      <h2>What Data Gets Deleted</h2>
+      <p>When you submit a deletion request, the following data will be permanently removed:</p>
+      <ul>
+        <li><strong>Account information</strong> &mdash; your email address and authentication credentials (Firebase Authentication)</li>
+        <li><strong>Uploaded documents</strong> &mdash; all PDF files and associated metadata you stored in the app (Firebase Storage)</li>
+        <li><strong>App preferences</strong> &mdash; saved settings, task progress, and any personalization data</li>
+      </ul>
+      <p class="muted">Once deleted, your data cannot be recovered.</p>
+
+      <h2>How to Request Deletion</h2>
+      <ol class="steps">
+        <li>Send an email to the address below with the subject line <strong>"Data Deletion Request"</strong>.</li>
+        <li>Include the <strong>email address</strong> associated with your GoThere account so we can locate your data.</li>
+        <li>We will process your request and permanently delete all associated data within <strong>30 days</strong>.</li>
+        <li>You will receive a confirmation email once deletion is complete.</li>
+      </ol>
+
+      <a class="btn" href="mailto:LucksExTenebris@gmail.com?subject=Data%20Deletion%20Request%20-%20GoThere&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20deletion%20of%20all%20my%20data%20associated%20with%20my%20GoThere%20account.%0A%0AMy%20account%20email%3A%20%5Benter%20your%20email%20here%5D%0A%0AThank%20you.">Request Data Deletion</a>
+
+      <p>Or email us directly at: <a href="mailto:LucksExTenebris@gmail.com">LucksExTenebris@gmail.com</a></p>
+
+      <hr/>
+
+      <h2>Data Retention After Deletion</h2>
+      <p>After processing your request, all personal data is permanently deleted. We do not retain any copies unless required by law for fraud prevention or legal compliance purposes.</p>
+
+      <hr/>
+      <p class="footer">
+        <a href="../gothere_privacy_policy.html">View full Privacy Policy</a><br/><br/>
+        This page is provided for general informational purposes and does not constitute legal advice.
+      </p>
+    </section>
+  </main>
+</body>
+</html>
