@@ -76,3 +76,9 @@ android/.idea/
 android/app/build/
 android/local.properties
 local.properties
+
+# Sensitive files (keystores, Firebase config)
+*.keystore
+keystore.properties
+android/keystore.properties
+google-services.json
