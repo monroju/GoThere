@@ -24,14 +24,14 @@ class AuthRepository(
     fun authStateFlow(): Flow<FirebaseUser?> = callbackFlow {
         val listener = FirebaseAuth.AuthStateListener { fa ->
             val user = fa.currentUser
-            Log.d(TAG, "Auth state changed: uid=${user?.uid}, email=${user?.email}")
+            Log.d(TAG, "Auth state changed: uid=${user?.uid}")
             trySend(user).isSuccess
         }
         auth.addAuthStateListener(listener)
 
         // Emit current state immediately
         val user = auth.currentUser
-        Log.d(TAG, "Auth state initial: uid=${user?.uid}, email=${user?.email}")
+        Log.d(TAG, "Auth state initial: uid=${user?.uid}")
         trySend(user).isSuccess
 
         awaitClose { auth.removeAuthStateListener(listener) }

@@ -3,6 +3,7 @@ package com.example.gothere
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import com.example.gothere.BuildConfig
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -120,28 +121,25 @@ class MainActivity : ComponentActivity() {
         // Initialize purchase manager
         purchaseManager = PurchaseManager.getInstance(this)
 
-        runCatching {
-            val app = FirebaseApp.getInstance()
-            val options = app.options
-            val u = FirebaseAuth.getInstance().currentUser
-            Log.e("FirebaseDiag", "projectId=${options.projectId} appId=${options.applicationId}")
-            Log.e("FirebaseDiag", "auth uid=${u?.uid} email=${u?.email}")
-            FirebaseFirestore.getInstance()
-                .collection("users")
-                .limit(1)
-                .get()
-                .addOnSuccessListener { snap ->
-                    Log.e("FirebaseDiag", "Firestore reachable. users sample size=${snap.size()}")
-                }
-                .addOnFailureListener { e ->
-                    Log.e("FirebaseDiag", "Firestore reachable FAILED", e)
-                }
-        }.onFailure { e ->
-            Log.e("FirebaseDiag", "Firebase diagnostics block failed", e)
+        if (BuildConfig.DEBUG) {
+            runCatching {
+                val app = FirebaseApp.getInstance()
+                val options = app.options
+                Log.d("FirebaseDiag", "projectId=${options.projectId}")
+                FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener { snap ->
+                        Log.d("FirebaseDiag", "Firestore reachable. users sample size=${snap.size()}")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("FirebaseDiag", "Firestore reachable FAILED", e)
+                    }
+            }.onFailure { e ->
+                Log.e("FirebaseDiag", "Firebase diagnostics block failed", e)
+            }
         }
-
-        val bootUser = FirebaseAuth.getInstance().currentUser
-        Log.d("AuthCheck", "MainActivity.onCreate -> currentUser=${bootUser?.uid} email=${bootUser?.email}")
 
         setContent {
             var isDark by rememberSaveable { mutableStateOf(true) }
@@ -163,8 +161,6 @@ class MainActivity : ComponentActivity() {
                         isDark = isDark,
                         onToggleTheme = { isDark = !isDark },
                         onAuthSuccess = {
-                            val u = FirebaseAuth.getInstance().currentUser
-                            Log.d("AuthCheck", "AuthScreen.onAuthSuccess -> currentUser=${u?.uid} email=${u?.email}")
                             // Restore purchases after login
                             purchaseManager.restorePurchases()
                         }

@@ -1,10 +1,13 @@
 package com.example.gothere.ui.theme
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
@@ -15,8 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gothere.R
@@ -29,12 +37,14 @@ fun AuthScreen(
     onToggleTheme: () -> Unit,
     onAuthSuccess: () -> Unit
 ) {
+    val context = LocalContext.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var isLogin by remember { mutableStateOf(false) } 
+    var isLogin by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val tealColor = Color(0xFF15B8A6)
+    val privacyPolicyUrl = "https://gothere-app.web.app/gothere_privacy_policy.html"
 
     Box(
         modifier = Modifier
@@ -138,6 +148,30 @@ fun AuthScreen(
                     fontSize = 14.sp
                 )
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Privacy Policy link
+            val annotatedText = buildAnnotatedString {
+                append("By continuing, you agree to our ")
+                pushStringAnnotation(tag = "URL", annotation = privacyPolicyUrl)
+                withStyle(SpanStyle(color = tealColor, textDecoration = TextDecoration.Underline)) {
+                    append("Privacy Policy")
+                }
+                pop()
+            }
+            ClickableText(
+                text = annotatedText,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                ),
+                onClick = { offset ->
+                    annotatedText.getStringAnnotations(tag = "URL", start = offset, end = offset)
+                        .firstOrNull()?.let { annotation ->
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(annotation.item)))
+                        }
+                }
+            )
         }
 
         // Theme Toggle Icon at the bottom right

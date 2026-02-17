@@ -33,7 +33,7 @@ class TaskRepository {
     private fun authUidFlow(): Flow<String?> = callbackFlow {
         val listener = FirebaseAuth.AuthStateListener { fa ->
             val uid = fa.currentUser?.uid
-            Log.d("AuthCheck", "TaskRepository auth changed -> uid=$uid email=${fa.currentUser?.email}")
+            Log.d("AuthCheck", "TaskRepository auth changed -> uid=$uid")
             trySend(uid).isSuccess
         }
         auth.addAuthStateListener(listener)
