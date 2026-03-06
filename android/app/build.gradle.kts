@@ -4,6 +4,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 val localProps = Properties().apply {
@@ -15,7 +16,7 @@ val localProps = Properties().apply {
 
 android {
     namespace = "com.example.gothere"
-    compileSdk = 34
+    compileSdk = 35
 
     sourceSets {
         getByName("main") {
@@ -26,9 +27,9 @@ android {
     defaultConfig {
         applicationId = "com.gothere.app"
         minSdk = 24
-        targetSdk = 34
-        versionCode = 2
-        versionName = "1.0.1"
+        targetSdk = 35
+        versionCode = 12
+        versionName = "1.1.2"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -120,6 +121,7 @@ dependencies {
     // Firebase (use BOM to align)
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
     implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")

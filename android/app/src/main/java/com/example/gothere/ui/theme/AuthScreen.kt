@@ -117,16 +117,29 @@ fun AuthScreen(
             // Main Action Button (Sign Up / Login)
             Button(
                 onClick = {
-                    val auth = FirebaseAuth.getInstance()
-                    val task = if (isLogin) {
-                        auth.signInWithEmailAndPassword(email, password)
-                    } else {
-                        auth.createUserWithEmailAndPassword(email, password)
+                    if (email.isBlank() || password.isBlank()) {
+                        errorMessage = "Please enter both email and password."
+                        return@Button
                     }
+                    if (password.length < 6) {
+                        errorMessage = "Password must be at least 6 characters."
+                        return@Button
+                    }
+                    errorMessage = null
+                    try {
+                        val auth = FirebaseAuth.getInstance()
+                        val task = if (isLogin) {
+                            auth.signInWithEmailAndPassword(email.trim(), password)
+                        } else {
+                            auth.createUserWithEmailAndPassword(email.trim(), password)
+                        }
 
-                    task.addOnCompleteListener { result ->
-                        if (result.isSuccessful) onAuthSuccess()
-                        else errorMessage = result.exception?.message
+                        task.addOnCompleteListener { result ->
+                            if (result.isSuccessful) onAuthSuccess()
+                            else errorMessage = result.exception?.localizedMessage ?: "Authentication failed."
+                        }
+                    } catch (e: Exception) {
+                        errorMessage = e.localizedMessage ?: "Authentication failed."
                     }
                 },
                 modifier = Modifier
