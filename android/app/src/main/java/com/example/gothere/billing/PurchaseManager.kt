@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.util.Log
 import com.android.billingclient.api.*
+import com.example.gothere.BuildConfig
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,17 +56,17 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingSetupFinished(billingResult: BillingResult) {
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                    Log.d(TAG, "Billing client connected")
+                    if (BuildConfig.DEBUG) Log.d(TAG, "Billing client connected")
                     _isConnected.value = true
                     queryProductDetails()
                     queryPurchases()
                 } else {
-                    Log.e(TAG, "Billing setup failed: ${billingResult.debugMessage}")
+                    if (BuildConfig.DEBUG) Log.e(TAG, "Billing setup failed: ${billingResult.debugMessage}")
                 }
             }
 
             override fun onBillingServiceDisconnected() {
-                Log.w(TAG, "Billing service disconnected")
+                if (BuildConfig.DEBUG) Log.w(TAG, "Billing service disconnected")
                 _isConnected.value = false
                 connectToPlayBilling()
             }
@@ -96,9 +97,9 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 val detailsMap = productDetailsList.associateBy { it.productId }
                 _productDetails.value = detailsMap
-                Log.d(TAG, "Product details loaded: ${detailsMap.keys}")
+                if (BuildConfig.DEBUG) Log.d(TAG, "Product details loaded: ${detailsMap.keys}")
             } else {
-                Log.e(TAG, "Failed to query product details: ${billingResult.debugMessage}")
+                if (BuildConfig.DEBUG) Log.e(TAG, "Failed to query product details: ${billingResult.debugMessage}")
             }
         }
     }
@@ -121,10 +122,10 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
                 purchases?.let { processPurchases(it) }
             }
             BillingClient.BillingResponseCode.USER_CANCELED -> {
-                Log.d(TAG, "User canceled purchase")
+                if (BuildConfig.DEBUG) Log.d(TAG, "User canceled purchase")
             }
             else -> {
-                Log.e(TAG, "Purchase error: ${billingResult.debugMessage}")
+                if (BuildConfig.DEBUG) Log.e(TAG, "Purchase error: ${billingResult.debugMessage}")
             }
         }
     }
@@ -153,7 +154,7 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
         
         _purchasedCountries.value = unlockedCountries
         savePurchasesToFirestore(unlockedCountries)
-        Log.d(TAG, "Unlocked countries: $unlockedCountries")
+        if (BuildConfig.DEBUG) Log.d(TAG, "Unlocked countries: $unlockedCountries")
     }
 
     private fun acknowledgePurchase(purchase: Purchase) {
@@ -163,7 +164,7 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
             
         billingClient.acknowledgePurchase(params) { billingResult ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                Log.d(TAG, "Purchase acknowledged: ${purchase.products}")
+                if (BuildConfig.DEBUG) Log.d(TAG, "Purchase acknowledged: ${purchase.products}")
             }
         }
     }
@@ -171,7 +172,7 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
     fun launchPurchaseFlow(activity: Activity, productId: String): Boolean {
         val details = _productDetails.value[productId]
         if (details == null) {
-            Log.e(TAG, "Product details not found for: $productId")
+            if (BuildConfig.DEBUG) Log.e(TAG, "Product details not found for: $productId")
             return false
         }
 
@@ -214,7 +215,7 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
         firestore.collection("users").document(uid)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
-                    Log.e(TAG, "Firestore listen failed", error)
+                    if (BuildConfig.DEBUG) Log.e(TAG, "Firestore listen failed", error)
                     return@addSnapshotListener
                 }
                 
@@ -223,7 +224,7 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
                     val countrySet = countries.filterIsInstance<String>().toMutableSet()
                     countrySet.add("spain")
                     _purchasedCountries.value = countrySet
-                    Log.d(TAG, "Loaded countries from Firestore: $countrySet")
+                    if (BuildConfig.DEBUG) Log.d(TAG, "Loaded countries from Firestore: $countrySet")
                 }
             }
     }

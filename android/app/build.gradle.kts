@@ -28,8 +28,8 @@ android {
         applicationId = "com.gothere.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 12
-        versionName = "1.1.2"
+        versionCode = 15
+        versionName = "1.2.2"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -96,9 +96,16 @@ dependencies {
 
     // Core + Lifecycle + Activity
     implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
-    implementation("androidx.activity:activity-compose:1.8.2")
+    implementation("androidx.activity:activity-compose:1.9.3")
+
+    // MapLibre GL for city maps
+    implementation("org.maplibre.gl:android-sdk:11.5.2")
+
+    // In-App Review
+    implementation("com.google.android.play:review-ktx:2.0.2")
 
     // Compose UI (versions come from BOM)
     implementation("androidx.compose.ui:ui")

@@ -3,10 +3,13 @@ package com.example.gothere
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.gothere.BuildConfig
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -15,14 +18,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ListAlt
+import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.outlined.AccountTree
+import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.LightMode
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -34,6 +42,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -62,9 +71,14 @@ import com.example.gothere.billing.PurchaseManager
 import com.example.gothere.ui.CalendarScreen
 import com.example.gothere.ui.DecisionTreeScreen
 import com.example.gothere.ui.DocumentsScreen
+import com.example.gothere.ui.OfflineBanner
+import com.example.gothere.ui.OnboardingPrefs
+import com.example.gothere.ui.OnboardingScreen
 import com.example.gothere.ui.PaywallDialog
 import com.example.gothere.ui.ResourcesScreen
 import com.example.gothere.ui.TasksScreen
+import com.example.gothere.ui.CityMapScreen
+import com.example.gothere.ui.VisaWizardScreen
 import com.example.gothere.ui.theme.AuthScreen
 import com.example.gothere.ui.theme.GoThereTheme
 import com.google.firebase.FirebaseApp
@@ -94,6 +108,12 @@ sealed class Route(val route: String) {
     data object Documents : Route("documents")
     data object Resources : Route("resources")
     data object DecisionTree : Route("decision_tree")
+    data object VisaWizard : Route("visa_wizard/{countryId}") {
+        fun create(countryId: String) = "visa_wizard/$countryId"
+    }
+    data object CityMap : Route("city_map/{countryId}/{cityId}") {
+        fun create(countryId: String, cityId: String) = "city_map/$countryId/$cityId"
+    }
 }
 
 data class BottomTab(
@@ -116,6 +136,8 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         // Initialize purchase manager
@@ -141,14 +163,21 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        // Create notification channel + schedule weekly digest
+        com.example.gothere.util.NotificationHelper.createNotificationChannel(this)
+        com.example.gothere.util.WeeklyDigestScheduler.schedule(this)
+
         setContent {
             var isDark by rememberSaveable { mutableStateOf(true) }
             var selectedCountryId by rememberSaveable { mutableStateOf("spain") }
-            
+            var onboardingDone by rememberSaveable {
+                mutableStateOf(OnboardingPrefs.isCompleted(this@MainActivity))
+            }
+
             // Paywall state
             var showPaywall by remember { mutableStateOf(false) }
             var paywallCountryId by remember { mutableStateOf("") }
-            
+
             // Get purchased countries from PurchaseManager
             val purchasedCountries by purchaseManager.purchasedCountries.collectAsState()
 
@@ -156,7 +185,12 @@ class MainActivity : ComponentActivity() {
             val user by authRepo.authStateFlow().collectAsState(initial = authRepo.currentUser())
 
             GoThereTheme(darkTheme = isDark) {
-                if (user == null) {
+                if (!onboardingDone) {
+                    OnboardingScreen(onFinish = {
+                        OnboardingPrefs.markCompleted(this@MainActivity)
+                        onboardingDone = true
+                    })
+                } else if (user == null) {
                     AuthScreen(
                         isDark = isDark,
                         onToggleTheme = { isDark = !isDark },
@@ -187,12 +221,12 @@ class MainActivity : ComponentActivity() {
                             // Check if country is unlocked
                             if (purchasedCountries.contains(newId)) {
                                 selectedCountryId = newId
-                                Log.d("CountrySwitch", "Switched to $newId")
+                                if (BuildConfig.DEBUG) Log.d("CountrySwitch", "Switched to $newId")
                             } else {
                                 // Show paywall
                                 paywallCountryId = newId
                                 showPaywall = true
-                                Log.d("CountrySwitch", "Country $newId is locked, showing paywall")
+                                if (BuildConfig.DEBUG) Log.d("CountrySwitch", "Country $newId is locked, showing paywall")
                             }
                         }
                     )
@@ -213,6 +247,98 @@ private fun MainAppContent(
 ) {
     val navController = rememberNavController()
     var showCountryDropdown by remember { mutableStateOf(false) }
+    var showSettingsMenu by remember { mutableStateOf(false) }
+    var showDeleteConfirm by remember { mutableStateOf(false) }
+    var deleteError by remember { mutableStateOf<String?>(null) }
+
+    // Delete Account confirmation dialog
+    if (showDeleteConfirm) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirm = false },
+            title = { Text("Delete Account") },
+            text = {
+                Text("This will permanently delete your account and all your data (tasks, events, documents). This action cannot be undone.")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteConfirm = false
+                        val user = FirebaseAuth.getInstance().currentUser
+                        val uid = user?.uid
+                        if (uid != null) {
+                            val db = FirebaseFirestore.getInstance()
+                            val userDoc = db.collection("users").document(uid)
+                            // Delete subcollections then user doc then auth account
+                            val subcollections = listOf("tasks", "events", "documents", "forms", "profiles", "recommendations")
+                            val batch = db.batch()
+                            val pending = java.util.concurrent.atomic.AtomicInteger(subcollections.size)
+                            for (sub in subcollections) {
+                                userDoc.collection(sub).get()
+                                    .addOnSuccessListener { snap ->
+                                        for (doc in snap.documents) {
+                                            doc.reference.delete()
+                                        }
+                                        if (pending.decrementAndGet() == 0) {
+                                            // All subcollections cleared, now delete user doc + auth
+                                            userDoc.delete().addOnCompleteListener {
+                                                user.delete().addOnCompleteListener { task ->
+                                                    if (!task.isSuccessful) {
+                                                        deleteError = "Please sign out, sign back in, and try again."
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    .addOnFailureListener {
+                                        if (pending.decrementAndGet() == 0) {
+                                            userDoc.delete().addOnCompleteListener {
+                                                user.delete().addOnCompleteListener { task ->
+                                                    if (!task.isSuccessful) {
+                                                        deleteError = "Please sign out, sign back in, and try again."
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                            }
+                        }
+                    },
+                    colors = androidx.compose.material3.ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Delete Forever")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirm = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    // Error dialog for re-auth required
+    if (deleteError != null) {
+        AlertDialog(
+            onDismissRequest = { deleteError = null },
+            title = { Text("Re-authentication Required") },
+            text = { Text(deleteError!!) },
+            confirmButton = {
+                TextButton(onClick = {
+                    deleteError = null
+                    AuthRepository().signOut()
+                }) {
+                    Text("Sign Out")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { deleteError = null }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -220,7 +346,9 @@ private fun MainAppContent(
                 navigationIcon = {
                     Row(
                         modifier = Modifier
-                            .clickable { showCountryDropdown = true }
+                            .clickable(
+                                onClickLabel = "Select country"
+                            ) { showCountryDropdown = true }
                             .padding(start = 8.dp, end = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -297,6 +425,64 @@ private fun MainAppContent(
                             contentDescription = "Toggle theme"
                         )
                     }
+                    // Settings overflow menu
+                    IconButton(onClick = { showSettingsMenu = true }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Settings,
+                            contentDescription = "Settings"
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = showSettingsMenu,
+                        onDismissRequest = { showSettingsMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Visa Wizard") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.AutoAwesome,
+                                    contentDescription = null
+                                )
+                            },
+                            onClick = {
+                                showSettingsMenu = false
+                                navController.navigate(Route.VisaWizard.create(selectedCountryId))
+                            }
+                        )
+                        androidx.compose.material3.HorizontalDivider()
+                        DropdownMenuItem(
+                            text = { Text("Sign Out") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.Logout,
+                                    contentDescription = null
+                                )
+                            },
+                            onClick = {
+                                showSettingsMenu = false
+                                AuthRepository().signOut()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    "Delete Account",
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Delete,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                            },
+                            onClick = {
+                                showSettingsMenu = false
+                                showDeleteConfirm = true
+                            }
+                        )
+                    }
                 }
             )
         },
@@ -324,11 +510,14 @@ private fun MainAppContent(
             }
         }
     ) { innerPadding ->
-        AppNavHost(
-            navController = navController,
-            selectedCountryId = selectedCountryId,
-            modifier = Modifier.padding(innerPadding)
-        )
+        Column(Modifier.padding(innerPadding)) {
+            OfflineBanner()
+            AppNavHost(
+                navController = navController,
+                selectedCountryId = selectedCountryId,
+                modifier = Modifier.weight(1f)
+            )
+        }
     }
 }
 
@@ -361,11 +550,24 @@ private fun AppNavHost(
         composable(Route.Calendar.route) { CalendarScreen() }
         composable(Route.Documents.route) { DocumentsScreen() }
         composable(Route.Resources.route) { ResourcesScreen(countryId = selectedCountryId) }
-        composable(Route.DecisionTree.route) { 
+        composable(Route.DecisionTree.route) {
             DecisionTreeScreen(
                 navController = navController,
                 countryId = selectedCountryId
-            ) 
+            )
+        }
+        composable(Route.VisaWizard.route) { backStackEntry ->
+            VisaWizardScreen(
+                navController = navController,
+                countryId = backStackEntry.arguments?.getString("countryId") ?: selectedCountryId
+            )
+        }
+        composable(Route.CityMap.route) { backStackEntry ->
+            CityMapScreen(
+                navController = navController,
+                cityId = backStackEntry.arguments?.getString("cityId") ?: "madrid",
+                countryId = backStackEntry.arguments?.getString("countryId") ?: selectedCountryId
+            )
         }
     }
 }

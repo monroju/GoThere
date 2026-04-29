@@ -1,8 +1,12 @@
 <resources>
-    <!-- App theme used by AndroidManifest -->
-    <style name="Theme.GoThere" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Optional surface tweaks; safe defaults -->
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">true</item>
+    <!-- Splash screen theme (shown while app cold-starts) -->
+    <style name="Theme.GoThere.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#151B23</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_logo</item>
+        <item name="windowSplashScreenIconBackgroundColor">#151B23</item>
+        <item name="postSplashScreenTheme">@style/Theme.GoThere</item>
     </style>
+
+    <!-- Main app theme (edge-to-edge handled programmatically) -->
+    <style name="Theme.GoThere" parent="Theme.Material3.DayNight.NoActionBar" />
 </resources>

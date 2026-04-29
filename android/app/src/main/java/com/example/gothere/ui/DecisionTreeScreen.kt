@@ -7,11 +7,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Calculate
+import androidx.compose.material.icons.outlined.Map
+import com.example.gothere.Route
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import android.content.Intent
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,6 +36,7 @@ fun DecisionTreeScreen(
 ) {
     val scroll = rememberScrollState()
     val clipboard = LocalClipboardManager.current
+    val shareContext = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -158,10 +163,15 @@ fun DecisionTreeScreen(
                         val ranked = DecisionEngine.rank(destinations, profile).take(5)
                         results = ranked
                         scope.launch {
-                            val id = ProfileRepository.saveProfile(profile)
-                            profileId = id
-                            RecommendationRepository.saveRecommendations(id, ranked)
-                            snackbarHostState.showSnackbar("Profile and recommendations saved")
+                            try {
+                                val id = ProfileRepository.saveProfile(profile)
+                                profileId = id
+                                RecommendationRepository.saveRecommendations(id, ranked)
+                                snackbarHostState.showSnackbar("Profile and recommendations saved")
+                            } catch (e: Exception) {
+                                // Firestore save failed (e.g. permissions) — results still show
+                                snackbarHostState.showSnackbar("Results ready (save failed: ${e.message?.take(50)})")
+                            }
                         }
                     },
                     modifier = Modifier.weight(1f).height(50.dp),
@@ -172,13 +182,21 @@ fun DecisionTreeScreen(
                     OutlinedButton(
                         onClick = {
                             val text = buildString {
-                                appendLine("Top $countryName Recommendations:")
+                                appendLine("GoThere - Top $countryName Recommendations:")
+                                appendLine()
                                 results.forEachIndexed { i, r ->
                                     appendLine("${i + 1}. ${r.destination.name} — ${r.destination.region} (score ${r.score})")
                                 }
+                                appendLine()
+                                appendLine("Find your perfect relocation destination at https://getgothere.app")
                             }
                             clipboard.setText(AnnotatedString(text))
-                            scope.launch { snackbarHostState.showSnackbar("Copied top picks to clipboard") }
+                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_TEXT, text)
+                                putExtra(Intent.EXTRA_SUBJECT, "GoThere - Top $countryName Picks")
+                            }
+                            shareContext.startActivity(Intent.createChooser(shareIntent, "Share recommendations"))
                         },
                         modifier = Modifier.weight(1f).height(50.dp),
                         shape = MaterialTheme.shapes.medium
@@ -198,6 +216,9 @@ fun DecisionTreeScreen(
                         ranked = ranked,
                         index = idx + 1,
                         countryId = countryId,
+                        onViewMap = { cityKey ->
+                            navController.navigate(Route.CityMap.create(countryId, cityKey))
+                        },
                         onCalculateCost = { cityId ->
                             selectedCityForCalculator = cityId
                             showCostCalculator = true
@@ -379,7 +400,8 @@ private fun RecommendationCard(
     ranked: RankedDestination,
     index: Int,
     countryId: String,
-    onCalculateCost: (String) -> Unit
+    onCalculateCost: (String) -> Unit,
+    onViewMap: (String) -> Unit = {}
 ) {
     val advice = MicroAdvice.tipsFor(ranked.destination.id, countryId)
 
@@ -405,10 +427,24 @@ private fun RecommendationCard(
                     modifier = Modifier.weight(1f)
                 )
 
+                // View Map button
+                FilledTonalIconButton(
+                    onClick = {
+                        val cityKey = ranked.destination.id.lowercase().replace(" ", "_")
+                        onViewMap(cityKey)
+                    },
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        Icons.Outlined.Map,
+                        contentDescription = "View map for ${ranked.destination.name}",
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
                 // Cost Calculator button for this city
                 FilledTonalIconButton(
                     onClick = {
-                        // Convert destination ID to city key for calculator
                         val cityKey = ranked.destination.id.lowercase().replace(" ", "_")
                         onCalculateCost(cityKey)
                     },

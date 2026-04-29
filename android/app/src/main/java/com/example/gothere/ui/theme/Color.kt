@@ -73,7 +73,7 @@ val md_theme_dark_onSecondaryContainer = White
 val md_theme_dark_tertiary            = Color(0xFF7CCBFF)
 val md_theme_dark_onTertiary          = Color(0xFF00344F)
 val md_theme_dark_tertiaryContainer   = Color(0xFF004B71)
-val md_theme_dark_onTertiaryContainer = Color(0xFFCAE6FF)
+val md_theme_dark_onTertiaryContainer = Color(0xFFF0EBE3) // warm off-white
 
 val md_theme_dark_error               = Color(0xFFFFB4AB)
 val md_theme_dark_errorContainer      = Color(0xFF93000A)
@@ -81,14 +81,14 @@ val md_theme_dark_onError             = Color(0xFF690005)
 val md_theme_dark_onErrorContainer    = Color(0xFFFFDAD6)
 
 val md_theme_dark_background          = Night
-val md_theme_dark_onBackground        = White
+val md_theme_dark_onBackground        = Color(0xFFF5F0E8) // bone white
 val md_theme_dark_surface             = Night
-val md_theme_dark_onSurface           = White
+val md_theme_dark_onSurface           = Color(0xFFF5F0E8) // bone white
 
 val md_theme_dark_surfaceVariant      = Color(0xFF2A2F37)
-val md_theme_dark_onSurfaceVariant    = Color(0xFFC4C6CF)
-val md_theme_dark_outline             = Color(0xFF8E9099)
-val md_theme_dark_outlineVariant      = Color(0xFF44474F)
+val md_theme_dark_onSurfaceVariant    = Color(0xFFD9D3C7) // cream white (no purple)
+val md_theme_dark_outline             = Color(0xFF9E9890) // warm gray
+val md_theme_dark_outlineVariant      = Color(0xFF4A4740)
 
 val md_theme_dark_inverseOnSurface    = Black
 val md_theme_dark_inverseSurface      = LightSurface

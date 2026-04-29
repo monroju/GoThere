@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.gothere.model.Task
 import com.example.gothere.repository.EventsRepository
 import com.example.gothere.repository.TaskRepository
+import com.example.gothere.util.NotificationHelper
+import com.example.gothere.util.ReviewHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +21,7 @@ import java.util.Calendar
  * ViewModel is allowed to be constructed with or without an Android Context.
  */
 class TasksViewModel(
-    @Suppress("unused") private val context: Context? = null
+    private val context: Context? = null
 ) : ViewModel() {
 
     private val repo = TaskRepository()
@@ -135,6 +137,10 @@ class TasksViewModel(
             Log.e("TasksViewModel", "toggleCompleted FAILED id=$id", res.exceptionOrNull())
         } else {
             Log.d("TasksViewModel", "toggleCompleted OK id=$id completed=${!task.completed}")
+            // Trigger in-app review after enough task completions
+            if (!task.completed && context != null) {
+                ReviewHelper.onTaskCompleted(context)
+            }
         }
     }
 
@@ -151,7 +157,16 @@ class TasksViewModel(
             Log.e("TasksViewModel", "setDue FAILED id=$id dueAt=$dateMillisUtcMidnight", res.exceptionOrNull())
         } else {
             Log.d("TasksViewModel", "setDue OK id=$id dueAt=$dateMillisUtcMidnight")
+            // Schedule a push reminder for the day before
+            if (dateMillisUtcMidnight != null && context != null) {
+                NotificationHelper.scheduleTaskReminder(context, id, task.title, dateMillisUtcMidnight)
+            }
         }
+    }
+
+    fun setNotes(task: Task, notes: String?) = viewModelScope.launch {
+        val id = task.id ?: return@launch
+        repo.setNotes(id, notes)
     }
 
     fun addToCalendar(task: Task) = viewModelScope.launch {

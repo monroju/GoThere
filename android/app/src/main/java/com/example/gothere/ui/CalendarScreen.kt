@@ -8,7 +8,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
@@ -81,7 +83,8 @@ fun CalendarScreen(vm: CalendarViewModel = viewModel()) {
             Modifier
                 .fillMaxSize()
                 .padding(inner)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
@@ -158,8 +161,9 @@ fun CalendarScreen(vm: CalendarViewModel = viewModel()) {
             if (dayEvents.isEmpty()) {
                 Text("No events for this date.", color = MaterialTheme.colorScheme.onSurfaceVariant)
             } else {
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(dayEvents) { event ->
+                // Use Column instead of LazyColumn to avoid nested scrolling issues
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    dayEvents.forEach { event ->
                         ElevatedCard {
                             Row(
                                 Modifier
@@ -177,6 +181,9 @@ fun CalendarScreen(vm: CalendarViewModel = viewModel()) {
                     }
                 }
             }
+
+            // Bottom spacing for FAB clearance
+            Spacer(Modifier.height(72.dp))
         }
     }
 

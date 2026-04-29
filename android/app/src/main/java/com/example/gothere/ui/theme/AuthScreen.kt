@@ -11,6 +11,8 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -41,7 +43,11 @@ fun AuthScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isLogin by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var showForgotPassword by remember { mutableStateOf(false) }
+    var forgotEmail by remember { mutableStateOf("") }
+    var forgotMessage by remember { mutableStateOf<String?>(null) }
 
     val tealColor = Color(0xFF15B8A6)
     val privacyPolicyUrl = "https://gothere-app.web.app/gothere_privacy_policy.html"
@@ -51,9 +57,59 @@ fun AuthScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
+        // Forgot Password dialog
+        if (showForgotPassword) {
+            AlertDialog(
+                onDismissRequest = { showForgotPassword = false; forgotMessage = null },
+                title = { Text("Reset Password") },
+                text = {
+                    Column {
+                        Text("Enter your email and we'll send a password reset link.")
+                        Spacer(modifier = Modifier.height(12.dp))
+                        OutlinedTextField(
+                            value = forgotEmail,
+                            onValueChange = { forgotEmail = it },
+                            label = { Text("Email") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        if (forgotMessage != null) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = forgotMessage!!,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (forgotMessage!!.startsWith("Check")) tealColor else MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        if (forgotEmail.isBlank() || !forgotEmail.contains("@")) {
+                            forgotMessage = "Please enter a valid email."
+                            return@TextButton
+                        }
+                        FirebaseAuth.getInstance().sendPasswordResetEmail(forgotEmail.trim())
+                            .addOnCompleteListener { task ->
+                                forgotMessage = if (task.isSuccessful) {
+                                    "Check your inbox for a reset link."
+                                } else {
+                                    task.exception?.localizedMessage ?: "Failed to send reset email."
+                                }
+                            }
+                    }) { Text("Send") }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showForgotPassword = false; forgotMessage = null }) { Text("Cancel") }
+                }
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -126,6 +182,7 @@ fun AuthScreen(
                         return@Button
                     }
                     errorMessage = null
+                    isLoading = true
                     try {
                         val auth = FirebaseAuth.getInstance()
                         val task = if (isLogin) {
@@ -135,10 +192,12 @@ fun AuthScreen(
                         }
 
                         task.addOnCompleteListener { result ->
+                            isLoading = false
                             if (result.isSuccessful) onAuthSuccess()
                             else errorMessage = result.exception?.localizedMessage ?: "Authentication failed."
                         }
                     } catch (e: Exception) {
+                        isLoading = false
                         errorMessage = e.localizedMessage ?: "Authentication failed."
                     }
                 },
@@ -146,9 +205,18 @@ fun AuthScreen(
                     .fillMaxWidth()
                     .height(48.dp),
                 shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = tealColor)
+                colors = ButtonDefaults.buttonColors(containerColor = tealColor),
+                enabled = !isLoading
             ) {
-                Text(if (isLogin) "Log In" else "Sign Up", fontSize = 16.sp)
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(if (isLogin) "Log In" else "Sign Up", fontSize = 16.sp)
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -160,6 +228,20 @@ fun AuthScreen(
                     color = tealColor,
                     fontSize = 14.sp
                 )
+            }
+
+            // Forgot Password (only show on login)
+            if (isLogin) {
+                TextButton(onClick = {
+                    forgotEmail = email
+                    showForgotPassword = true
+                }) {
+                    Text(
+                        text = "Forgot Password?",
+                        color = tealColor.copy(alpha = 0.8f),
+                        fontSize = 13.sp
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))

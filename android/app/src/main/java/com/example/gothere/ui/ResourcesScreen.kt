@@ -164,15 +164,30 @@ fun ResourcesScreen(
 
                 // Show each folder's documents
                 documentsByFolder.forEach { (folderName, documents) ->
-                    if (documents.isNotEmpty()) {
+                    // Filter out non-document files (e.g. .json config files)
+                    val filteredDocs = documents.filter { doc ->
+                        !doc.name.endsWith(".json", ignoreCase = true)
+                    }
+                    if (filteredDocs.isNotEmpty()) {
                         item {
                             StorageDocumentsCard(
                                 title = folderDisplayNames[folderName] ?: folderName,
                                 icon = getFolderIcon(folderName),
-                                documents = documents,
+                                documents = filteredDocs,
                                 onDocumentClick = { doc ->
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(doc.downloadUrl))
-                                    context.startActivity(intent)
+                                    // Use ACTION_VIEW with PDF MIME type so Android opens
+                                    // in a PDF viewer instead of downloading directly
+                                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                                        setDataAndType(Uri.parse(doc.downloadUrl), "application/pdf")
+                                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                    }
+                                    // Fall back to browser if no PDF viewer installed
+                                    try {
+                                        context.startActivity(intent)
+                                    } catch (e: android.content.ActivityNotFoundException) {
+                                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(doc.downloadUrl))
+                                        context.startActivity(browserIntent)
+                                    }
                                 }
                             )
                         }
@@ -227,6 +242,59 @@ fun ResourcesScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
+                    }
+                }
+            }
+
+            // Cross-promotion: Localista
+            item {
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+                ElevatedCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            val intent = Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("https://play.google.com/store/apps/details?id=com.localista.app")
+                            )
+                            context.startActivity(intent)
+                        },
+                    colors = CardDefaults.elevatedCardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Newspaper,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(36.dp)
+                        )
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Try Localista",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                text = "Spain news in English \u2014 30+ cities, emergency alerts, expat guides",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.Outlined.ChevronRight,
+                            contentDescription = "Open",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 }
             }

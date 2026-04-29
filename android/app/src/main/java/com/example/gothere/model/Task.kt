@@ -12,5 +12,6 @@ data class Task(
     val cityId: String? = null,
     val cityName: String? = null,
     val countryId: String? = null,        // spain, portugal, mexico - defaults to spain for legacy
-    val links: List<Link>? = null         // serialized as [{label,url}]
+    val links: List<Link>? = null,        // serialized as [{label,url}]
+    val notes: String? = null             // user's personal notes on this task
 )

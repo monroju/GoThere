@@ -16,11 +16,12 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_logo"
+        android:icon="@mipmap/ic_launcher"
         android:label="GoThere"
-        android:roundIcon="@drawable/ic_logo"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.GoThere"
+        android:theme="@style/Theme.GoThere.Splash"
+        android:enableOnBackInvokedCallback="true"
         android:usesCleartextTraffic="false">
 
         <!-- Required for Google Play Services / Firebase stability -->
@@ -42,6 +43,10 @@
         <!-- Broadcast Receiver for Notifications -->
         <receiver
             android:name=".util.NotificationReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".util.WeeklyDigestReceiver"
             android:exported="false" />
 
         <receiver

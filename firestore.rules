@@ -2,41 +2,51 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Per-user subcollections
+    // Per-user document
     match /users/{uid} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
 
       // Tasks
       match /tasks/{taskId} {
-        allow read, write: if request.auth != null && request.auth.uid == uid;
-
-        // Validate shape on create/update
-        allow create, update: if request.resource.data.keys().hasOnly([
-            'title','description','completed','category','links','dueAt','createdAt'
-          ])
+        allow read, delete: if request.auth != null && request.auth.uid == uid;
+        allow create: if request.auth != null && request.auth.uid == uid
           && request.resource.data.title is string
           && request.resource.data.title.size() > 0
-          && (request.resource.data.description == null
-              || request.resource.data.description is string)
-          && (request.resource.data.completed == null
-              || request.resource.data.completed is bool)
-          && (request.resource.data.category == null
-              || request.resource.data.category is string)
-          && (request.resource.data.dueAt == null
-              || request.resource.data.dueAt is int)
-          && (request.resource.data.links == null
-              || request.resource.data.links is list);
+          && request.resource.data.title.size() <= 500;
+        allow update: if request.auth != null && request.auth.uid == uid;
       }
 
       // Events (Calendar)
       match /events/{eventId} {
-        allow read, write: if request.auth != null && request.auth.uid == uid;
-        allow create, update: if request.resource.data.keys().hasOnly([
-            'title','dateMillis','createdAt'
-          ])
+        allow read, delete: if request.auth != null && request.auth.uid == uid;
+        allow create, update: if request.auth != null && request.auth.uid == uid
           && request.resource.data.title is string
-          && request.resource.data.title.size() > 0
-          && request.resource.data.dateMillis is int;
+          && request.resource.data.title.size() > 0;
+      }
+
+      // Documents
+      match /documents/{docId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      // Forms
+      match /forms/{formId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      // Decision profiles
+      match /profiles/{profileId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      // Recommendations
+      match /recommendations/{recId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      // Wizard results
+      match /wizardResults/{resultId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
       }
     }
   }

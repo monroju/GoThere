@@ -125,6 +125,8 @@ class TaskRepository {
                         if (label.isNotEmpty() && url.isNotEmpty()) Link(label, url) else null
                     }
 
+                    val notes = doc.getString("notes")
+
                     Task(
                         id = doc.id,
                         title = title,
@@ -134,7 +136,8 @@ class TaskRepository {
                         dueAt = dueAt,
                         createdAt = createdAt,
                         countryId = countryId,
-                        links = links
+                        links = links,
+                        notes = notes
                     )
                 } catch (t: Throwable) {
                     Log.e("TaskRepository", "Failed mapping task doc id=${doc.id}", t)
@@ -156,10 +159,39 @@ class TaskRepository {
     // Writes
     // ----------------------------
 
+    suspend fun addTask(task: Task): Result<Unit> {
+        val uid = auth.currentUser?.uid ?: return Result.failure(Exception("Not signed in"))
+        return try {
+            val data = hashMapOf<String, Any?>(
+                "title" to task.title,
+                "description" to task.description,
+                "category" to task.category,
+                "completed" to false,
+                "dueAt" to task.dueAt,
+                "createdAt" to System.currentTimeMillis(),
+                "countryId" to task.countryId,
+            )
+            colFor(uid).document().set(data).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun toggleCompleted(taskId: String, completed: Boolean): Result<Unit> {
         val uid = auth.currentUser?.uid ?: return Result.failure(Exception("Not signed in"))
         return try {
             colFor(uid).document(taskId).update("completed", completed).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun setNotes(taskId: String, notes: String?): Result<Unit> {
+        val uid = auth.currentUser?.uid ?: return Result.failure(Exception("Not signed in"))
+        return try {
+            colFor(uid).document(taskId).update("notes", notes).await()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
