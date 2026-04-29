@@ -13,6 +13,8 @@ object DestinationConfig {
     const val SPAIN = "spain"
     const val PORTUGAL = "portugal"
     const val MEXICO = "mexico"
+    const val CANADA = "canada"
+    const val IRELAND = "ireland"
 
     // ==================== VISA TRACK IDs ====================
     // Spain
@@ -26,6 +28,12 @@ object DestinationConfig {
     // Mexico
     const val MEXICO_TEMP_RESIDENT = "mx_temp_resident_economic_solvency"
     const val MEXICO_TEMP_REMOTE = "mx_temp_resident_remote_work"
+
+    // Canada
+    const val CANADA_CITIZENSHIP_DESCENT = "ca_citizenship_descent_billc3"
+
+    // Ireland
+    const val IRELAND_FBR = "ie_foreign_births_register"
 
     // ==================== CURRENT SEED VERSION ====================
     // Increment this when seed data changes to trigger re-seeding
@@ -164,9 +172,66 @@ object DestinationConfig {
         officialImmigrationUrl = "https://www.inm.gob.mx/"
     )
 
+    val canada = DestinationCountry(
+        id = CANADA,
+        name = "Canada",
+        flagEmoji = "🇨🇦",
+        region = "North America",
+        description = "Bill C-3 (effective Dec 15, 2025) removed the first-generation limit on Canadian citizenship by descent. If you have a Canadian-born or naturalized ancestor, you may already be Canadian.",
+        visaTracks = listOf(
+            VisaTrack(
+                id = CANADA_CITIZENSHIP_DESCENT,
+                destinationId = CANADA,
+                name = "Canadian Citizenship by Descent (Bill C-3)",
+                shortName = "Bill C-3",
+                description = "If you descend from a Canadian-born or naturalized ancestor, you may already be a Canadian citizen by operation of law. The Lost Canadians Act (Bill C-3, 2025) removed the first-generation limit and is retroactive for births before Dec 15, 2025.",
+                requirements = listOf(
+                    "Canadian-born or naturalized ancestor in your direct line",
+                    "Documentary chain (birth/marriage certificates) from you to that ancestor",
+                    "If born on/after 2025-12-15 to a Canadian parent who is also a citizen by descent: parent must have spent ≥1,095 days physically in Canada before your birth (Substantial Connection test)",
+                    "Apply to IRCC for proof of citizenship (Form CIT 0001)"
+                ),
+                estimatedProcessingTime = "6–12 months for proof of citizenship",
+                officialUrl = "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-citizenship/proof-citizenship.html"
+            )
+        ),
+        defaultVisaTrackId = CANADA_CITIZENSHIP_DESCENT,
+        seedVersion = CURRENT_SEED_VERSION,
+        officialImmigrationUrl = "https://www.canada.ca/en/immigration-refugees-citizenship.html"
+    )
+
+    val ireland = DestinationCountry(
+        id = IRELAND,
+        name = "Ireland",
+        flagEmoji = "🇮🇪",
+        region = "Europe",
+        description = "Irish citizenship by descent through the Foreign Births Register. If you have a grandparent born on the island of Ireland, you can register and become an Irish (and EU) citizen.",
+        visaTracks = listOf(
+            VisaTrack(
+                id = IRELAND_FBR,
+                destinationId = IRELAND,
+                name = "Foreign Births Register (Citizenship by Descent)",
+                shortName = "FBR",
+                description = "If you were born outside Ireland to a parent who was an Irish citizen at the time of your birth — most commonly because your grandparent was born on the island of Ireland — you can register on the Foreign Births Register and obtain Irish citizenship and a full EU passport.",
+                requirements = listOf(
+                    "Grandparent born on the island of Ireland (or eligible parent)",
+                    "Birth certificates for you, your Irish-citizen parent, and the Irish-born grandparent (GRO-issued certified copies)",
+                    "Marriage certificates linking the chain where surnames change",
+                    "Government-issued photo ID and address verification",
+                    "Online application + signed paper copy posted with documents"
+                ),
+                estimatedProcessingTime = "Approximately 12 months",
+                officialUrl = "https://fbr.dfa.ie/"
+            )
+        ),
+        defaultVisaTrackId = IRELAND_FBR,
+        seedVersion = CURRENT_SEED_VERSION,
+        officialImmigrationUrl = "https://www.ireland.ie/en/dfa/citizenship/"
+    )
+
     // ==================== ALL DESTINATIONS ====================
 
-    val allDestinations: List<DestinationCountry> = listOf(spain, portugal, mexico)
+    val allDestinations: List<DestinationCountry> = listOf(spain, portugal, mexico, canada, ireland)
 
     fun getDestination(id: String): DestinationCountry? = allDestinations.find { it.id == id }
 

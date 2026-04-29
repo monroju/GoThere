@@ -18,7 +18,13 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
         
         const val PRODUCT_PORTUGAL = "com.gothere.portugal_pack"
         const val PRODUCT_MEXICO = "com.gothere.mexico_pack"
+        const val PRODUCT_IRELAND = "com.gothere.ireland_pack"
         const val PRODUCT_ALL_COUNTRIES = "com.gothere.all_countries"
+
+        // Spain and Canada are always free.
+        // Spain is GoThere's original launch destination.
+        // Canada is free for the v1 launch of the Fast-Track Eligibility module to ride the Bill C-3 news cycle.
+        private val FREE_COUNTRIES = setOf("spain", "canada")
         
         @Volatile
         private var INSTANCE: PurchaseManager? = null
@@ -38,7 +44,7 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     
-    private val _purchasedCountries = MutableStateFlow<Set<String>>(setOf("spain"))
+    private val _purchasedCountries = MutableStateFlow<Set<String>>(FREE_COUNTRIES)
     val purchasedCountries: StateFlow<Set<String>> = _purchasedCountries.asStateFlow()
     
     private val _productDetails = MutableStateFlow<Map<String, ProductDetails>>(emptyMap())
@@ -81,6 +87,10 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
                 .build(),
             QueryProductDetailsParams.Product.newBuilder()
                 .setProductId(PRODUCT_MEXICO)
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId(PRODUCT_IRELAND)
                 .setProductType(BillingClient.ProductType.INAPP)
                 .build(),
             QueryProductDetailsParams.Product.newBuilder()
@@ -131,21 +141,23 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
     }
 
     private fun processPurchases(purchases: List<Purchase>) {
-        val unlockedCountries = mutableSetOf("spain")
-        
+        val unlockedCountries = FREE_COUNTRIES.toMutableSet()
+
         for (purchase in purchases) {
             if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
                 if (!purchase.isAcknowledged) {
                     acknowledgePurchase(purchase)
                 }
-                
+
                 purchase.products.forEach { productId ->
                     when (productId) {
                         PRODUCT_PORTUGAL -> unlockedCountries.add("portugal")
                         PRODUCT_MEXICO -> unlockedCountries.add("mexico")
+                        PRODUCT_IRELAND -> unlockedCountries.add("ireland")
                         PRODUCT_ALL_COUNTRIES -> {
                             unlockedCountries.add("portugal")
                             unlockedCountries.add("mexico")
+                            unlockedCountries.add("ireland")
                         }
                     }
                 }
@@ -222,7 +234,7 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
                 val countries = snapshot?.get("unlockedCountries") as? List<*>
                 if (countries != null) {
                     val countrySet = countries.filterIsInstance<String>().toMutableSet()
-                    countrySet.add("spain")
+                    countrySet.addAll(FREE_COUNTRIES)
                     _purchasedCountries.value = countrySet
                     if (BuildConfig.DEBUG) Log.d(TAG, "Loaded countries from Firestore: $countrySet")
                 }

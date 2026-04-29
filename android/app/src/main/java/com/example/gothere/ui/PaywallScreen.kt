@@ -40,18 +40,21 @@ fun PaywallDialog(
     val countryName = when (countryId) {
         "portugal" -> "Portugal"
         "mexico" -> "Mexico"
+        "ireland" -> "Ireland"
         else -> "Country"
     }
-    
+
     val countryFlag = when (countryId) {
         "portugal" -> "🇵🇹"
         "mexico" -> "🇲🇽"
+        "ireland" -> "🇮🇪"
         else -> "🌍"
     }
-    
+
     val countryProductId = when (countryId) {
         "portugal" -> PurchaseManager.PRODUCT_PORTUGAL
         "mexico" -> PurchaseManager.PRODUCT_MEXICO
+        "ireland" -> PurchaseManager.PRODUCT_IRELAND
         else -> null
     }
     
@@ -263,12 +266,14 @@ fun PaywallBanner(
     val countryName = when (countryId) {
         "portugal" -> "Portugal"
         "mexico" -> "Mexico"
+        "ireland" -> "Ireland"
         else -> "Country"
     }
-    
+
     val countryFlag = when (countryId) {
         "portugal" -> "🇵🇹"
         "mexico" -> "🇲🇽"
+        "ireland" -> "🇮🇪"
         else -> "🌍"
     }
 
