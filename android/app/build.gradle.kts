@@ -28,8 +28,8 @@ android {
         applicationId = "com.gothere.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 16
-        versionName = "1.3.0"
+        versionCode = 17
+        versionName = "1.3.1"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -135,6 +135,9 @@ dependencies {
 
     // Google Play Billing
     implementation("com.android.billingclient:billing-ktx:6.1.0")
+
+    // PostHog product analytics
+    implementation("com.posthog:posthog-android:3.+")
 
     // (Optional) Material Components for Android Views (if any XML screens)
     implementation("com.google.android.material:material:1.12.0")

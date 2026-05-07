@@ -84,6 +84,8 @@ import com.example.gothere.ui.theme.GoThereTheme
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.posthog.android.PostHogAndroid
+import com.posthog.android.PostHogAndroidConfig
 
 // Simple helper functions for country data
 private fun getCountryName(id: String): String = when (id) {
@@ -146,6 +148,14 @@ class MainActivity : ComponentActivity() {
 
         // Initialize purchase manager
         purchaseManager = PurchaseManager.getInstance(this)
+
+        PostHogAndroid.setup(
+            applicationContext,
+            PostHogAndroidConfig(
+                apiKey = "phc_zdWSqHah9LiyNqn38H2i3E48XPv5acrWsXedfUWVGSLb",
+                host = "https://eu.i.posthog.com"
+            )
+        )
 
         if (BuildConfig.DEBUG) {
             runCatching {
