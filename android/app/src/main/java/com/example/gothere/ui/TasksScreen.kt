@@ -188,7 +188,9 @@ fun TasksScreen(
 
     val countryName = when (countryId) {
         "spain" -> "Spain"; "portugal" -> "Portugal"; "mexico" -> "Mexico"
-        "canada" -> "Canada"; "ireland" -> "Ireland"; else -> "Spain"
+        "canada" -> "Canada"; "ireland" -> "Ireland"
+        "italy" -> "Italy"; "germany" -> "Germany"; "poland" -> "Poland"
+        else -> "Spain"
     }
 
     // Celebration dialog

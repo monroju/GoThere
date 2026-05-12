@@ -19,6 +19,9 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
         const val PRODUCT_PORTUGAL = "com.gothere.portugal_pack"
         const val PRODUCT_MEXICO = "com.gothere.mexico_pack"
         const val PRODUCT_IRELAND = "com.gothere.ireland_pack"
+        const val PRODUCT_ITALY = "com.gothere.italy_pack"
+        const val PRODUCT_GERMANY = "com.gothere.germany_pack"
+        const val PRODUCT_POLAND = "com.gothere.poland_pack"
         const val PRODUCT_ALL_COUNTRIES = "com.gothere.all_countries"
 
         // Spain and Canada are always free.
@@ -94,6 +97,18 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
                 .setProductType(BillingClient.ProductType.INAPP)
                 .build(),
             QueryProductDetailsParams.Product.newBuilder()
+                .setProductId(PRODUCT_ITALY)
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId(PRODUCT_GERMANY)
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId(PRODUCT_POLAND)
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
                 .setProductId(PRODUCT_ALL_COUNTRIES)
                 .setProductType(BillingClient.ProductType.INAPP)
                 .build()
@@ -154,10 +169,16 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
                         PRODUCT_PORTUGAL -> unlockedCountries.add("portugal")
                         PRODUCT_MEXICO -> unlockedCountries.add("mexico")
                         PRODUCT_IRELAND -> unlockedCountries.add("ireland")
+                        PRODUCT_ITALY -> unlockedCountries.add("italy")
+                        PRODUCT_GERMANY -> unlockedCountries.add("germany")
+                        PRODUCT_POLAND -> unlockedCountries.add("poland")
                         PRODUCT_ALL_COUNTRIES -> {
                             unlockedCountries.add("portugal")
                             unlockedCountries.add("mexico")
                             unlockedCountries.add("ireland")
+                            unlockedCountries.add("italy")
+                            unlockedCountries.add("germany")
+                            unlockedCountries.add("poland")
                         }
                     }
                 }

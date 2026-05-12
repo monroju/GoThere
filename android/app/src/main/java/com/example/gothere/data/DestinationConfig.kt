@@ -15,6 +15,9 @@ object DestinationConfig {
     const val MEXICO = "mexico"
     const val CANADA = "canada"
     const val IRELAND = "ireland"
+    const val ITALY = "italy"
+    const val GERMANY = "germany"
+    const val POLAND = "poland"
 
     // ==================== VISA TRACK IDs ====================
     // Spain
@@ -35,9 +38,19 @@ object DestinationConfig {
     // Ireland
     const val IRELAND_FBR = "ie_foreign_births_register"
 
+    // Italy
+    const val ITALY_JURE_SANGUINIS = "it_jure_sanguinis"
+
+    // Germany
+    const val GERMANY_ARTICLE_116 = "de_article_116"
+    const val GERMANY_STAG_15 = "de_stag_15"
+
+    // Poland
+    const val POLAND_CITIZENSHIP_CONFIRMATION = "pl_citizenship_confirmation"
+
     // ==================== CURRENT SEED VERSION ====================
     // Increment this when seed data changes to trigger re-seeding
-    const val CURRENT_SEED_VERSION = 1
+    const val CURRENT_SEED_VERSION = 2
 
     // ==================== DESTINATIONS ====================
 
@@ -229,9 +242,116 @@ object DestinationConfig {
         officialImmigrationUrl = "https://www.ireland.ie/en/dfa/citizenship/"
     )
 
+    val italy = DestinationCountry(
+        id = ITALY,
+        name = "Italy",
+        flagEmoji = "🇮🇹",
+        region = "Europe",
+        description = "Italian citizenship by descent (jure sanguinis). The March 2025 reform limits eligibility to applicants with an Italian-born parent or grandparent — but those who qualify gain Italian (and EU) citizenship for life.",
+        visaTracks = listOf(
+            VisaTrack(
+                id = ITALY_JURE_SANGUINIS,
+                destinationId = ITALY,
+                name = "Italian Citizenship by Descent (Jure Sanguinis)",
+                shortName = "Jure Sanguinis",
+                description = "Italian citizenship is transmitted by blood (jure sanguinis). Decree-Law 36/2025 (in force March 28, 2025) restricted eligibility to applicants with at least one Italian-born parent or grandparent for applications filed on or after that date. The unbroken citizenship chain must be intact (no ancestor naturalized as a US citizen before passing citizenship to the next generation in the line).",
+                requirements = listOf(
+                    "Italian-born parent or grandparent in your direct line (post-2025 reform)",
+                    "Unbroken citizenship chain — Italian ancestor did not naturalize as a US citizen before the next generation in the line was born (or if they did, only after that birth)",
+                    "Certified vital records (birth, marriage, death) for each generation, with Apostille + sworn Italian translation",
+                    "Application filed at the Italian consulate having jurisdiction over your US residence (or via 1948 case in Italian court if descent passes through a female ancestor before 1948)",
+                    "Proof of residence in the consular jurisdiction (utility bills, lease)"
+                ),
+                estimatedProcessingTime = "12–24 months at consulate; 18–36 months for 1948 court route",
+                officialUrl = "https://www.esteri.it/en/servizi-consolari-e-visti/italiani-all-estero/cittadinanza/"
+            )
+        ),
+        defaultVisaTrackId = ITALY_JURE_SANGUINIS,
+        seedVersion = CURRENT_SEED_VERSION,
+        officialImmigrationUrl = "https://www.esteri.it/en/servizi-consolari-e-visti/italiani-all-estero/cittadinanza/"
+    )
+
+    val germany = DestinationCountry(
+        id = GERMANY,
+        name = "Germany",
+        flagEmoji = "🇩🇪",
+        region = "Europe",
+        description = "Germany offers two citizenship restoration pathways for descendants of Germans persecuted by the Nazi regime (Article 116(2) Basic Law) or barred from citizenship by historic discriminatory laws (StAG §15). Both routes grant German and EU citizenship for life with no language test, residency, or fee.",
+        visaTracks = listOf(
+            VisaTrack(
+                id = GERMANY_ARTICLE_116,
+                destinationId = GERMANY,
+                name = "Article 116(2) Restoration (Nazi-era Persecution)",
+                shortName = "Article 116",
+                description = "If your ancestor was a German citizen who lost citizenship between January 30, 1933 and May 8, 1945 for political, racial, or religious reasons (most commonly: German Jews stripped of citizenship under the 1941 11th Reich Citizenship Ordinance), you and their descendants have a constitutional right to restoration. No language test, no residency requirement, no fee.",
+                requirements = listOf(
+                    "Direct-line descent from a German citizen persecuted between 1933 and 1945",
+                    "Evidence ancestor was a German citizen (pre-1941 passport, residence registration, vital records)",
+                    "Evidence of persecution (e.g., emigration after 1933, listing in 1941 expatriation gazette, Yad Vashem record, naturalization documents in country of refuge)",
+                    "Unbroken documentary chain of descent (birth + marriage certificates) from the persecuted ancestor to you",
+                    "Application form (BVA-Antrag) to the Bundesverwaltungsamt in Cologne",
+                    "Dual citizenship permitted — you keep your US citizenship"
+                ),
+                estimatedProcessingTime = "18–36 months at Bundesverwaltungsamt",
+                officialUrl = "https://www.bva.bund.de/EN/Services/Citizens/Migration-Citizenship/Citizenship/Restoration-of-citizenship/restoration-of-citizenship_node.html"
+            ),
+            VisaTrack(
+                id = GERMANY_STAG_15,
+                destinationId = GERMANY,
+                name = "StAG §15 Restoration",
+                shortName = "StAG §15",
+                description = "Added in 2021, StAG §15 closes loopholes in Article 116. It covers descendants of Germans who were barred from acquiring or transmitting citizenship by historic discriminatory laws — most commonly: children of German mothers and foreign fathers born before April 1, 1953 (pre-equality law); children born out of wedlock to German fathers before July 1, 1993; descendants who would have been Article 116 eligible but for technical gaps.",
+                requirements = listOf(
+                    "Descent from a person who was excluded from German citizenship by discriminatory pre-1953 law, or otherwise barred by technical gaps in earlier statutes",
+                    "Documentary chain (birth + marriage certificates) showing the excluded ancestor and your line of descent",
+                    "Application to the Bundesverwaltungsamt under StAG §15 (separate form from Article 116)",
+                    "Dual citizenship permitted",
+                    "No language test, no residency requirement, no fee"
+                ),
+                estimatedProcessingTime = "18–36 months at Bundesverwaltungsamt",
+                officialUrl = "https://www.bva.bund.de/EN/Services/Citizens/Migration-Citizenship/Citizenship/Restoration-of-citizenship/restoration-of-citizenship_node.html"
+            )
+        ),
+        defaultVisaTrackId = GERMANY_ARTICLE_116,
+        seedVersion = CURRENT_SEED_VERSION,
+        officialImmigrationUrl = "https://www.bva.bund.de/EN/Home/home_node.html"
+    )
+
+    val poland = DestinationCountry(
+        id = POLAND,
+        name = "Poland",
+        flagEmoji = "🇵🇱",
+        region = "Europe",
+        description = "Confirmation of Polish citizenship (potwierdzenie posiadania obywatelstwa polskiego) for descendants of Polish citizens. If you can trace an unbroken line to a Polish citizen ancestor who emigrated after Poland's 1920 citizenship law took effect, you may already be a Polish citizen by operation of law — and gain EU citizenship by confirmation.",
+        visaTracks = listOf(
+            VisaTrack(
+                id = POLAND_CITIZENSHIP_CONFIRMATION,
+                destinationId = POLAND,
+                name = "Confirmation of Polish Citizenship",
+                shortName = "Confirmation",
+                description = "Polish citizenship is hereditary and was not automatically lost by emigration. The voivode (provincial governor) of the relevant Polish province issues a decision confirming that you are a Polish citizen — based on an unbroken chain of citizenship from your Polish ancestor. Key cut-off: Polish citizenship law took effect in January 1920; emigration before then is harder to trace. Subsequent loss-of-citizenship events (1951 law, military service for a foreign state, etc.) can break the chain — careful pre-screening is essential.",
+                requirements = listOf(
+                    "Polish ancestor with proven Polish citizenship after January 31, 1920 (or earlier under conditions of the 1920 law)",
+                    "No break in the citizenship chain — ancestor must not have lost Polish citizenship by foreign naturalization before 1951, by serving in a foreign army or accepting a foreign public office, or by other statutory triggers",
+                    "Ancestor's Polish documents: passport, military service book (książeczka wojskowa), civil registry records, residence registration (zameldowanie), naturalization records from country of emigration",
+                    "Unbroken vital records chain (birth, marriage, death) from the Polish ancestor to you, with apostille and sworn Polish translation",
+                    "Application (wniosek o potwierdzenie posiadania obywatelstwa polskiego) to the voivode of the appropriate Polish province (typically Mazowieckie for diaspora applicants), or via consulate",
+                    "Dual citizenship permitted"
+                ),
+                estimatedProcessingTime = "6–18 months at voivode; longer if archives need to be searched",
+                officialUrl = "https://www.gov.pl/web/usa-en/citizenship"
+            )
+        ),
+        defaultVisaTrackId = POLAND_CITIZENSHIP_CONFIRMATION,
+        seedVersion = CURRENT_SEED_VERSION,
+        officialImmigrationUrl = "https://www.gov.pl/web/usa-en/citizenship"
+    )
+
     // ==================== ALL DESTINATIONS ====================
 
-    val allDestinations: List<DestinationCountry> = listOf(spain, portugal, mexico, canada, ireland)
+    val allDestinations: List<DestinationCountry> = listOf(
+        spain, portugal, mexico, canada, ireland, italy, germany, poland
+    )
 
     fun getDestination(id: String): DestinationCountry? = allDestinations.find { it.id == id }
 

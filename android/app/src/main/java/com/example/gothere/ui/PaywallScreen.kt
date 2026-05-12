@@ -41,6 +41,9 @@ fun PaywallDialog(
         "portugal" -> "Portugal"
         "mexico" -> "Mexico"
         "ireland" -> "Ireland"
+        "italy" -> "Italy"
+        "germany" -> "Germany"
+        "poland" -> "Poland"
         else -> "Country"
     }
 
@@ -48,6 +51,9 @@ fun PaywallDialog(
         "portugal" -> "🇵🇹"
         "mexico" -> "🇲🇽"
         "ireland" -> "🇮🇪"
+        "italy" -> "🇮🇹"
+        "germany" -> "🇩🇪"
+        "poland" -> "🇵🇱"
         else -> "🌍"
     }
 
@@ -55,6 +61,9 @@ fun PaywallDialog(
         "portugal" -> PurchaseManager.PRODUCT_PORTUGAL
         "mexico" -> PurchaseManager.PRODUCT_MEXICO
         "ireland" -> PurchaseManager.PRODUCT_IRELAND
+        "italy" -> PurchaseManager.PRODUCT_ITALY
+        "germany" -> PurchaseManager.PRODUCT_GERMANY
+        "poland" -> PurchaseManager.PRODUCT_POLAND
         else -> null
     }
     
@@ -193,7 +202,7 @@ fun PaywallDialog(
                                 color = MaterialTheme.colorScheme.primary
                             )
                             Text(
-                                text = "Best Value • Save \$2",
+                                text = "Best Value • Save 75%",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.tertiary
                             )
@@ -267,6 +276,9 @@ fun PaywallBanner(
         "portugal" -> "Portugal"
         "mexico" -> "Mexico"
         "ireland" -> "Ireland"
+        "italy" -> "Italy"
+        "germany" -> "Germany"
+        "poland" -> "Poland"
         else -> "Country"
     }
 
@@ -274,6 +286,9 @@ fun PaywallBanner(
         "portugal" -> "🇵🇹"
         "mexico" -> "🇲🇽"
         "ireland" -> "🇮🇪"
+        "italy" -> "🇮🇹"
+        "germany" -> "🇩🇪"
+        "poland" -> "🇵🇱"
         else -> "🌍"
     }
 
