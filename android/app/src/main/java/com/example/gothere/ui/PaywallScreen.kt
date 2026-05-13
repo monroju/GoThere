@@ -44,6 +44,9 @@ fun PaywallDialog(
         "italy" -> "Italy"
         "germany" -> "Germany"
         "poland" -> "Poland"
+        "argentina" -> "Argentina"
+        "hungary" -> "Hungary"
+        "uk_ancestry" -> "UK (Ancestry)"
         else -> "Country"
     }
 
@@ -54,6 +57,9 @@ fun PaywallDialog(
         "italy" -> "🇮🇹"
         "germany" -> "🇩🇪"
         "poland" -> "🇵🇱"
+        "argentina" -> "🇦🇷"
+        "hungary" -> "🇭🇺"
+        "uk_ancestry" -> "🇬🇧"
         else -> "🌍"
     }
 
@@ -64,6 +70,9 @@ fun PaywallDialog(
         "italy" -> PurchaseManager.PRODUCT_ITALY
         "germany" -> PurchaseManager.PRODUCT_GERMANY
         "poland" -> PurchaseManager.PRODUCT_POLAND
+        "argentina" -> PurchaseManager.PRODUCT_ARGENTINA
+        "hungary" -> PurchaseManager.PRODUCT_HUNGARY
+        "uk_ancestry" -> PurchaseManager.PRODUCT_UK_ANCESTRY
         else -> null
     }
     
@@ -202,7 +211,7 @@ fun PaywallDialog(
                                 color = MaterialTheme.colorScheme.primary
                             )
                             Text(
-                                text = "Best Value • Save 75%",
+                                text = "Best Value • Save over 80%",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.tertiary
                             )
@@ -279,6 +288,9 @@ fun PaywallBanner(
         "italy" -> "Italy"
         "germany" -> "Germany"
         "poland" -> "Poland"
+        "argentina" -> "Argentina"
+        "hungary" -> "Hungary"
+        "uk_ancestry" -> "UK (Ancestry)"
         else -> "Country"
     }
 
@@ -289,6 +301,9 @@ fun PaywallBanner(
         "italy" -> "🇮🇹"
         "germany" -> "🇩🇪"
         "poland" -> "🇵🇱"
+        "argentina" -> "🇦🇷"
+        "hungary" -> "🇭🇺"
+        "uk_ancestry" -> "🇬🇧"
         else -> "🌍"
     }
 

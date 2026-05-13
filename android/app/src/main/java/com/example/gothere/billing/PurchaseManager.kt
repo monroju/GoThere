@@ -22,6 +22,9 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
         const val PRODUCT_ITALY = "com.gothere.italy_pack"
         const val PRODUCT_GERMANY = "com.gothere.germany_pack"
         const val PRODUCT_POLAND = "com.gothere.poland_pack"
+        const val PRODUCT_ARGENTINA = "com.gothere.argentina_pack"
+        const val PRODUCT_HUNGARY = "com.gothere.hungary_pack"
+        const val PRODUCT_UK_ANCESTRY = "com.gothere.uk_ancestry_pack"
         const val PRODUCT_ALL_COUNTRIES = "com.gothere.all_countries"
 
         // Spain and Canada are always free.
@@ -109,6 +112,18 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
                 .setProductType(BillingClient.ProductType.INAPP)
                 .build(),
             QueryProductDetailsParams.Product.newBuilder()
+                .setProductId(PRODUCT_ARGENTINA)
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId(PRODUCT_HUNGARY)
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId(PRODUCT_UK_ANCESTRY)
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
                 .setProductId(PRODUCT_ALL_COUNTRIES)
                 .setProductType(BillingClient.ProductType.INAPP)
                 .build()
@@ -172,6 +187,9 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
                         PRODUCT_ITALY -> unlockedCountries.add("italy")
                         PRODUCT_GERMANY -> unlockedCountries.add("germany")
                         PRODUCT_POLAND -> unlockedCountries.add("poland")
+                        PRODUCT_ARGENTINA -> unlockedCountries.add("argentina")
+                        PRODUCT_HUNGARY -> unlockedCountries.add("hungary")
+                        PRODUCT_UK_ANCESTRY -> unlockedCountries.add("uk_ancestry")
                         PRODUCT_ALL_COUNTRIES -> {
                             unlockedCountries.add("portugal")
                             unlockedCountries.add("mexico")
@@ -179,6 +197,9 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
                             unlockedCountries.add("italy")
                             unlockedCountries.add("germany")
                             unlockedCountries.add("poland")
+                            unlockedCountries.add("argentina")
+                            unlockedCountries.add("hungary")
+                            unlockedCountries.add("uk_ancestry")
                         }
                     }
                 }

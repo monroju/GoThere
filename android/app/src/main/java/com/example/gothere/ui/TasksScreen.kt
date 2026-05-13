@@ -190,6 +190,7 @@ fun TasksScreen(
         "spain" -> "Spain"; "portugal" -> "Portugal"; "mexico" -> "Mexico"
         "canada" -> "Canada"; "ireland" -> "Ireland"
         "italy" -> "Italy"; "germany" -> "Germany"; "poland" -> "Poland"
+        "argentina" -> "Argentina"; "hungary" -> "Hungary"; "uk_ancestry" -> "UK (Ancestry)"
         else -> "Spain"
     }
 

@@ -97,6 +97,9 @@ private fun getCountryName(id: String): String = when (id) {
     "italy" -> "Italy"
     "germany" -> "Germany"
     "poland" -> "Poland"
+    "argentina" -> "Argentina"
+    "hungary" -> "Hungary"
+    "uk_ancestry" -> "UK (Ancestry)"
     else -> "Spain"
 }
 
@@ -109,10 +112,13 @@ private fun getCountryFlag(id: String): String = when (id) {
     "italy" -> "🇮🇹"
     "germany" -> "🇩🇪"
     "poland" -> "🇵🇱"
+    "argentina" -> "🇦🇷"
+    "hungary" -> "🇭🇺"
+    "uk_ancestry" -> "🇬🇧"
     else -> "🇪🇸"
 }
 
-private val allCountryIds = listOf("spain", "portugal", "mexico", "canada", "ireland", "italy", "germany", "poland")
+private val allCountryIds = listOf("spain", "portugal", "mexico", "canada", "ireland", "italy", "germany", "poland", "argentina", "hungary", "uk_ancestry")
 
 sealed class Route(val route: String) {
     data object Tasks : Route("tasks")
