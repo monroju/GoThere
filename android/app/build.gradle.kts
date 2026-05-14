@@ -29,7 +29,7 @@ android {
         applicationId = "com.gothere.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 23
+        versionCode = 25
         versionName = "1.7.1"
         vectorDrawables.useSupportLibrary = true
     }
@@ -101,8 +101,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
     implementation("androidx.activity:activity-compose:1.9.3")
 
-    // MapLibre GL for city maps
-    implementation("org.maplibre.gl:android-sdk:11.5.2")
+    // MapLibre GL for city maps — 11.8+ ships 16 KB-aligned native libs
+    implementation("org.maplibre.gl:android-sdk:11.13.0")
 
     // In-App Review
     implementation("com.google.android.play:review-ktx:2.0.2")
@@ -133,8 +133,8 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
 
-    // Google Play Billing
-    implementation("com.android.billingclient:billing-ktx:6.1.0")
+    // Google Play Billing — 7.x ships 16 KB-aligned native libs
+    implementation("com.android.billingclient:billing-ktx:7.1.1")
 
     // PostHog product analytics
     implementation("com.posthog:posthog-android:3.+")
