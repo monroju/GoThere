@@ -43,6 +43,19 @@ fun VisaWizardScreen(
     val generatedTasks by vm.generatedTasks.collectAsState()
     val isSaving by vm.isSaving.collectAsState()
     val saveComplete by vm.saveComplete.collectAsState()
+    var showCompare by remember { mutableStateOf(false) }
+
+    if (showCompare) {
+        VisaCompareScreen(
+            initialCountryId = countryId,
+            onDismiss = { showCompare = false },
+            onStartWizard = { trackId ->
+                vm.selectTrack(trackId)
+                showCompare = false
+            }
+        )
+        return
+    }
 
     LaunchedEffect(countryId) {
         vm.loadConfig(countryId)
@@ -106,7 +119,8 @@ fun VisaWizardScreen(
                     step == 0 -> TrackSelectionScreen(
                         countryName = countryName,
                         tracks = tracks,
-                        onSelect = { vm.selectTrack(it) }
+                        onSelect = { vm.selectTrack(it) },
+                        onCompare = { showCompare = true }
                     )
                     vm.isOnSummary() -> SummaryScreen(
                         tasks = generatedTasks,
@@ -146,7 +160,8 @@ fun VisaWizardScreen(
 private fun TrackSelectionScreen(
     countryName: String,
     tracks: List<Pair<String, WizardTrack>>,
-    onSelect: (String) -> Unit
+    onSelect: (String) -> Unit,
+    onCompare: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -166,6 +181,43 @@ private fun TrackSelectionScreen(
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+
+        // Compare visa types CTA
+        OutlinedCard(
+            onClick = onCompare,
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.outlinedCardColors(
+                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
+            ),
+            border = androidx.compose.foundation.BorderStroke(
+                1.dp,
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+            )
+        ) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    Icons.Outlined.Description,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Compare Visa Types",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        "Side-by-side eligibility, cost & citizenship paths",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
 
         Spacer(Modifier.height(8.dp))
 

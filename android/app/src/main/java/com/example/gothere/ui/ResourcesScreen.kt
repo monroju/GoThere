@@ -628,15 +628,12 @@ private fun getResourcesForCountry(countryId: String): List<ResourceCategory> {
 private fun getSpainResources(): List<ResourceCategory> = listOf(
     ResourceCategory(
         id = "visas",
-        title = "Visas & Immigration",
+        title = "Government & Immigration Portals",
         icon = "passport",
         resources = listOf(
             ResourceItem("spain-consulate", "Spanish Consulates in USA", "Find your assigned consulate", "https://www.exteriores.gob.es/en/EmbajadasConsulados/Paginas/index.aspx", "official"),
             ResourceItem("spain-nie", "NIE/TIE Application Guide", "Foreigner identification numbers", "https://www.inclusion.gob.es/web/migraciones/w/extranjeria", "official"),
-            ResourceItem("spain-nlv", "Non-Lucrative Visa (NLV)", "Retirees & passive income — ~€2,400/mo required, no work in Spain", "https://www.exteriores.gob.es/Consulados/sanfrancisco/en/InformacionParaExtranjeros/Paginas/Visados.aspx", "official"),
-            ResourceItem("spain-nomad", "Digital Nomad Visa (DNV)", "Remote workers — non-EU employer, ~€2,650/mo, 1-3yr renewable", "https://www.exteriores.gob.es", "official"),
-            ResourceItem("spain-work", "Work Visa (Cuenta Ajena)", "Employer-sponsored work permit — labor market test required", "https://www.inclusion.gob.es/web/migraciones/w/empleo-y-trabajo", "official"),
-            ResourceItem("spain-student", "Student Visa (D Type)", "Long-stay study visa — 50% work hours allowed", "https://www.exteriores.gob.es/Consulados/sanfrancisco/en/InformacionParaExtranjeros/Paginas/Estudios.aspx", "official")
+            ResourceItem("spain-migr", "Spanish Immigration Portal", "Official Inclusión y Migraciones", "https://www.inclusion.gob.es/web/migraciones", "official")
         )
     ),
     ResourceCategory(
@@ -686,11 +683,7 @@ private fun getPortugalResources(): List<ResourceCategory> = listOf(
         icon = "passport",
         resources = listOf(
             ResourceItem("aima", "AIMA (Immigration Agency)", "Portuguese immigration portal", "https://www.aima.gov.pt", "official"),
-            ResourceItem("d7", "D7 Passive Income Visa", "Retirees / passive income — ~€870/mo, residency in 5yr", "https://vistos.mne.gov.pt/en/national-visas/general-information/type-of-visa", "official"),
-            ResourceItem("d8", "D8 Digital Nomad Visa", "Remote workers — ~€3,480/mo, foreign employer required", "https://www.aima.gov.pt", "official"),
-            ResourceItem("d2-entrepreneur", "D2 Entrepreneur / Self-Employed", "Startup founders or freelancers with viable business plan", "https://vistos.mne.gov.pt/en/national-visas/general-information/type-of-visa", "official"),
-            ResourceItem("golden", "Golden Visa (Investment)", "€500k fund / cultural investment — real estate excluded since 2023", "https://www.sef.pt/en/pages/conteudo-detalhe.aspx?nID=21", "official"),
-            ResourceItem("pt-student", "Student Visa", "Higher education enrollment — €700/mo proof", "https://vistos.mne.gov.pt/en/national-visas/general-information/type-of-visa", "official")
+            ResourceItem("pt-mne", "Portuguese MFA Visas Portal", "All national visas (D7, D8, D2, etc.)", "https://vistos.mne.gov.pt/en/national-visas/general-information/type-of-visa", "official")
         )
     ),
     ResourceCategory(
@@ -761,9 +754,6 @@ private fun getMexicoResources(): List<ResourceCategory> = listOf(
         icon = "passport",
         resources = listOf(
             ResourceItem("inm", "INM (Immigration Agency)", "Instituto Nacional de Migración", "https://www.gob.mx/inm", "official"),
-            ResourceItem("temp-resident-econ", "Temporary Resident (Economic Solvency)", "Passive income ~$4,300/mo or $72k savings — 1-4yr", "https://www.gob.mx/tramites/ficha/visa-de-residente-temporal/SRE273", "official"),
-            ResourceItem("temp-resident-remote", "Temporary Resident (Remote Work)", "Same income threshold, work for foreign employer — 1-4yr", "https://www.gob.mx/tramites/ficha/visa-de-residente-temporal/SRE273", "official"),
-            ResourceItem("perm-resident", "Permanent Resident Visa", "Higher financial threshold (~$5,300/mo) or 4yr Temp held first", "https://www.gob.mx/tramites/ficha/visa-de-residente-permanente/SRE269", "official"),
             ResourceItem("inm-citas", "INM Appointments", "Schedule card exchange", "https://citas.inm.gob.mx/", "official")
         )
     ),
@@ -841,15 +831,10 @@ private fun getMexicoResources(): List<ResourceCategory> = listOf(
 private fun getCanadaResources(): List<ResourceCategory> = listOf(
     ResourceCategory(
         id = "citizenship",
-        title = "Citizenship & Immigration",
+        title = "Government & Immigration Portals",
         icon = "passport",
         resources = listOf(
             ResourceItem("ircc", "IRCC (Immigration Canada)", "Immigration, Refugees and Citizenship Canada", "https://www.canada.ca/en/immigration-refugees-citizenship.html", "official"),
-            ResourceItem("bill-c3", "Citizenship by Descent (Bill C-3)", "Canadian parent / lost Canadians — proof of citizenship", "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-citizenship/proof-citizenship.html", "official"),
-            ResourceItem("express-entry", "Express Entry (Skilled Worker)", "Points-based PR — degree + work experience + English/French", "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry.html", "official"),
-            ResourceItem("pnp", "Provincial Nominee Program (PNP)", "Province-sponsored PR — lower CRS threshold than Express Entry", "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/provincial-nominees.html", "official"),
-            ResourceItem("work-permit", "Work Permit (LMIA / IMP)", "Employer-sponsored or treaty-based (USMCA for US citizens)", "https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada.html", "official"),
-            ResourceItem("family-sponsor", "Family Sponsorship", "Spouse, parent, or child of Canadian citizen / PR", "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/family-sponsorship.html", "official"),
             ResourceItem("consulates-ca", "Canadian Consulates in USA", "Find your assigned consulate", "https://travel.gc.ca/assistance/embassies-consulates", "official")
         )
     ),
@@ -904,14 +889,11 @@ private fun getCanadaResources(): List<ResourceCategory> = listOf(
 private fun getIrelandResources(): List<ResourceCategory> = listOf(
     ResourceCategory(
         id = "citizenship",
-        title = "Citizenship & Immigration",
+        title = "Government & Immigration Portals",
         icon = "passport",
         resources = listOf(
-            ResourceItem("dfa", "Department of Foreign Affairs", "FBR citizenship by descent", "https://www.ireland.ie/en/dfa/citizenship/", "official"),
-            ResourceItem("fbr", "Citizenship by Descent (FBR)", "Irish-born grandparent — Foreign Births Register, no income test", "https://www.ireland.ie/en/dfa/citizenship/born-abroad/", "official"),
-            ResourceItem("stamp-0", "Stamp 0 — Retiree Visa", "Non-EEA retirees — €50k/yr passive income required", "https://www.irishimmigration.ie/coming-to-join-family-in-ireland/stamp-0/", "official"),
-            ResourceItem("critical-skills", "Critical Skills Employment Permit", "Tech, healthcare, engineering — €38k+ salary, 2yr to PR", "https://enterprise.gov.ie/en/what-we-do/workplace-and-skills/employment-permits/permit-types/critical-skills-employment-permit/", "official"),
-            ResourceItem("general-permit", "General Employment Permit", "Standard work permit — €34k+ salary, employer-sponsored", "https://enterprise.gov.ie/en/what-we-do/workplace-and-skills/employment-permits/permit-types/general-employment-permit/", "official"),
+            ResourceItem("dfa", "Department of Foreign Affairs", "Citizenship + foreign births portal", "https://www.ireland.ie/en/dfa/citizenship/", "official"),
+            ResourceItem("isd", "Irish Immigration Service", "Visas, Stamps, residence permissions", "https://www.irishimmigration.ie/", "official"),
             ResourceItem("consulates-ie", "Irish Consulates in USA", "Find your assigned consulate", "https://www.ireland.ie/en/usa/", "official")
         )
     ),
@@ -966,14 +948,11 @@ private fun getIrelandResources(): List<ResourceCategory> = listOf(
 private fun getItalyResources(): List<ResourceCategory> = listOf(
     ResourceCategory(
         id = "citizenship",
-        title = "Citizenship & Immigration",
+        title = "Government & Immigration Portals",
         icon = "passport",
         resources = listOf(
-            ResourceItem("esteri", "Italian MFA Citizenship", "Jure sanguinis official portal", "https://www.esteri.it/en/servizi-consolari-e-visti/italiani-all-estero/cittadinanza/", "official"),
-            ResourceItem("jure-sanguinis", "Citizenship by Descent (Jure Sanguinis)", "Italian ancestry — no generational limit pre-1948, narrowed in 2024", "https://www.esteri.it/en/servizi-consolari-e-visti/italiani-all-estero/cittadinanza/", "official"),
-            ResourceItem("elective-residency", "Elective Residency Visa", "Retirees with passive income — ~€31k/yr, no work allowed", "https://vistoperitalia.esteri.it/home/dettagliovisto/76/47", "official"),
-            ResourceItem("it-nomad", "Digital Nomad Visa", "Highly skilled remote workers — €28k+/yr, launched Apr 2024", "https://www.esteri.it/en/servizi-consolari-e-visti/visti-per-litalia/", "official"),
-            ResourceItem("it-investor", "Investor Visa", "€500k Italian company / €2M govt bonds / €1M philanthropy", "https://investorvisa.mise.gov.it/index.php/en/", "official"),
+            ResourceItem("esteri", "Italian MFA Citizenship", "Jure sanguinis + visa types portal", "https://www.esteri.it/en/servizi-consolari-e-visti/italiani-all-estero/cittadinanza/", "official"),
+            ResourceItem("vistoperitalia", "Visto per l'Italia", "Italian visa portal — all national visas", "https://vistoperitalia.esteri.it/", "official"),
             ResourceItem("prenotami", "Prenot@mi", "Book consulate appointments", "https://prenotami.esteri.it/", "official"),
             ResourceItem("consulates-it", "Italian Consulates in USA", "Find your assigned consulate", "https://www.esteri.it/en/ministero/laministero/lerappresentanze/", "official")
         )
@@ -1029,17 +1008,13 @@ private fun getItalyResources(): List<ResourceCategory> = listOf(
 private fun getGermanyResources(): List<ResourceCategory> = listOf(
     ResourceCategory(
         id = "citizenship",
-        title = "Citizenship & Immigration",
+        title = "Government & Immigration Portals",
         icon = "passport",
         resources = listOf(
-            ResourceItem("bva", "Bundesverwaltungsamt", "Article 116 + StAG §15 restoration", "https://www.bva.bund.de/EN/Services/Citizens/Migration-Citizenship/Citizenship/Restoration-of-citizenship/restoration-of-citizenship_node.html", "official"),
-            ResourceItem("stag-15", "Citizenship Restoration (StAG §15)", "Descendants of Nazi-era persecution victims — no language/income test", "https://www.bva.bund.de/EN/Services/Citizens/Migration-Citizenship/Citizenship/Restoration-of-citizenship/restoration-of-citizenship_node.html", "official"),
-            ResourceItem("blue-card", "EU Blue Card", "University degree + €45,300+/yr salary (€41k shortage occupations)", "https://www.make-it-in-germany.com/en/visa-residence/types/eu-blue-card", "official"),
-            ResourceItem("freelancer-visa", "Freelancer Visa (§21)", "Self-employed creators/IT — Berlin Künstler visa popular among Americans", "https://www.berlin.de/en/visa/visa-categories/freelance-self-employment/", "official"),
-            ResourceItem("job-seeker", "Job Seeker Visa", "6-month in-country search — degree + €1,091/mo funds", "https://www.make-it-in-germany.com/en/visa-residence/types/job-seeker-visa", "official"),
-            ResourceItem("chancenkarte", "Opportunity Card (Chancenkarte)", "Points-based — work up to 20h/wk while searching (2024)", "https://www.make-it-in-germany.com/en/visa-residence/types/opportunity-card", "official"),
+            ResourceItem("bva", "Bundesverwaltungsamt (BVA)", "Citizenship restoration (Art. 116, StAG §15)", "https://www.bva.bund.de/EN/Services/Citizens/Migration-Citizenship/Citizenship/Restoration-of-citizenship/restoration-of-citizenship_node.html", "official"),
+            ResourceItem("make-it-de", "Make it in Germany", "Official visa portal — Blue Card, Freelancer, Chancenkarte, etc.", "https://www.make-it-in-germany.com/en/visa-residence/", "official"),
             ResourceItem("consulates-de", "German Consulates in USA", "Find your assigned consulate", "https://www.germany.info/us-en", "official"),
-            ResourceItem("yadvashem", "Yad Vashem", "Persecution evidence research", "https://www.yadvashem.org/", "official")
+            ResourceItem("yadvashem", "Yad Vashem", "Persecution evidence research (StAG §15)", "https://www.yadvashem.org/", "official")
         )
     ),
     ResourceCategory(
@@ -1095,14 +1070,11 @@ private fun getGermanyResources(): List<ResourceCategory> = listOf(
 private fun getPolandResources(): List<ResourceCategory> = listOf(
     ResourceCategory(
         id = "citizenship",
-        title = "Citizenship & Immigration",
+        title = "Government & Immigration Portals",
         icon = "passport",
         resources = listOf(
-            ResourceItem("gov-pl", "Polish Government Citizenship", "Confirmation of Polish citizenship", "https://www.gov.pl/web/usa-en/citizenship", "official"),
-            ResourceItem("confirmation", "Confirmation of Polish Citizenship", "Polish ancestor on paternal line (or post-1951 maternal) — no language test", "https://www.gov.pl/web/usa-en/citizenship", "official"),
-            ResourceItem("karta-polaka", "Karta Polaka (Pole's Card)", "Polish heritage + basic language — work rights, no fees on Visa D", "https://www.gov.pl/web/dyplomacja/karta-polaka", "official"),
-            ResourceItem("visa-d", "Visa D (National Long-Stay)", "Work / study / family / residence permit > 90 days", "https://www.gov.pl/web/dyplomacja/visa-d", "official"),
-            ResourceItem("temp-residence-pl", "Temporary Residence Card", "In-country residence permit — work + study tracks", "https://www.gov.pl/web/udsc", "official"),
+            ResourceItem("gov-pl", "Polish Government Citizenship Portal", "Confirmation of Polish citizenship", "https://www.gov.pl/web/usa-en/citizenship", "official"),
+            ResourceItem("udsc", "Office for Foreigners (UDSC)", "Residence permits + work permits portal", "https://www.gov.pl/web/udsc", "official"),
             ResourceItem("voivode", "Mazowiecki Voivode", "Diaspora applicant office", "https://www.gov.pl/web/uw-mazowiecki", "official"),
             ResourceItem("consulates-pl", "Polish Consulates in USA", "Find your assigned consulate", "https://www.gov.pl/web/usa-en", "official")
         )
@@ -1157,14 +1129,11 @@ private fun getPolandResources(): List<ResourceCategory> = listOf(
 private fun getArgentinaResources(): List<ResourceCategory> = listOf(
     ResourceCategory(
         id = "citizenship",
-        title = "Citizenship & Immigration",
+        title = "Government & Immigration Portals",
         icon = "passport",
         resources = listOf(
-            ResourceItem("cancilleria", "Argentine MFA Citizenship", "Citizenship by option (Ley 346)", "https://www.cancilleria.gob.ar/en/services/argentinians-abroad/argentine-citizenship", "official"),
-            ResourceItem("ar-by-option", "Citizenship by Option (Ley 346)", "Children of native-born Argentines — fast track, no residency required", "https://www.cancilleria.gob.ar/en/services/argentinians-abroad/argentine-citizenship", "official"),
-            ResourceItem("visa-rentista", "Visa Rentista (Passive Income)", "~$2,000/mo USD passive income — 1yr renewable, leads to PR", "https://www.argentina.gob.ar/migraciones", "official"),
-            ResourceItem("visa-pensionado", "Visa Pensionado (Retiree)", "Pension income only — popular with US retirees", "https://www.argentina.gob.ar/migraciones", "official"),
-            ResourceItem("ar-investor", "Investor Visa", "ARS-denominated investment in Argentine economy", "https://www.argentina.gob.ar/migraciones", "official"),
+            ResourceItem("cancilleria", "Argentine MFA Citizenship", "Citizenship by option (Ley 346) portal", "https://www.cancilleria.gob.ar/en/services/argentinians-abroad/argentine-citizenship", "official"),
+            ResourceItem("ar-migraciones", "Argentine Migrations Portal", "Residence permits — Rentista, Pensionado, Investor", "https://www.argentina.gob.ar/migraciones", "official"),
             ResourceItem("consulates-ar", "Argentine Consulates in USA", "Find your assigned consulate", "https://www.cancilleria.gob.ar/en/foreign-policy/embassies-and-consulates", "official"),
             ResourceItem("renaper", "RENAPER", "National Persons Registry (DNI)", "https://www.argentina.gob.ar/interior/renaper", "official")
         )
@@ -1220,14 +1189,12 @@ private fun getArgentinaResources(): List<ResourceCategory> = listOf(
 private fun getHungaryResources(): List<ResourceCategory> = listOf(
     ResourceCategory(
         id = "citizenship",
-        title = "Citizenship & Immigration",
+        title = "Government & Immigration Portals",
         icon = "passport",
         resources = listOf(
             ResourceItem("allampolgarsag", "Hungarian Citizenship Portal", "Simplified naturalization application", "https://allampolgarsag.gov.hu/", "official"),
-            ResourceItem("hu-simplified", "Simplified Naturalization", "Hungarian ancestor + basic conversational Hungarian — no residency required", "https://allampolgarsag.gov.hu/", "official"),
-            ResourceItem("hu-white-card", "White Card (Digital Nomad)", "Non-EU remote workers — €3,000/mo from foreign employer, 1yr renewable", "https://nemzetikartya.gov.hu/", "official"),
-            ResourceItem("hu-d-visa", "D-Visa (Long-Stay Residence)", "Work / study / family / investment > 90 days", "https://oif.gov.hu/", "official"),
-            ResourceItem("hu-investor", "Guest Investor Programme", "€250k real estate fund / €1M property — relaunched 2024", "https://nemzetikartya.gov.hu/", "official"),
+            ResourceItem("oif-hu", "Office for Immigration (OIF)", "D-Visa, White Card, residence permits", "https://oif.gov.hu/", "official"),
+            ResourceItem("nemzetikartya", "Nemzeti Kártya", "Guest Investor + White Card portal", "https://nemzetikartya.gov.hu/", "official"),
             ResourceItem("kormanyablak", "Kormányablak (Govt Office)", "One-stop government office", "https://kormanyablak.hu/en", "official"),
             ResourceItem("embassy-hu", "Hungarian Embassy USA", "Washington DC consulate", "https://washington.mfa.gov.hu/eng", "official")
         )
@@ -1291,16 +1258,12 @@ private fun getHungaryResources(): List<ResourceCategory> = listOf(
 private fun getUkAncestryResources(): List<ResourceCategory> = listOf(
     ResourceCategory(
         id = "visa",
-        title = "Ancestry Visa & Immigration",
+        title = "Government & Immigration Portals",
         icon = "passport",
         resources = listOf(
-            ResourceItem("gov-uk-ancestry", "UK Ancestry Visa", "Commonwealth citizens 17+ with UK-born grandparent — 5yr work visa, ILR after", "https://www.gov.uk/ancestry-visa", "official"),
-            ResourceItem("skilled-worker-uk", "Skilled Worker Visa", "Sponsored employment — £38,700+ salary (lower for shortage occupations)", "https://www.gov.uk/skilled-worker-visa", "official"),
-            ResourceItem("global-talent", "Global Talent Visa", "Tech, science, arts — endorsement by recognized UK body, no employer needed", "https://www.gov.uk/global-talent", "official"),
-            ResourceItem("family-visa-uk", "Family Visa", "Spouse, partner, child, parent of British / settled person", "https://www.gov.uk/uk-family-visa", "official"),
-            ResourceItem("student-visa-uk", "Student Visa", "UK higher education enrollment — 20h/wk work allowed", "https://www.gov.uk/student-visa", "official"),
-            ResourceItem("ilr", "ILR (Settlement)", "Indefinite Leave to Remain — after 5yr Ancestry / Skilled Worker", "https://www.gov.uk/ancestry-visa/settle-in-the-uk", "official"),
-            ResourceItem("ukvi", "UK Visas and Immigration", "Official UKVI portal", "https://www.gov.uk/government/organisations/uk-visas-and-immigration", "official")
+            ResourceItem("ukvi", "UK Visas and Immigration (UKVI)", "Official UKVI portal — all visa categories", "https://www.gov.uk/government/organisations/uk-visas-and-immigration", "official"),
+            ResourceItem("ilr", "ILR (Settlement) Guidance", "Indefinite Leave to Remain after 5yr", "https://www.gov.uk/ancestry-visa/settle-in-the-uk", "official"),
+            ResourceItem("ihs-info", "Immigration Health Surcharge", "Paid as part of visa application", "https://www.gov.uk/healthcare-immigration-application", "official")
         )
     ),
     ResourceCategory(
