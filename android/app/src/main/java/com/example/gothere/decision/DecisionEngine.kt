@@ -5,7 +5,11 @@ import kotlin.math.max
 
 object DecisionEngine {
 
-    fun rank(destinations: List<Destination>, p: UserProfile): List<RankedDestination> {
+    fun rank(
+        destinations: List<Destination>,
+        p: UserProfile,
+        countryId: String = "spain"
+    ): List<RankedDestination> {
         return destinations.map { d ->
             var score = 0
             val reasons = mutableListOf<String>()
@@ -44,9 +48,53 @@ object DecisionEngine {
                     if ("coastal" in d.tags && p.wantsCoastal) score += 3
                     score += d.safety
                 }
+                Household.SingleParent -> {
+                    if ("families" in d.tags) { score += 8; reasons += "Family-friendly" }
+                    if ("intl_schools" in d.tags) { score += 6; reasons += "International schools" }
+                    if ("public_transit" in d.tags || d.type == "Big City") { score += 4; reasons += "Strong public transit" }
+                    score += (d.safety * 2)
+                }
                 Household.Retiree -> {
                     if ("retiree_friendly" in d.tags || "affordable" in d.tags) { score += 6; reasons += "Retiree-friendly pace/cost" }
                     score += (d.safety * 2)
+                }
+            }
+
+            // Personal Considerations (country-level + tag bonus)
+            p.considerations.forEach { c ->
+                when (c) {
+                    PersonalConsideration.LGBTQ -> {
+                        when (countryId) {
+                            "spain", "portugal", "canada", "ireland", "germany", "uk_ancestry" -> { score += 12; reasons += "Strong LGBTQ+ protections" }
+                            "italy", "argentina", "mexico" -> { score += 6; reasons += "LGBTQ+ legal but uneven" }
+                            "poland", "hungary" -> { score -= 4; reasons += "LGBTQ+ rights limited" }
+                        }
+                        if ("lgbtq_friendly" in d.tags) score += 5
+                    }
+                    PersonalConsideration.Disabled -> {
+                        when (countryId) {
+                            "germany", "spain", "portugal", "ireland", "italy", "poland", "hungary" -> { score += 8; reasons += "EU Disability Card recognised" }
+                            "canada", "uk_ancestry" -> { score += 7; reasons += "Strong accessibility law" }
+                            "mexico", "argentina" -> { score += 2 }
+                        }
+                        if (d.type == "Big City") { score += 4; reasons += "Better accessibility in city" }
+                        if ("public_transit" in d.tags) score += 4
+                    }
+                    PersonalConsideration.Veteran -> {
+                        when (countryId) {
+                            "spain", "portugal", "italy", "germany", "ireland", "poland", "hungary", "uk_ancestry", "canada" -> { score += 6; reasons += "US totalization agreement" }
+                            "mexico" -> { score += 4; reasons += "VA FMP coverage available" }
+                            "argentina" -> { score += 3 }
+                        }
+                    }
+                    PersonalConsideration.Pregnant -> {
+                        when (countryId) {
+                            "germany", "ireland", "canada", "italy", "spain", "portugal", "uk_ancestry" -> { score += 10; reasons += "Strong maternity care" }
+                            "poland", "hungary", "argentina" -> { score += 5 }
+                            "mexico" -> { score += 4 }
+                        }
+                        if (d.type == "Big City") { score += 3; reasons += "Top-tier hospitals" }
+                    }
                 }
             }
 

@@ -56,6 +56,7 @@ fun DecisionTreeScreen(
     var nightlife by remember { mutableStateOf(Nightlife.Medium) }
     var expatPref by remember { mutableStateOf<Density?>(null) }
     var safetyPriority by remember { mutableStateOf(3) }
+    var considerations by remember { mutableStateOf<Set<PersonalConsideration>>(emptySet()) }
 
     var results by remember { mutableStateOf<List<RankedDestination>>(emptyList()) }
     var profileId by remember { mutableStateOf<String?>(null) }
@@ -123,6 +124,50 @@ fun DecisionTreeScreen(
             }
 
             LabeledChoiceRow("Household", Household.entries.toList(), household) { household = it }
+
+            // Personal Considerations (multi-select)
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    "Personal Considerations",
+                    style = MaterialTheme.typography.labelLarge.copy(fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                )
+                Text(
+                    "Select any that apply — affects safety, healthcare & rights scoring.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    PersonalConsideration.entries.forEach { opt ->
+                        val selected = opt in considerations
+                        FilterChip(
+                            selected = selected,
+                            onClick = {
+                                considerations = if (selected) considerations - opt else considerations + opt
+                            },
+                            label = {
+                                Text(
+                                    when (opt) {
+                                        PersonalConsideration.LGBTQ -> "LGBTQ+"
+                                        PersonalConsideration.Disabled -> "Disabled / Accessibility"
+                                        PersonalConsideration.Veteran -> "Veteran"
+                                        PersonalConsideration.Pregnant -> "Pregnant / Expecting"
+                                    },
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                )
+                            },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                            )
+                        )
+                    }
+                }
+            }
+
             LabeledChoiceRow("Budget", Budget.entries.toList(), budget) { budget = it }
             LabeledChoiceRow("Preferred Climate", ClimatePref.entries.toList(), climate) { climate = it }
 
@@ -158,9 +203,10 @@ fun DecisionTreeScreen(
                     onClick = {
                         val profile = UserProfile(
                             household, budget, climate, wantsCoastal, wantsBigCity,
-                            language, carOwner, airportImportant, businessFocus, nightlife, expatPref, safetyPriority
+                            language, carOwner, airportImportant, businessFocus, nightlife, expatPref, safetyPriority,
+                            considerations
                         )
-                        val ranked = DecisionEngine.rank(destinations, profile).take(5)
+                        val ranked = DecisionEngine.rank(destinations, profile, countryId).take(5)
                         results = ranked
                         scope.launch {
                             try {

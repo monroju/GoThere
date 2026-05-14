@@ -14,10 +14,12 @@ data class UserProfile(
     val businessFocus: BusinessFocus?,
     val nightlifePreference: Nightlife,
     val expatDensityPref: Density?,
-    val safetyPriority: Int // 1..5
+    val safetyPriority: Int, // 1..5
+    val considerations: Set<PersonalConsideration> = emptySet()
 )
 
-enum class Household { Singles, Couple, FamilyKids, Retiree }
+enum class Household { Singles, Couple, FamilyKids, SingleParent, Retiree }
+enum class PersonalConsideration { LGBTQ, Disabled, Veteran, Pregnant }
 enum class Budget { Low, Medium, High }
 enum class ClimatePref { WarmCoastal, Temperate, Mountain, Continental }
 enum class Language { None, Basic, Intermediate }
