@@ -29,8 +29,8 @@ android {
         applicationId = "com.gothere.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 22
-        versionName = "1.7.0"
+        versionCode = 23
+        versionName = "1.7.1"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -80,6 +80,10 @@ android {
             // avoid common META-INF collisions from transitive deps
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+        // 16 KB native page size alignment (Play Console enforcement, Nov 2025)
+        jniLibs {
+            useLegacyPackaging = false
+        }
     }
 }
 
@@ -121,8 +125,8 @@ dependencies {
     implementation("androidx.datastore:datastore:1.1.1")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
-    // Firebase (use BOM to align)
-    implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
+    // Firebase (use BOM to align) — 33.x ships 16 KB-aligned native libs
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
