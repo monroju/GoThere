@@ -617,7 +617,10 @@ private fun getSpainResources(): List<ResourceCategory> = listOf(
         resources = listOf(
             ResourceItem("spain-consulate", "Spanish Consulates in USA", "Find your assigned consulate", "https://www.exteriores.gob.es/en/EmbajadasConsulados/Paginas/index.aspx", "official"),
             ResourceItem("spain-nie", "NIE/TIE Application Guide", "Foreigner identification numbers", "https://www.inclusion.gob.es/web/migraciones/w/extranjeria", "official"),
-            ResourceItem("spain-nomad", "Digital Nomad Visa", "Remote worker visa requirements", "https://www.exteriores.gob.es", "official")
+            ResourceItem("spain-nlv", "Non-Lucrative Visa (NLV)", "Retirees & passive income — ~€2,400/mo required, no work in Spain", "https://www.exteriores.gob.es/Consulados/sanfrancisco/en/InformacionParaExtranjeros/Paginas/Visados.aspx", "official"),
+            ResourceItem("spain-nomad", "Digital Nomad Visa (DNV)", "Remote workers — non-EU employer, ~€2,650/mo, 1-3yr renewable", "https://www.exteriores.gob.es", "official"),
+            ResourceItem("spain-work", "Work Visa (Cuenta Ajena)", "Employer-sponsored work permit — labor market test required", "https://www.inclusion.gob.es/web/migraciones/w/empleo-y-trabajo", "official"),
+            ResourceItem("spain-student", "Student Visa (D Type)", "Long-stay study visa — 50% work hours allowed", "https://www.exteriores.gob.es/Consulados/sanfrancisco/en/InformacionParaExtranjeros/Paginas/Estudios.aspx", "official")
         )
     ),
     ResourceCategory(
@@ -667,9 +670,11 @@ private fun getPortugalResources(): List<ResourceCategory> = listOf(
         icon = "passport",
         resources = listOf(
             ResourceItem("aima", "AIMA (Immigration Agency)", "Portuguese immigration portal", "https://www.aima.gov.pt", "official"),
-            ResourceItem("d7", "D7 Passive Income Visa", "Visa for retirees and passive income", "https://vistos.mne.gov.pt/en/national-visas/general-information/type-of-visa", "official"),
-            ResourceItem("d8", "D8 Digital Nomad Visa", "Remote worker visa", "https://www.aima.gov.pt", "official"),
-            ResourceItem("golden", "Golden Visa Program", "Residency by investment", "https://www.sef.pt/en/pages/conteudo-detalhe.aspx?nID=21", "official")
+            ResourceItem("d7", "D7 Passive Income Visa", "Retirees / passive income — ~€870/mo, residency in 5yr", "https://vistos.mne.gov.pt/en/national-visas/general-information/type-of-visa", "official"),
+            ResourceItem("d8", "D8 Digital Nomad Visa", "Remote workers — ~€3,480/mo, foreign employer required", "https://www.aima.gov.pt", "official"),
+            ResourceItem("d2-entrepreneur", "D2 Entrepreneur / Self-Employed", "Startup founders or freelancers with viable business plan", "https://vistos.mne.gov.pt/en/national-visas/general-information/type-of-visa", "official"),
+            ResourceItem("golden", "Golden Visa (Investment)", "€500k fund / cultural investment — real estate excluded since 2023", "https://www.sef.pt/en/pages/conteudo-detalhe.aspx?nID=21", "official"),
+            ResourceItem("pt-student", "Student Visa", "Higher education enrollment — €700/mo proof", "https://vistos.mne.gov.pt/en/national-visas/general-information/type-of-visa", "official")
         )
     ),
     ResourceCategory(
@@ -740,7 +745,9 @@ private fun getMexicoResources(): List<ResourceCategory> = listOf(
         icon = "passport",
         resources = listOf(
             ResourceItem("inm", "INM (Immigration Agency)", "Instituto Nacional de Migración", "https://www.gob.mx/inm", "official"),
-            ResourceItem("temp-resident", "Temporary Resident Visa", "1-4 year residency", "https://www.gob.mx/tramites/ficha/visa-de-residente-temporal/SRE273", "official"),
+            ResourceItem("temp-resident-econ", "Temporary Resident (Economic Solvency)", "Passive income ~$4,300/mo or $72k savings — 1-4yr", "https://www.gob.mx/tramites/ficha/visa-de-residente-temporal/SRE273", "official"),
+            ResourceItem("temp-resident-remote", "Temporary Resident (Remote Work)", "Same income threshold, work for foreign employer — 1-4yr", "https://www.gob.mx/tramites/ficha/visa-de-residente-temporal/SRE273", "official"),
+            ResourceItem("perm-resident", "Permanent Resident Visa", "Higher financial threshold (~$5,300/mo) or 4yr Temp held first", "https://www.gob.mx/tramites/ficha/visa-de-residente-permanente/SRE269", "official"),
             ResourceItem("inm-citas", "INM Appointments", "Schedule card exchange", "https://citas.inm.gob.mx/", "official")
         )
     ),
