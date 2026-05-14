@@ -66,6 +66,14 @@ fun ResourcesScreen(
         "spain" -> "Spain 🇪🇸"
         "portugal" -> "Portugal 🇵🇹"
         "mexico" -> "Mexico 🇲🇽"
+        "canada" -> "Canada 🇨🇦"
+        "ireland" -> "Ireland 🇮🇪"
+        "italy" -> "Italy 🇮🇹"
+        "germany" -> "Germany 🇩🇪"
+        "poland" -> "Poland 🇵🇱"
+        "argentina" -> "Argentina 🇦🇷"
+        "hungary" -> "Hungary 🇭🇺"
+        "uk_ancestry" -> "UK (Ancestry) 🇬🇧"
         else -> "Spain 🇪🇸"
     }
 
@@ -605,6 +613,14 @@ private fun getResourcesForCountry(countryId: String): List<ResourceCategory> {
     return when (countryId) {
         "portugal" -> getPortugalResources()
         "mexico" -> getMexicoResources()
+        "canada" -> getCanadaResources()
+        "ireland" -> getIrelandResources()
+        "italy" -> getItalyResources()
+        "germany" -> getGermanyResources()
+        "poland" -> getPolandResources()
+        "argentina" -> getArgentinaResources()
+        "hungary" -> getHungaryResources()
+        "uk_ancestry" -> getUkAncestryResources()
         else -> getSpainResources()
     }
 }
@@ -818,6 +834,532 @@ private fun getMexicoResources(): List<ResourceCategory> = listOf(
         resources = listOf(
             ResourceItem("us-embassy", "US Embassy Mexico", "Consular services", "https://mx.usembassy.gov", "official"),
             ResourceItem("step", "STEP Enrollment", "Smart Traveler Enrollment", "https://step.state.gov", "official")
+        )
+    )
+)
+
+private fun getCanadaResources(): List<ResourceCategory> = listOf(
+    ResourceCategory(
+        id = "citizenship",
+        title = "Citizenship & Immigration",
+        icon = "passport",
+        resources = listOf(
+            ResourceItem("ircc", "IRCC (Immigration Canada)", "Immigration, Refugees and Citizenship Canada", "https://www.canada.ca/en/immigration-refugees-citizenship.html", "official"),
+            ResourceItem("bill-c3", "Citizenship by Descent (Bill C-3)", "Canadian parent / lost Canadians — proof of citizenship", "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-citizenship/proof-citizenship.html", "official"),
+            ResourceItem("express-entry", "Express Entry (Skilled Worker)", "Points-based PR — degree + work experience + English/French", "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry.html", "official"),
+            ResourceItem("pnp", "Provincial Nominee Program (PNP)", "Province-sponsored PR — lower CRS threshold than Express Entry", "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/provincial-nominees.html", "official"),
+            ResourceItem("work-permit", "Work Permit (LMIA / IMP)", "Employer-sponsored or treaty-based (USMCA for US citizens)", "https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada.html", "official"),
+            ResourceItem("family-sponsor", "Family Sponsorship", "Spouse, parent, or child of Canadian citizen / PR", "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/family-sponsorship.html", "official"),
+            ResourceItem("consulates-ca", "Canadian Consulates in USA", "Find your assigned consulate", "https://travel.gc.ca/assistance/embassies-consulates", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "id",
+        title = "ID & Tax Registration",
+        icon = "badge",
+        resources = listOf(
+            ResourceItem("sin", "SIN (Social Insurance Number)", "Required to work and pay taxes", "https://www.canada.ca/en/employment-social-development/services/sin.html", "official"),
+            ResourceItem("cra", "Canada Revenue Agency", "Federal taxes for residents", "https://www.canada.ca/en/revenue-agency.html", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "housing",
+        title = "Housing & Rentals",
+        icon = "home",
+        resources = listOf(
+            ResourceItem("realtor-ca", "Realtor.ca", "MLS national property search", "https://www.realtor.ca", "marketplace"),
+            ResourceItem("rentals-ca", "Rentals.ca", "Apartment and home rentals", "https://rentals.ca", "marketplace"),
+            ResourceItem("kijiji", "Kijiji", "Classifieds with rentals", "https://www.kijiji.ca", "marketplace")
+        )
+    ),
+    ResourceCategory(
+        id = "banking",
+        title = "Banking & Finance",
+        icon = "account_balance",
+        resources = listOf(
+            ResourceItem("rbc", "RBC Royal Bank", "Largest Canadian bank", "https://www.rbc.com", "service"),
+            ResourceItem("td", "TD Canada Trust", "Cross-border friendly", "https://www.td.com", "service"),
+            ResourceItem("wise-ca", "Wise", "Multi-currency transfers", "https://wise.com", "service")
+        )
+    ),
+    ResourceCategory(
+        id = "healthcare",
+        title = "Healthcare",
+        icon = "local_hospital",
+        resources = listOf(
+            ResourceItem("health-canada", "Health Canada", "Provincial healthcare overview", "https://www.canada.ca/en/health-canada/services/health-care-system/canada-health-care-system-medicare.html", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "community",
+        title = "Expat Communities",
+        icon = "groups",
+        resources = listOf(
+            ResourceItem("reddit-can", "r/PersonalFinanceCanada", "Reddit community", "https://www.reddit.com/r/PersonalFinanceCanada/", "community"),
+            ResourceItem("internations-ca", "InterNations Canada", "Expat network", "https://www.internations.org/canada-expats", "community")
+        )
+    )
+)
+
+private fun getIrelandResources(): List<ResourceCategory> = listOf(
+    ResourceCategory(
+        id = "citizenship",
+        title = "Citizenship & Immigration",
+        icon = "passport",
+        resources = listOf(
+            ResourceItem("dfa", "Department of Foreign Affairs", "FBR citizenship by descent", "https://www.ireland.ie/en/dfa/citizenship/", "official"),
+            ResourceItem("fbr", "Citizenship by Descent (FBR)", "Irish-born grandparent — Foreign Births Register, no income test", "https://www.ireland.ie/en/dfa/citizenship/born-abroad/", "official"),
+            ResourceItem("stamp-0", "Stamp 0 — Retiree Visa", "Non-EEA retirees — €50k/yr passive income required", "https://www.irishimmigration.ie/coming-to-join-family-in-ireland/stamp-0/", "official"),
+            ResourceItem("critical-skills", "Critical Skills Employment Permit", "Tech, healthcare, engineering — €38k+ salary, 2yr to PR", "https://enterprise.gov.ie/en/what-we-do/workplace-and-skills/employment-permits/permit-types/critical-skills-employment-permit/", "official"),
+            ResourceItem("general-permit", "General Employment Permit", "Standard work permit — €34k+ salary, employer-sponsored", "https://enterprise.gov.ie/en/what-we-do/workplace-and-skills/employment-permits/permit-types/general-employment-permit/", "official"),
+            ResourceItem("consulates-ie", "Irish Consulates in USA", "Find your assigned consulate", "https://www.ireland.ie/en/usa/", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "id",
+        title = "ID & Tax Registration",
+        icon = "badge",
+        resources = listOf(
+            ResourceItem("pps", "PPS Number Service", "Personal Public Service Number", "https://www.gov.ie/en/service/12e6de-get-a-personal-public-service-pps-number/", "official"),
+            ResourceItem("revenue-ie", "Revenue (Irish Tax)", "Tax registration for residents", "https://www.revenue.ie", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "housing",
+        title = "Housing & Rentals",
+        icon = "home",
+        resources = listOf(
+            ResourceItem("daft", "Daft.ie", "Ireland's largest property portal", "https://www.daft.ie", "marketplace"),
+            ResourceItem("myhome-ie", "MyHome.ie", "Property and rentals", "https://www.myhome.ie", "marketplace")
+        )
+    ),
+    ResourceCategory(
+        id = "banking",
+        title = "Banking & Finance",
+        icon = "account_balance",
+        resources = listOf(
+            ResourceItem("boi", "Bank of Ireland", "Largest retail bank", "https://www.bankofireland.com", "service"),
+            ResourceItem("aib", "AIB", "Allied Irish Banks", "https://www.aib.ie", "service"),
+            ResourceItem("revolut-ie", "Revolut", "Digital banking, popular in Ireland", "https://www.revolut.com", "service")
+        )
+    ),
+    ResourceCategory(
+        id = "healthcare",
+        title = "Healthcare",
+        icon = "local_hospital",
+        resources = listOf(
+            ResourceItem("hse", "HSE (Health Service Executive)", "Public healthcare", "https://www.hse.ie", "official"),
+            ResourceItem("vhi", "Vhi Healthcare", "Largest private insurer", "https://www.vhi.ie", "service")
+        )
+    ),
+    ResourceCategory(
+        id = "community",
+        title = "Expat Communities",
+        icon = "groups",
+        resources = listOf(
+            ResourceItem("boards-ie", "Boards.ie", "Ireland's largest forum", "https://www.boards.ie", "community"),
+            ResourceItem("internations-ie", "InterNations Ireland", "Expat network", "https://www.internations.org/ireland-expats", "community")
+        )
+    )
+)
+
+private fun getItalyResources(): List<ResourceCategory> = listOf(
+    ResourceCategory(
+        id = "citizenship",
+        title = "Citizenship & Immigration",
+        icon = "passport",
+        resources = listOf(
+            ResourceItem("esteri", "Italian MFA Citizenship", "Jure sanguinis official portal", "https://www.esteri.it/en/servizi-consolari-e-visti/italiani-all-estero/cittadinanza/", "official"),
+            ResourceItem("jure-sanguinis", "Citizenship by Descent (Jure Sanguinis)", "Italian ancestry — no generational limit pre-1948, narrowed in 2024", "https://www.esteri.it/en/servizi-consolari-e-visti/italiani-all-estero/cittadinanza/", "official"),
+            ResourceItem("elective-residency", "Elective Residency Visa", "Retirees with passive income — ~€31k/yr, no work allowed", "https://vistoperitalia.esteri.it/home/dettagliovisto/76/47", "official"),
+            ResourceItem("it-nomad", "Digital Nomad Visa", "Highly skilled remote workers — €28k+/yr, launched Apr 2024", "https://www.esteri.it/en/servizi-consolari-e-visti/visti-per-litalia/", "official"),
+            ResourceItem("it-investor", "Investor Visa", "€500k Italian company / €2M govt bonds / €1M philanthropy", "https://investorvisa.mise.gov.it/index.php/en/", "official"),
+            ResourceItem("prenotami", "Prenot@mi", "Book consulate appointments", "https://prenotami.esteri.it/", "official"),
+            ResourceItem("consulates-it", "Italian Consulates in USA", "Find your assigned consulate", "https://www.esteri.it/en/ministero/laministero/lerappresentanze/", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "id",
+        title = "Codice Fiscale & Anagrafe",
+        icon = "badge",
+        resources = listOf(
+            ResourceItem("codice-fiscale", "Agenzia delle Entrate (Codice Fiscale)", "Italian tax code", "https://www.agenziaentrate.gov.it/portale/codice-fiscale-tessera-sanitaria", "official"),
+            ResourceItem("anagrafe", "Anagrafe Nazionale", "National residents registry", "https://www.anagrafenazionale.interno.it/", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "housing",
+        title = "Housing & Rentals",
+        icon = "home",
+        resources = listOf(
+            ResourceItem("immobiliare-it", "Immobiliare.it", "Italy's largest property portal", "https://www.immobiliare.it", "marketplace"),
+            ResourceItem("idealista-it", "Idealista Italia", "Property and rentals", "https://www.idealista.it", "marketplace"),
+            ResourceItem("subito-it", "Subito.it", "Classifieds with rentals", "https://www.subito.it", "marketplace")
+        )
+    ),
+    ResourceCategory(
+        id = "banking",
+        title = "Banking & Finance",
+        icon = "account_balance",
+        resources = listOf(
+            ResourceItem("intesa", "Intesa Sanpaolo", "Largest Italian bank", "https://www.intesasanpaolo.com", "service"),
+            ResourceItem("unicredit", "UniCredit", "Major bank, English support", "https://www.unicredit.it", "service"),
+            ResourceItem("wise-it", "Wise", "Multi-currency transfers", "https://wise.com", "service")
+        )
+    ),
+    ResourceCategory(
+        id = "healthcare",
+        title = "Healthcare",
+        icon = "local_hospital",
+        resources = listOf(
+            ResourceItem("ssn", "SSN (Servizio Sanitario Nazionale)", "National Health Service", "https://www.salute.gov.it", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "community",
+        title = "Expat Communities",
+        icon = "groups",
+        resources = listOf(
+            ResourceItem("internations-it", "InterNations Italy", "Expat network", "https://www.internations.org/italy-expats", "community"),
+            ResourceItem("reddit-it", "r/ItalyExpat", "Reddit community", "https://www.reddit.com/r/ItalyExpat/", "community")
+        )
+    )
+)
+
+private fun getGermanyResources(): List<ResourceCategory> = listOf(
+    ResourceCategory(
+        id = "citizenship",
+        title = "Citizenship & Immigration",
+        icon = "passport",
+        resources = listOf(
+            ResourceItem("bva", "Bundesverwaltungsamt", "Article 116 + StAG §15 restoration", "https://www.bva.bund.de/EN/Services/Citizens/Migration-Citizenship/Citizenship/Restoration-of-citizenship/restoration-of-citizenship_node.html", "official"),
+            ResourceItem("stag-15", "Citizenship Restoration (StAG §15)", "Descendants of Nazi-era persecution victims — no language/income test", "https://www.bva.bund.de/EN/Services/Citizens/Migration-Citizenship/Citizenship/Restoration-of-citizenship/restoration-of-citizenship_node.html", "official"),
+            ResourceItem("blue-card", "EU Blue Card", "University degree + €45,300+/yr salary (€41k shortage occupations)", "https://www.make-it-in-germany.com/en/visa-residence/types/eu-blue-card", "official"),
+            ResourceItem("freelancer-visa", "Freelancer Visa (§21)", "Self-employed creators/IT — Berlin Künstler visa popular among Americans", "https://www.berlin.de/en/visa/visa-categories/freelance-self-employment/", "official"),
+            ResourceItem("job-seeker", "Job Seeker Visa", "6-month in-country search — degree + €1,091/mo funds", "https://www.make-it-in-germany.com/en/visa-residence/types/job-seeker-visa", "official"),
+            ResourceItem("chancenkarte", "Opportunity Card (Chancenkarte)", "Points-based — work up to 20h/wk while searching (2024)", "https://www.make-it-in-germany.com/en/visa-residence/types/opportunity-card", "official"),
+            ResourceItem("consulates-de", "German Consulates in USA", "Find your assigned consulate", "https://www.germany.info/us-en", "official"),
+            ResourceItem("yadvashem", "Yad Vashem", "Persecution evidence research", "https://www.yadvashem.org/", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "id",
+        title = "Anmeldung & Tax",
+        icon = "badge",
+        resources = listOf(
+            ResourceItem("anmeldung", "Anmeldung Registration", "Required address registration", "https://service.berlin.de/dienstleistung/120335/", "official"),
+            ResourceItem("elster", "ELSTER (Finanzamt)", "German tax portal", "https://www.elster.de", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "housing",
+        title = "Housing & Rentals",
+        icon = "home",
+        resources = listOf(
+            ResourceItem("immoscout", "ImmoScout24", "Germany's largest property portal", "https://www.immobilienscout24.de", "marketplace"),
+            ResourceItem("immowelt", "Immowelt", "Property and rentals", "https://www.immowelt.de", "marketplace"),
+            ResourceItem("wg-gesucht", "WG-Gesucht", "Shared apartments and rentals", "https://www.wg-gesucht.de", "marketplace")
+        )
+    ),
+    ResourceCategory(
+        id = "banking",
+        title = "Banking & Finance",
+        icon = "account_balance",
+        resources = listOf(
+            ResourceItem("n26-de", "N26", "Berlin-based digital bank", "https://n26.com/en-de", "service"),
+            ResourceItem("dkb", "DKB", "Online bank, free account", "https://www.dkb.de", "service"),
+            ResourceItem("deutsche-bank", "Deutsche Bank", "Major retail bank", "https://www.deutsche-bank.de", "service"),
+            ResourceItem("wise-de", "Wise", "Multi-currency transfers", "https://wise.com", "service")
+        )
+    ),
+    ResourceCategory(
+        id = "healthcare",
+        title = "Healthcare",
+        icon = "local_hospital",
+        resources = listOf(
+            ResourceItem("tk", "TK (Techniker Krankenkasse)", "Largest public health insurer", "https://www.tk.de/en", "official"),
+            ResourceItem("aok", "AOK", "Public health insurance", "https://www.aok.de", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "community",
+        title = "Expat Communities",
+        icon = "groups",
+        resources = listOf(
+            ResourceItem("toytown", "Toytown Germany", "English-speaking expat forum", "https://www.toytowngermany.com", "community"),
+            ResourceItem("internations-de", "InterNations Germany", "Expat network", "https://www.internations.org/germany-expats", "community")
+        )
+    )
+)
+
+private fun getPolandResources(): List<ResourceCategory> = listOf(
+    ResourceCategory(
+        id = "citizenship",
+        title = "Citizenship & Immigration",
+        icon = "passport",
+        resources = listOf(
+            ResourceItem("gov-pl", "Polish Government Citizenship", "Confirmation of Polish citizenship", "https://www.gov.pl/web/usa-en/citizenship", "official"),
+            ResourceItem("confirmation", "Confirmation of Polish Citizenship", "Polish ancestor on paternal line (or post-1951 maternal) — no language test", "https://www.gov.pl/web/usa-en/citizenship", "official"),
+            ResourceItem("karta-polaka", "Karta Polaka (Pole's Card)", "Polish heritage + basic language — work rights, no fees on Visa D", "https://www.gov.pl/web/dyplomacja/karta-polaka", "official"),
+            ResourceItem("visa-d", "Visa D (National Long-Stay)", "Work / study / family / residence permit > 90 days", "https://www.gov.pl/web/dyplomacja/visa-d", "official"),
+            ResourceItem("temp-residence-pl", "Temporary Residence Card", "In-country residence permit — work + study tracks", "https://www.gov.pl/web/udsc", "official"),
+            ResourceItem("voivode", "Mazowiecki Voivode", "Diaspora applicant office", "https://www.gov.pl/web/uw-mazowiecki", "official"),
+            ResourceItem("consulates-pl", "Polish Consulates in USA", "Find your assigned consulate", "https://www.gov.pl/web/usa-en", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "id",
+        title = "PESEL & Tax",
+        icon = "badge",
+        resources = listOf(
+            ResourceItem("pesel", "PESEL Number Application", "Polish personal ID number", "https://www.gov.pl/web/gov/uzyskaj-numer-pesel-dla-cudzoziemcow", "official"),
+            ResourceItem("us-pl", "Urząd Skarbowy (Tax Office)", "Tax registration in Poland", "https://www.podatki.gov.pl", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "housing",
+        title = "Housing & Rentals",
+        icon = "home",
+        resources = listOf(
+            ResourceItem("otodom", "Otodom", "Poland's largest property portal", "https://www.otodom.pl", "marketplace"),
+            ResourceItem("olx-pl", "OLX Nieruchomości", "Classifieds with rentals", "https://www.olx.pl/nieruchomosci/", "marketplace")
+        )
+    ),
+    ResourceCategory(
+        id = "banking",
+        title = "Banking & Finance",
+        icon = "account_balance",
+        resources = listOf(
+            ResourceItem("mbank", "mBank", "Online bank, English app", "https://www.mbank.pl", "service"),
+            ResourceItem("pko", "PKO Bank Polski", "Largest Polish bank", "https://www.pkobp.pl", "service"),
+            ResourceItem("revolut-pl", "Revolut", "Digital banking", "https://www.revolut.com", "service")
+        )
+    ),
+    ResourceCategory(
+        id = "healthcare",
+        title = "Healthcare",
+        icon = "local_hospital",
+        resources = listOf(
+            ResourceItem("nfz", "NFZ (National Health Fund)", "Public healthcare", "https://www.nfz.gov.pl", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "community",
+        title = "Expat Communities",
+        icon = "groups",
+        resources = listOf(
+            ResourceItem("internations-pl", "InterNations Poland", "Expat network", "https://www.internations.org/poland-expats", "community"),
+            ResourceItem("reddit-pl", "r/poland", "Reddit community", "https://www.reddit.com/r/poland/", "community")
+        )
+    )
+)
+
+private fun getArgentinaResources(): List<ResourceCategory> = listOf(
+    ResourceCategory(
+        id = "citizenship",
+        title = "Citizenship & Immigration",
+        icon = "passport",
+        resources = listOf(
+            ResourceItem("cancilleria", "Argentine MFA Citizenship", "Citizenship by option (Ley 346)", "https://www.cancilleria.gob.ar/en/services/argentinians-abroad/argentine-citizenship", "official"),
+            ResourceItem("ar-by-option", "Citizenship by Option (Ley 346)", "Children of native-born Argentines — fast track, no residency required", "https://www.cancilleria.gob.ar/en/services/argentinians-abroad/argentine-citizenship", "official"),
+            ResourceItem("visa-rentista", "Visa Rentista (Passive Income)", "~$2,000/mo USD passive income — 1yr renewable, leads to PR", "https://www.argentina.gob.ar/migraciones", "official"),
+            ResourceItem("visa-pensionado", "Visa Pensionado (Retiree)", "Pension income only — popular with US retirees", "https://www.argentina.gob.ar/migraciones", "official"),
+            ResourceItem("ar-investor", "Investor Visa", "ARS-denominated investment in Argentine economy", "https://www.argentina.gob.ar/migraciones", "official"),
+            ResourceItem("consulates-ar", "Argentine Consulates in USA", "Find your assigned consulate", "https://www.cancilleria.gob.ar/en/foreign-policy/embassies-and-consulates", "official"),
+            ResourceItem("renaper", "RENAPER", "National Persons Registry (DNI)", "https://www.argentina.gob.ar/interior/renaper", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "id",
+        title = "DNI & Tax",
+        icon = "badge",
+        resources = listOf(
+            ResourceItem("dni", "DNI Application", "Argentine national ID card", "https://www.argentina.gob.ar/interior/renaper/dni", "official"),
+            ResourceItem("afip", "AFIP", "Tax authority (CUIT/CUIL)", "https://www.afip.gob.ar/", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "housing",
+        title = "Housing & Rentals",
+        icon = "home",
+        resources = listOf(
+            ResourceItem("zonaprop", "ZonaProp", "Argentina's largest property portal", "https://www.zonaprop.com.ar", "marketplace"),
+            ResourceItem("argenprop", "ArgenProp", "Property and rentals", "https://www.argenprop.com", "marketplace")
+        )
+    ),
+    ResourceCategory(
+        id = "banking",
+        title = "Banking & Finance",
+        icon = "account_balance",
+        resources = listOf(
+            ResourceItem("santander-ar", "Santander Argentina", "International bank", "https://www.santander.com.ar", "service"),
+            ResourceItem("galicia", "Banco Galicia", "Major private bank", "https://www.bancogalicia.com", "service"),
+            ResourceItem("wise-ar", "Wise", "Multi-currency transfers", "https://wise.com", "service")
+        )
+    ),
+    ResourceCategory(
+        id = "healthcare",
+        title = "Healthcare",
+        icon = "local_hospital",
+        resources = listOf(
+            ResourceItem("obras-sociales", "Public Healthcare Argentina", "Universal coverage overview", "https://www.argentina.gob.ar/salud", "official"),
+            ResourceItem("osde", "OSDE", "Largest private health plan", "https://www.osde.com.ar", "service")
+        )
+    ),
+    ResourceCategory(
+        id = "community",
+        title = "Expat Communities",
+        icon = "groups",
+        resources = listOf(
+            ResourceItem("internations-ar", "InterNations Argentina", "Expat network", "https://www.internations.org/argentina-expats", "community"),
+            ResourceItem("reddit-ba", "r/buenosaires", "Reddit community", "https://www.reddit.com/r/buenosaires/", "community")
+        )
+    )
+)
+
+private fun getHungaryResources(): List<ResourceCategory> = listOf(
+    ResourceCategory(
+        id = "citizenship",
+        title = "Citizenship & Immigration",
+        icon = "passport",
+        resources = listOf(
+            ResourceItem("allampolgarsag", "Hungarian Citizenship Portal", "Simplified naturalization application", "https://allampolgarsag.gov.hu/", "official"),
+            ResourceItem("hu-simplified", "Simplified Naturalization", "Hungarian ancestor + basic conversational Hungarian — no residency required", "https://allampolgarsag.gov.hu/", "official"),
+            ResourceItem("hu-white-card", "White Card (Digital Nomad)", "Non-EU remote workers — €3,000/mo from foreign employer, 1yr renewable", "https://nemzetikartya.gov.hu/", "official"),
+            ResourceItem("hu-d-visa", "D-Visa (Long-Stay Residence)", "Work / study / family / investment > 90 days", "https://oif.gov.hu/", "official"),
+            ResourceItem("hu-investor", "Guest Investor Programme", "€250k real estate fund / €1M property — relaunched 2024", "https://nemzetikartya.gov.hu/", "official"),
+            ResourceItem("kormanyablak", "Kormányablak (Govt Office)", "One-stop government office", "https://kormanyablak.hu/en", "official"),
+            ResourceItem("embassy-hu", "Hungarian Embassy USA", "Washington DC consulate", "https://washington.mfa.gov.hu/eng", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "documents",
+        title = "Documents & Translation",
+        icon = "description",
+        resources = listOf(
+            ResourceItem("offi", "OFFI (Translation Office)", "Official Hungarian translations", "https://www.offi.hu/", "service"),
+            ResourceItem("balassi", "Hungarian Cultural Institute", "Language courses & resources", "https://newyork.balassiintezet.hu/en/", "official"),
+            ResourceItem("familysearch-hu", "FamilySearch — Hungary", "Ancestor records research", "https://www.familysearch.org/en/search/collection/list?page=1&place=Hungary", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "id",
+        title = "ID Cards & Tax",
+        icon = "badge",
+        resources = listOf(
+            ResourceItem("nyilvantarto", "Nyilvántartó", "ID card and address registry", "https://nyilvantarto.hu/", "official"),
+            ResourceItem("nav-hu", "NAV (Tax Authority)", "Hungarian taxation", "https://www.nav.gov.hu/", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "housing",
+        title = "Housing & Rentals",
+        icon = "home",
+        resources = listOf(
+            ResourceItem("ingatlan", "Ingatlan.com", "Hungary's largest property portal", "https://ingatlan.com", "marketplace"),
+            ResourceItem("otthonterkep", "Otthontérkép", "Property listings", "https://www.otthonterkep.hu", "marketplace")
+        )
+    ),
+    ResourceCategory(
+        id = "banking",
+        title = "Banking & Finance",
+        icon = "account_balance",
+        resources = listOf(
+            ResourceItem("otp", "OTP Bank", "Largest Hungarian bank", "https://www.otpbank.hu", "service"),
+            ResourceItem("revolut-hu", "Revolut", "Digital banking, popular in Hungary", "https://www.revolut.com", "service")
+        )
+    ),
+    ResourceCategory(
+        id = "healthcare",
+        title = "Healthcare",
+        icon = "local_hospital",
+        resources = listOf(
+            ResourceItem("neak", "NEAK (Health Insurance Fund)", "Public healthcare (TAJ card)", "https://neak.gov.hu/", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "community",
+        title = "Expat Communities",
+        icon = "groups",
+        resources = listOf(
+            ResourceItem("internations-hu", "InterNations Hungary", "Expat network", "https://www.internations.org/hungary-expats", "community"),
+            ResourceItem("xpatloop", "XpatLoop", "English-language Hungary news/community", "https://xpatloop.com", "community")
+        )
+    )
+)
+
+private fun getUkAncestryResources(): List<ResourceCategory> = listOf(
+    ResourceCategory(
+        id = "visa",
+        title = "Ancestry Visa & Immigration",
+        icon = "passport",
+        resources = listOf(
+            ResourceItem("gov-uk-ancestry", "UK Ancestry Visa", "Commonwealth citizens 17+ with UK-born grandparent — 5yr work visa, ILR after", "https://www.gov.uk/ancestry-visa", "official"),
+            ResourceItem("skilled-worker-uk", "Skilled Worker Visa", "Sponsored employment — £38,700+ salary (lower for shortage occupations)", "https://www.gov.uk/skilled-worker-visa", "official"),
+            ResourceItem("global-talent", "Global Talent Visa", "Tech, science, arts — endorsement by recognized UK body, no employer needed", "https://www.gov.uk/global-talent", "official"),
+            ResourceItem("family-visa-uk", "Family Visa", "Spouse, partner, child, parent of British / settled person", "https://www.gov.uk/uk-family-visa", "official"),
+            ResourceItem("student-visa-uk", "Student Visa", "UK higher education enrollment — 20h/wk work allowed", "https://www.gov.uk/student-visa", "official"),
+            ResourceItem("ilr", "ILR (Settlement)", "Indefinite Leave to Remain — after 5yr Ancestry / Skilled Worker", "https://www.gov.uk/ancestry-visa/settle-in-the-uk", "official"),
+            ResourceItem("ukvi", "UK Visas and Immigration", "Official UKVI portal", "https://www.gov.uk/government/organisations/uk-visas-and-immigration", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "documents",
+        title = "Birth Certificates & Records",
+        icon = "description",
+        resources = listOf(
+            ResourceItem("gro", "GRO (England & Wales)", "Order birth/marriage certificates", "https://www.gro.gov.uk/gro/content/certificates/", "official"),
+            ResourceItem("scotlandspeople", "ScotlandsPeople", "Scottish family records", "https://www.scotlandspeople.gov.uk/", "official"),
+            ResourceItem("groni", "GRONI (Northern Ireland)", "Order NI certificates", "https://www.nidirect.gov.uk/articles/general-register-office", "official"),
+            ResourceItem("tb-test", "TB Test Country List", "Required pre-visa health check", "https://www.gov.uk/tb-test-visa", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "id",
+        title = "NIN & Tax",
+        icon = "badge",
+        resources = listOf(
+            ResourceItem("nin", "National Insurance Number", "Apply post-arrival", "https://www.gov.uk/apply-national-insurance-number", "official"),
+            ResourceItem("hmrc", "HMRC", "UK tax authority", "https://www.gov.uk/government/organisations/hm-revenue-customs", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "housing",
+        title = "Housing & Rentals",
+        icon = "home",
+        resources = listOf(
+            ResourceItem("rightmove", "Rightmove", "UK's largest property portal", "https://www.rightmove.co.uk", "marketplace"),
+            ResourceItem("zoopla", "Zoopla", "Property and rentals", "https://www.zoopla.co.uk", "marketplace"),
+            ResourceItem("spareroom", "SpareRoom", "Flatshare and rooms", "https://www.spareroom.co.uk", "marketplace")
+        )
+    ),
+    ResourceCategory(
+        id = "banking",
+        title = "Banking & Finance",
+        icon = "account_balance",
+        resources = listOf(
+            ResourceItem("monzo", "Monzo", "Popular UK digital bank", "https://monzo.com", "service"),
+            ResourceItem("starling", "Starling Bank", "Digital bank, easy setup", "https://www.starlingbank.com", "service"),
+            ResourceItem("hsbc-uk", "HSBC UK", "Major retail bank", "https://www.hsbc.co.uk", "service"),
+            ResourceItem("wise-uk", "Wise", "Multi-currency transfers", "https://wise.com", "service")
+        )
+    ),
+    ResourceCategory(
+        id = "healthcare",
+        title = "Healthcare",
+        icon = "local_hospital",
+        resources = listOf(
+            ResourceItem("nhs", "NHS", "National Health Service", "https://www.nhs.uk", "official"),
+            ResourceItem("ihs", "Immigration Health Surcharge", "Paid as part of visa fee", "https://www.gov.uk/healthcare-immigration-application", "official")
+        )
+    ),
+    ResourceCategory(
+        id = "community",
+        title = "Expat Communities",
+        icon = "groups",
+        resources = listOf(
+            ResourceItem("internations-uk", "InterNations UK", "Expat network", "https://www.internations.org/united-kingdom-expats", "community"),
+            ResourceItem("reddit-uk", "r/AskUK", "Reddit community", "https://www.reddit.com/r/AskUK/", "community")
         )
     )
 )
