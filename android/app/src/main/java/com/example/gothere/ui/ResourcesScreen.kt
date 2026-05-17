@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gothere.billing.PurchaseManager
 import com.example.gothere.model.Document
 import com.example.gothere.viewmodel.ResourcesViewModel
 
@@ -50,15 +52,29 @@ fun ResourcesScreen(
     vm: ResourcesViewModel = viewModel()
 ) {
     val context = LocalContext.current
-    
+    val purchaseManager = remember { PurchaseManager.getInstance(context) }
+    val purchasedCountries by purchaseManager.purchasedCountries.collectAsState()
+    val isUnlocked = purchasedCountries.contains(countryId)
+    var showPaywall by remember { mutableStateOf(false) }
+
     // Observe ViewModel state
     val documentsByFolder by vm.documentsByFolder.collectAsState()
     val isLoading by vm.isLoading.collectAsState()
     val error by vm.error.collectAsState()
-    
-    // Load documents when countryId changes
-    LaunchedEffect(countryId) {
-        vm.loadDocumentsForCountry(countryId)
+
+    // Load documents when countryId changes (only when unlocked)
+    LaunchedEffect(countryId, isUnlocked) {
+        if (isUnlocked) {
+            vm.loadDocumentsForCountry(countryId)
+        }
+    }
+
+    if (showPaywall) {
+        PaywallDialog(
+            countryId = countryId,
+            onDismiss = { showPaywall = false },
+            purchaseManager = purchaseManager
+        )
     }
     
     // Country name for display
@@ -136,29 +152,41 @@ fun ResourcesScreen(
                 }
             }
 
-            // Web Resource categories (always shown)
-            item {
-                Text(
-                    text = "Quick Links",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-                )
+            // Locked country gate: show paywall card instead of resources
+            if (!isUnlocked) {
+                item {
+                    LockedCountryCard(
+                        countryName = countryName,
+                        onUnlockClick = { showPaywall = true }
+                    )
+                }
             }
 
-            items(webResourceCategories) { category ->
-                ResourceCategoryCard(
-                    category = category,
-                    onResourceClick = { resource ->
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(resource.url))
-                        context.startActivity(intent)
-                    }
-                )
+            // Web Resource categories (only when country is unlocked)
+            if (isUnlocked) {
+                item {
+                    Text(
+                        text = "Quick Links",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                    )
+                }
+
+                items(webResourceCategories) { category ->
+                    ResourceCategoryCard(
+                        category = category,
+                        onResourceClick = { resource ->
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(resource.url))
+                            context.startActivity(intent)
+                        }
+                    )
+                }
             }
 
-            // Firebase Storage Documents Section
-            if (documentsByFolder.isNotEmpty()) {
+            // Firebase Storage Documents Section (only when country is unlocked)
+            if (isUnlocked && documentsByFolder.isNotEmpty()) {
                 item {
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     Text(
@@ -204,7 +232,7 @@ fun ResourcesScreen(
             }
 
             // Loading indicator at bottom
-            if (isLoading) {
+            if (isUnlocked && isLoading) {
                 item {
                     Box(
                         modifier = Modifier
@@ -218,7 +246,7 @@ fun ResourcesScreen(
             }
 
             // Empty state for documents
-            if (!isLoading && documentsByFolder.isEmpty()) {
+            if (isUnlocked && !isLoading && documentsByFolder.isEmpty()) {
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -309,6 +337,61 @@ fun ResourcesScreen(
 
             // Bottom spacing
             item { Spacer(Modifier.height(16.dp)) }
+        }
+    }
+}
+
+@Composable
+private fun LockedCountryCard(
+    countryName: String,
+    onUnlockClick: () -> Unit
+) {
+    val displayName = countryName.removeSuffix(" 🇪🇸")
+        .removeSuffix(" 🇵🇹")
+        .removeSuffix(" 🇲🇽")
+        .removeSuffix(" 🇨🇦")
+        .removeSuffix(" 🇮🇪")
+        .removeSuffix(" 🇮🇹")
+        .removeSuffix(" 🇩🇪")
+        .removeSuffix(" 🇵🇱")
+        .removeSuffix(" 🇦🇷")
+        .removeSuffix(" 🇭🇺")
+        .removeSuffix(" 🇬🇧")
+        .trim()
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Lock,
+                contentDescription = null,
+                modifier = Modifier.size(36.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = "$displayName is locked",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = "Unlock the $displayName Pack to access immigration portals, housing sites, banking, healthcare, and expat communities — plus downloadable PDF guides.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+            Button(
+                onClick = onUnlockClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Unlock $displayName")
+            }
         }
     }
 }
