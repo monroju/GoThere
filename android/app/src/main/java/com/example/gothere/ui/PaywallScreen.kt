@@ -79,6 +79,35 @@ fun PaywallDialog(
     val singlePrice = countryProductId?.let { purchaseManager.getFormattedPrice(it) } ?: "$3.99"
     val bundlePrice = purchaseManager.getFormattedPrice(PurchaseManager.PRODUCT_ALL_COUNTRIES) ?: "$5.99"
 
+    // Item 11 mirror — new freemium SKUs surface as additional CTAs when Play Console
+    // has them configured (Item 13 pending). Hidden when not yet loaded so the dialog
+    // degrades cleanly to the original two-button layout.
+    val regionBundleProductId: String? = when {
+        countryId in PurchaseManager.EUROPE_BUNDLE_COUNTRIES -> PurchaseManager.PRODUCT_EUROPE_BUNDLE
+        countryId in PurchaseManager.AMERICAS_BUNDLE_COUNTRIES -> PurchaseManager.PRODUCT_AMERICAS_BUNDLE
+        else -> null
+    }
+    val regionBundleCount = when (regionBundleProductId) {
+        PurchaseManager.PRODUCT_EUROPE_BUNDLE -> PurchaseManager.EUROPE_BUNDLE_COUNTRIES.size
+        PurchaseManager.PRODUCT_AMERICAS_BUNDLE -> PurchaseManager.AMERICAS_BUNDLE_COUNTRIES.size
+        else -> 0
+    }
+    val regionBundleLabel = when (regionBundleProductId) {
+        PurchaseManager.PRODUCT_EUROPE_BUNDLE -> "Europe Bundle"
+        PurchaseManager.PRODUCT_AMERICAS_BUNDLE -> "Americas Bundle"
+        else -> "Region Bundle"
+    }
+    val regionBundleAvailable = regionBundleProductId != null && productDetails.containsKey(regionBundleProductId)
+    val regionBundlePrice = regionBundleProductId?.let { purchaseManager.getFormattedPrice(it) } ?: ""
+
+    val preferredSubProductId: String? = when {
+        productDetails.containsKey(PurchaseManager.PRODUCT_ALL_ACCESS_ANNUAL) -> PurchaseManager.PRODUCT_ALL_ACCESS_ANNUAL
+        productDetails.containsKey(PurchaseManager.PRODUCT_ALL_ACCESS_MONTHLY) -> PurchaseManager.PRODUCT_ALL_ACCESS_MONTHLY
+        else -> null
+    }
+    val subPriceSuffix = if (preferredSubProductId == PurchaseManager.PRODUCT_ALL_ACCESS_ANNUAL) "/yr" else "/mo"
+    val subPrice = preferredSubProductId?.let { purchaseManager.getFormattedPrice(it) } ?: ""
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -172,7 +201,34 @@ fun PaywallDialog(
                     Spacer(modifier = Modifier.height(12.dp))
                 }
                 
-                // Bundle purchase button (best value)
+                // Region bundle button — contextual to the country being viewed.
+                // Hidden when the Play Console product isn't loaded yet (Item 13).
+                if (regionBundleAvailable && regionBundleProductId != null) {
+                    OutlinedButton(
+                        onClick = {
+                            activity?.let { act ->
+                                purchaseManager.launchPurchaseFlow(act, regionBundleProductId)
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text(
+                            text = "$regionBundlePrice — $regionBundleLabel · $regionBundleCount countries",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+
+                // Lifetime All-Access (legacy all_countries SKU repositioned).
+                // The misleading "Save over 80%" copy was dropped — subscriptions and region
+                // bundles now exist so a single fixed percentage no longer makes sense.
                 OutlinedButton(
                     onClick = {
                         activity?.let { act ->
@@ -205,20 +261,43 @@ fun PaywallDialog(
                         Spacer(modifier = Modifier.width(8.dp))
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
-                                text = "$bundlePrice — All Countries",
+                                text = "$bundlePrice — Lifetime All-Access",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.primary
                             )
                             Text(
-                                text = "Best Value • Save over 80%",
+                                text = "Pay once · every country, current and future",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.tertiary
                             )
                         }
                     }
                 }
-                
+
+                // All-Access subscription — surface the recommended plan price.
+                // Hidden when no Play Console subscription product is loaded.
+                if (preferredSubProductId != null) {
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    TextButton(
+                        onClick = {
+                            activity?.let { act ->
+                                purchaseManager.launchPurchaseFlow(act, preferredSubProductId)
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                    ) {
+                        Text(
+                            text = "Or subscribe — $subPrice$subPriceSuffix",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 // Maybe later link
@@ -240,7 +319,7 @@ private fun FeaturesList(countryName: String) {
         "Decision tree for 15+ cities",
         "Neighborhood guides & tips",
         "Country-specific resources",
-        "Lifetime access, no subscription"
+        "Pay once or subscribe — your call"
     )
     
     Column(
