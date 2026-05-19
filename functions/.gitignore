@@ -1,0 +1,10 @@
+# Local environment (Telegram bot token, Apple bundle config, etc.)
+.env
+.env.local
+.env.*.local
+
+# Node
+node_modules/
+firebase-debug.log
+firebase-debug.*.log
+*.local

@@ -13,18 +13,15 @@
  * notification handling never blocks on Telegram availability.
  */
 
-const functions = require('firebase-functions');
-
 const API_BASE = 'https://api.telegram.org';
 
 function readConfig() {
-  // Prefer the v2 runtime env vars when set; fall back to legacy
-  // `functions.config()` for backward compat with older deployments.
-  const token = process.env.TELEGRAM_BOT_TOKEN
-    || (functions.config().telegram && functions.config().telegram.token);
-  const chatId = process.env.TELEGRAM_CHAT_ID
-    || (functions.config().telegram && functions.config().telegram.chat_id);
-  return { token, chatId };
+  // Firebase Functions v2 — values come from the .env file in functions/
+  // (TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID), injected as process.env at runtime.
+  return {
+    token: process.env.TELEGRAM_BOT_TOKEN,
+    chatId: process.env.TELEGRAM_CHAT_ID
+  };
 }
 
 async function sendAlert(message) {

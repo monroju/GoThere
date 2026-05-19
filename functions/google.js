@@ -29,7 +29,7 @@
  * mapping (`apple.js#mapToStatus`) where the semantics overlap.
  */
 
-const functions = require('firebase-functions');
+const { onMessagePublished } = require('firebase-functions/v2/pubsub');
 const { lookupUidByPurchase, writeSubscriptionStatus, logEvent } = require('./lib/firestore');
 const { sendAlert } = require('./lib/telegram');
 
@@ -66,12 +66,17 @@ const TYPE_NAMES = {
 // Refund-like events that need an operator Telegram ping.
 const REFUND_LIKE_TYPES = new Set([12, 21]);
 
-exports.handler = functions
-  .runWith({ memory: '256MB', timeoutSeconds: 30 })
-  .pubsub.topic('play-rtdn').onPublish(async (message) => {
+exports.handler = onMessagePublished(
+  { topic: 'play-rtdn', memory: '256MiB', timeoutSeconds: 30, region: 'us-central1' },
+  async (event) => {
+    // Functions v2 wraps the Pub/Sub message under event.data.message.
+    const message = event && event.data && event.data.message;
     let payload;
     try {
-      payload = JSON.parse(Buffer.from(message.data, 'base64').toString('utf8'));
+      const raw = message && message.data
+        ? Buffer.from(message.data, 'base64').toString('utf8')
+        : '';
+      payload = JSON.parse(raw);
     } catch (e) {
       console.error('[google] failed to decode RTDN payload:', e);
       return;

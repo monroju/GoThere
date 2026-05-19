@@ -30,7 +30,7 @@
  * test pings, etc.).
  */
 
-const functions = require('firebase-functions');
+const { onRequest } = require('firebase-functions/v2/https');
 const { lookupUidByPurchase, writeSubscriptionStatus, logEvent } = require('./lib/firestore');
 const { sendAlert } = require('./lib/telegram');
 
@@ -150,9 +150,14 @@ async function processNotification(verified) {
   }
 }
 
-exports.handler = functions
-  .runWith({ memory: '256MB', timeoutSeconds: 30 })
-  .https.onRequest(async (req, res) => {
+exports.handler = onRequest(
+  {
+    memory: '256MiB',
+    timeoutSeconds: 30,
+    region: 'us-central1',
+    invoker: 'public'  // Apple's webhook POSTs without auth headers; must be public
+  },
+  async (req, res) => {
     if (req.method !== 'POST') {
       res.status(405).send('Method Not Allowed');
       return;
@@ -178,4 +183,5 @@ exports.handler = functions
       const isVerificationFailure = /verif|decode|signature|invalid/i.test(msg);
       res.status(isVerificationFailure ? 422 : 500).send(msg);
     }
-  });
+  }
+);
