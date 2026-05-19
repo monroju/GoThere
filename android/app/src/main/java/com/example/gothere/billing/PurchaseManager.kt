@@ -342,6 +342,10 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
             if (!purchase.isAcknowledged) acknowledgePurchase(purchase)
             if (purchase.products.any { it in SUBSCRIPTION_SKUS }) {
                 sawSubscription = true
+                // Write the iapPurchases/{purchaseToken} lookup so the Firebase
+                // IAP function (Item 12) can map Play RTDN events back to this
+                // Firebase user on renewal / refund / expiration.
+                writePurchaseLookup(purchase)
             }
         }
 
@@ -449,6 +453,27 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
             ?.pricingPhases?.pricingPhaseList?.firstOrNull()
             ?.formattedPrice?.let { return it }
         return details.oneTimePurchaseOfferDetails?.formattedPrice
+    }
+
+    /**
+     * Writes the `iapPurchases/{purchaseToken}` lookup row used by the Firebase
+     * IAP function (Item 12) to map Play RTDN events back to this Firebase user.
+     * Only called for SUBS purchases — Play sends RTDN for subscriptions only.
+     */
+    private fun writePurchaseLookup(purchase: Purchase) {
+        val uid = auth.currentUser?.uid ?: return
+        val productId = purchase.products.firstOrNull() ?: return
+        val payload = mapOf(
+            "uid" to uid,
+            "productId" to productId,
+            "platform" to "android",
+            "createdAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
+        )
+        firestore.collection("iapPurchases").document(purchase.purchaseToken)
+            .set(payload, com.google.firebase.firestore.SetOptions.merge())
+            .addOnFailureListener { e ->
+                if (BuildConfig.DEBUG) Log.e(TAG, "iapPurchases lookup write failed", e)
+            }
     }
 
     private fun savePurchasesToFirestore(
