@@ -23,7 +23,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.outlined.MenuBook
 import com.example.gothere.billing.PurchaseManager
+import com.example.gothere.data.RealJourney
+import com.example.gothere.data.RealJourneys
 import com.example.gothere.model.Document
 import com.example.gothere.viewmodel.ResourcesViewModel
 
@@ -56,6 +60,7 @@ fun ResourcesScreen(
     val purchasedCountries by purchaseManager.purchasedCountries.collectAsState()
     val isUnlocked = purchasedCountries.contains(countryId)
     var showPaywall by remember { mutableStateOf(false) }
+    var presentedJourney by remember { mutableStateOf<RealJourney?>(null) }
 
     // Observe ViewModel state
     val documentsByFolder by vm.documentsByFolder.collectAsState()
@@ -76,6 +81,25 @@ fun ResourcesScreen(
             purchaseManager = purchaseManager
         )
     }
+
+    presentedJourney?.let { journey ->
+        // Full-screen dialog hosting the Real Journey premium content. Paywalled by
+        // PurchaseManager.hasAllAccess() internally.
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { presentedJourney = null },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            RealJourneyScreen(
+                journey = journey,
+                purchaseManager = purchaseManager,
+                onDismiss = { presentedJourney = null },
+                onOpenPaywall = {
+                    presentedJourney = null
+                    showPaywall = true
+                }
+            )
+        }
+    }
     
     // Country name for display
     val countryName = when (countryId) {
@@ -95,6 +119,7 @@ fun ResourcesScreen(
 
     // Hardcoded web resources
     val webResourceCategories = remember(countryId) { getResourcesForCountry(countryId) }
+    val realJourney = remember(countryId) { RealJourneys.forCountry(countryId).firstOrNull() }
 
     // Map Firebase folder names to display names
     val folderDisplayNames = mapOf(
@@ -158,6 +183,19 @@ fun ResourcesScreen(
                     LockedCountryCard(
                         countryName = countryName,
                         onUnlockClick = { showPaywall = true }
+                    )
+                }
+            }
+
+            // Real Journey CTA — paywalled premium content authored from anonymized
+            // real client correspondence. Only surfaces when a journey exists for this
+            // country. The country must be unlocked first (matches iOS gating order).
+            if (isUnlocked && realJourney != null) {
+                item {
+                    RealJourneyCtaCard(
+                        journey = realJourney,
+                        isProUnlocked = purchaseManager.hasAllAccess(),
+                        onClick = { presentedJourney = realJourney }
                     )
                 }
             }
@@ -1409,3 +1447,77 @@ private fun getUkAncestryResources(): List<ResourceCategory> = listOf(
         )
     )
 )
+
+/**
+ * Entry-point card for a Real Journey. Tapping it opens [RealJourneyScreen]
+ * which renders either the full content (subscribers) or a paywall preview.
+ */
+@Composable
+private fun RealJourneyCtaCard(
+    journey: RealJourney,
+    isProUnlocked: Boolean,
+    onClick: () -> Unit
+) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onClick() }
+                .padding(14.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = if (isProUnlocked) Icons.Outlined.MenuBook else Icons.Default.Lock,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(28.dp)
+            )
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(
+                        text = "Real Journey",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    if (!isProUnlocked) {
+                        Surface(
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = RoundedCornerShape(4.dp)
+                        ) {
+                            Text(
+                                text = "PRO",
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+                Text(
+                    text = journey.title,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = journey.subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            Icon(
+                imageVector = Icons.Default.ExpandMore,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
