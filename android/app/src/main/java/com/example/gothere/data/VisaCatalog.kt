@@ -185,7 +185,7 @@ object VisaCatalog {
             "Skip — instant EU citizenship", "Immediate", "€600+ + research costs",
             listOf("EU passport without moving", "No language test (until 2024 changes)", "Children automatically eligible"),
             listOf("2024 reform: limited to grandparents only (DL 36/2025)", "Consulate backlogs years long", "1948 maternal-line cases need lawsuit"),
-            "https://www.esteri.it/en/servizi-consolari-e-visti/italiani-all-estero/cittadinanza/", null),
+            "https://www.esteri.it/en/servizi-consolari-e-visti/italiani-all-estero/cittadinanza/", "it_jure_sanguinis"),
         VisaInfo("it_elective", "italy", "🇮🇹", "Italy", "Elective Residency Visa", "Elective",
             VisaCategory.PassiveIncome,
             "~€31,000/yr passive (~€2,600/mo)", "2-3 months", "1yr → 2yr → 5yr", "No",
