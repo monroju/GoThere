@@ -34,4 +34,21 @@ object SeedImportStore {
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         prefs.edit().putBoolean(KEY_DEDUPED, true).apply()
     }
+
+    /**
+     * Tracks per-country seed import so each country's tasks get imported the
+     * first time the user opens that country's Tasks tab — Spain still uses the
+     * legacy KEY_IMPORTED flag above for backwards compatibility.
+     */
+    fun isCountryImported(context: Context, countryId: String): Boolean {
+        if (countryId == "spain") return isImported(context)
+        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        return prefs.getBoolean("country_imported_$countryId", false)
+    }
+
+    fun markCountryImported(context: Context, countryId: String) {
+        if (countryId == "spain") { markImported(context); return }
+        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        prefs.edit().putBoolean("country_imported_$countryId", true).apply()
+    }
 }

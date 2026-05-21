@@ -1,0 +1,130 @@
+[
+  {
+    "title": "Confirm a Hungarian-citizen ancestor in your direct line",
+    "category": "Phase 1: Research & Planning",
+    "completed": false,
+    "countryId": "hungary",
+    "description": "Simplified naturalization (Act LV of 1993, §4(3)) requires proof that an ancestor in your direct line — parent, grandparent, great-grandparent, or further back — held Hungarian citizenship at some point. There is no generational cap, so even distant ancestors who emigrated from the Austro-Hungarian Empire can qualify, provided the documentary chain holds.",
+    "links": [
+      {
+        "label": "Open Visa Wizard in app",
+        "url": "gothere://wizard"
+      },
+      {
+        "label": "Hungarian Government — Simplified Naturalization",
+        "url": "https://allampolgarsag.gov.hu/"
+      }
+    ]
+  },
+  {
+    "title": "Be honest about the Hungarian language requirement",
+    "category": "Phase 1: Research & Planning",
+    "completed": false,
+    "countryId": "hungary",
+    "description": "Unlike Italy, Germany, or Poland, Hungary requires you to speak Hungarian at a basic conversational level. There is no formal exam, but the officer at the consulate or registry office WILL converse with you in Hungarian during the oath. Plan 12–24 months of language study before applying if you don't already speak the language.",
+    "links": [
+      {
+        "label": "Hungarian Cultural Institute — language courses",
+        "url": "https://newyork.balassiintezet.hu/en/"
+      }
+    ]
+  },
+  {
+    "title": "Identify the Hungarian consulate or embassy with jurisdiction over your residence",
+    "category": "Phase 1: Research & Planning",
+    "completed": false,
+    "countryId": "hungary",
+    "description": "Applications can be filed at any Hungarian consulate abroad or at a Hungarian government office (kormányablak) inside Hungary. Most US applicants file at the consulate nearest their home — but you can also use a temporary visit to Hungary to file in person.",
+    "links": [
+      {
+        "label": "Open Visa Wizard in app",
+        "url": "gothere://wizard"
+      },
+      {
+        "label": "Embassy of Hungary, Washington DC",
+        "url": "https://washington.mfa.gov.hu/eng"
+      }
+    ]
+  },
+  {
+    "title": "Locate your Hungarian ancestor's records (anyakönyv)",
+    "category": "Phase 2: Documentation",
+    "completed": false,
+    "countryId": "hungary",
+    "description": "Pre-1895 records are typically held in church archives (Catholic, Reformed, Lutheran, or Jewish congregational books). Post-1895 records are in state civil registry (állami anyakönyv) at the local önkormányzat (municipality) or in the national Mikrofilm archive. FamilySearch.org has scanned many Hungarian church and civil records.",
+    "links": [
+      {
+        "label": "FamilySearch — Hungary records",
+        "url": "https://www.familysearch.org/en/search/collection/list?page=1&place=Hungary"
+      }
+    ]
+  },
+  {
+    "title": "Order certified copies of your ancestor's birth, marriage, and (if applicable) death records",
+    "category": "Phase 2: Documentation",
+    "completed": false,
+    "countryId": "hungary",
+    "description": "Hungarian consulates accept either the original Hungarian civil registry copy OR a sworn translation of foreign records. For the founding ancestor, the Hungarian birth record (születési anyakönyvi kivonat) is the single most important document."
+  },
+  {
+    "title": "Build the unbroken vital records chain to you",
+    "category": "Phase 2: Documentation",
+    "completed": false,
+    "countryId": "hungary",
+    "description": "Birth and marriage certificates connecting the Hungarian ancestor to their child, that child to the next generation, and so on to you. Each US-issued certificate needs an apostille (Hungary is a Hague party) and a Hungarian translation by an OFFI-certified translator.",
+    "links": [
+      {
+        "label": "OFFI — official Hungarian translation office",
+        "url": "https://www.offi.hu/"
+      }
+    ]
+  },
+  {
+    "title": "Get your US documents apostilled and translated by OFFI (or OFFI-equivalent)",
+    "category": "Phase 2: Documentation",
+    "completed": false,
+    "countryId": "hungary",
+    "description": "Hungary insists on translations by the State Translation Office (OFFI) for most official uses. Some consulates accept US sworn translators; verify with yours. Apostilles come from your state's Secretary of State."
+  },
+  {
+    "title": "Fill out the simplified naturalization application form",
+    "category": "Phase 1: Research & Planning",
+    "completed": false,
+    "countryId": "hungary",
+    "description": "Form 'Kérelem magyar állampolgárság megszerzésére' — available from the consulate or download from allampolgarsag.gov.hu. The form is entirely in Hungarian; the consul will help you complete it but expects you to understand the questions.",
+    "links": [
+      {
+        "label": "Application forms",
+        "url": "https://allampolgarsag.gov.hu/letoltheto-dokumentumok"
+      }
+    ]
+  },
+  {
+    "title": "Wait for the decision from the President of Hungary",
+    "category": "Phase 1: Research & Planning",
+    "completed": false,
+    "countryId": "hungary",
+    "description": "The application is forwarded to Budapest. Decisions are made by the Office of the President on the recommendation of the Ministry of Interior. Processing takes 12–24 months on average, sometimes longer for borderline cases or when archival research is required."
+  },
+  {
+    "title": "Attend your consulate interview (in Hungarian)",
+    "category": "Phase 1: Research & Planning",
+    "completed": false,
+    "countryId": "hungary",
+    "description": "You appear in person, present all documents, and have a basic conversation in Hungarian with the consul about your background, why you want Hungarian citizenship, and your knowledge of Hungary. The officer assesses your language level. There is no fee for simplified naturalization."
+  },
+  {
+    "title": "Take the citizenship oath (állampolgársági eskü)",
+    "category": "Phase 1: Research & Planning",
+    "completed": false,
+    "countryId": "hungary",
+    "description": "If approved, you are summoned to take the oath of Hungarian citizenship in Hungarian, in front of a Hungarian official — typically at the consulate or at a Hungarian municipality. You receive your certificate of naturalization (honosítási okirat)."
+  },
+  {
+    "title": "Apply for your Hungarian passport and ID card",
+    "category": "Phase 1: Research & Planning",
+    "completed": false,
+    "countryId": "hungary",
+    "description": "Once you have the honosítási okirat, you can apply for a Hungarian passport (útlevél) and national ID card (személyazonosító igazolvány) at any Hungarian consulate or kormányablak. The passport gives full EU freedom of movement."
+  }
+]

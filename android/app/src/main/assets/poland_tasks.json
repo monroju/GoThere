@@ -1,0 +1,197 @@
+[
+  {
+    "title": "Confirm you have a Polish citizen ancestor who emigrated after 1920",
+    "category": "Phase 1: Research & Planning",
+    "completed": false,
+    "countryId": "poland",
+    "description": "Polish citizenship law took effect on 1920-01-31. If your ancestor emigrated from the territory of post-1920 Poland AFTER that date and held Polish citizenship, you may have inherited it. If they emigrated before 1920 (e.g. from Austrian or Russian-partitioned Poland in the 1890s-1910s), the path is much harder and may not be available.",
+    "links": [
+      {
+        "label": "Open Visa Wizard in app",
+        "url": "gothere://wizard"
+      },
+      {
+        "label": "Polish citizenship overview",
+        "url": "https://www.gov.pl/web/usa-en/citizenship"
+      }
+    ]
+  },
+  {
+    "title": "Check for citizenship-breaking events in the chain",
+    "category": "Phase 1: Research & Planning",
+    "completed": false,
+    "countryId": "poland",
+    "description": "Polish citizenship is lost by: foreign naturalization BEFORE 1951-01-19 (the 1920 Citizenship Act made dual citizenship impossible); voluntary service in a foreign army; accepting a foreign public office without Polish government permission. After the 1951 Citizenship Act, loss became harder but not impossible. After 1962, voluntary renunciation is the main loss trigger. Find your ancestor's US naturalization date — if before 1951-01-19, the chain breaks there.",
+    "links": [
+      {
+        "label": "USCIS Genealogy Program (naturalization records)",
+        "url": "https://www.uscis.gov/genealogy"
+      }
+    ]
+  },
+  {
+    "title": "Special case: military service issues",
+    "category": "Phase 1: Research & Planning",
+    "completed": false,
+    "countryId": "poland",
+    "description": "If your Polish-born male ancestor served in the US Armed Forces between 1920 and 1951 without Polish government permission, he may have lost Polish citizenship — even if he never naturalized as American. WWII service is treated more leniently in recent case law but is still a flag worth pre-screening."
+  },
+  {
+    "title": "Map the documentary chain from you to the Polish ancestor",
+    "category": "Phase 1: Research & Planning",
+    "completed": false,
+    "countryId": "poland",
+    "description": "Each generation needs: birth certificate; marriage certificate where surnames change. Document any name anglicizations (Kowalski → Smith, Stanisław → Stanley) that you will need to explain by affidavit.",
+    "links": [
+      {
+        "label": "Open Visa Wizard in app",
+        "url": "gothere://wizard"
+      }
+    ]
+  },
+  {
+    "title": "Find your Polish ancestor's Polish documents",
+    "category": "Phase 2: Documentation",
+    "completed": false,
+    "countryId": "poland",
+    "description": "Polish passport (especially pre-1951), military service book (książeczka wojskowa), birth certificate from a Polish parish or civil registry, ship manifest with port of departure, US immigration arrival record (Ellis Island, etc.), residence registration (zameldowanie).",
+    "links": [
+      {
+        "label": "Polish State Archives",
+        "url": "https://www.archiwa.gov.pl/en"
+      },
+      {
+        "label": "Geneteka — Polish genealogy index",
+        "url": "https://geneteka.genealodzy.pl/"
+      }
+    ]
+  },
+  {
+    "title": "Request the ancestor's US naturalization record (or 'No Record' certificate)",
+    "category": "Phase 2: Documentation",
+    "completed": false,
+    "countryId": "poland",
+    "description": "Order via the USCIS Genealogy Program. If the ancestor naturalized AFTER 1951-01-19 or never naturalized, the chain is intact. If they naturalized before that, the chain breaks unless one of the narrow exceptions applies. A 'No Record Found' certificate is also accepted proof.",
+    "links": [
+      {
+        "label": "USCIS Genealogy Program",
+        "url": "https://www.uscis.gov/genealogy"
+      }
+    ]
+  },
+  {
+    "title": "Order birth, marriage, and death certificates for each generation",
+    "category": "Phase 2: Documentation",
+    "completed": false,
+    "countryId": "poland",
+    "description": "From state/county vital records offices for US records; from the Urząd Stanu Cywilnego (civil registry) of the relevant Polish gmina for Polish records. Allow 2–6 months per Polish record, much longer if you need to search parish archives."
+  },
+  {
+    "title": "Have all US documents apostilled",
+    "category": "Phase 2: Documentation",
+    "completed": false,
+    "countryId": "poland",
+    "description": "Poland is a Hague Apostille party. Each US Secretary of State office issues apostilles for state-issued documents; the US Department of State for federal documents.",
+    "links": [
+      {
+        "label": "Open Documents in app",
+        "url": "gothere://documents"
+      },
+      {
+        "label": "US Department of State authentications",
+        "url": "https://travel.state.gov/content/travel/en/records-and-authentications.html"
+      }
+    ]
+  },
+  {
+    "title": "Get sworn translations into Polish (tłumaczenie przysięgłe)",
+    "category": "Phase 2: Documentation",
+    "completed": false,
+    "countryId": "poland",
+    "description": "All non-Polish documents must be translated by a tłumacz przysięgły (Poland-certified sworn translator). The Polish Ministry of Justice publishes the official list. Translations done by other translators will be rejected.",
+    "links": [
+      {
+        "label": "Open Documents in app",
+        "url": "gothere://documents"
+      },
+      {
+        "label": "Polish sworn translators list (MoJ)",
+        "url": "https://www.gov.pl/web/sprawiedliwosc/lista-tlumaczy-przysieglych"
+      }
+    ]
+  },
+  {
+    "title": "Choose your filing route: voivode in Poland, or Polish consulate in the US",
+    "category": "Phase 3: Application",
+    "completed": false,
+    "countryId": "poland",
+    "description": "The voivode (wojewoda) of Mazowieckie (Warsaw) handles most diaspora cases and tends to be the fastest. Filing via a Polish consulate in the US is slower but doesn't require travel. Many applicants engage a Polish citizenship attorney with a Polish power of attorney and file at the voivode by mail."
+  },
+  {
+    "title": "Submit the application (wniosek o potwierdzenie posiadania obywatelstwa polskiego)",
+    "category": "Phase 3: Application",
+    "completed": false,
+    "countryId": "poland",
+    "description": "The application includes: completed form (in Polish), all original documents with apostilles and sworn translations, family tree diagram (drzewo genealogiczne), power of attorney if filing through a lawyer, and the filing fee (currently 58 PLN for the voivode, higher at consulates)."
+  },
+  {
+    "title": "Wait for the voivode's decision",
+    "category": "Phase 3: Application",
+    "completed": false,
+    "countryId": "poland",
+    "description": "Currently 6–18 months at Mazowieckie voivode; longer if archives need to be searched in Poland (this is common). The voivode may request additional evidence — respond within 7 days to avoid delay."
+  },
+  {
+    "title": "Receive the voivode's decision (decyzja)",
+    "category": "Phase 4: Arrival & Setup",
+    "completed": false,
+    "countryId": "poland",
+    "description": "A positive decision confirms you ARE a Polish citizen (and have been since birth, by operation of law). The decision is your foundational document for everything that follows. If negative, you can appeal to the Minister of Internal Affairs within 14 days."
+  },
+  {
+    "title": "Apply for a PESEL number (Polish national ID number)",
+    "category": "Phase 4: Arrival & Setup",
+    "completed": false,
+    "countryId": "poland",
+    "description": "Apply at any urząd gminy (commune office) in Poland or via the Polish consulate. The PESEL is required for most administrative actions in Poland, including passport issuance.",
+    "links": [
+      {
+        "label": "PESEL number application",
+        "url": "https://www.gov.pl/web/gov/uzyskaj-numer-pesel-dla-cudzoziemcow"
+      }
+    ]
+  },
+  {
+    "title": "Apply for a Polish passport (paszport)",
+    "category": "Phase 4: Arrival & Setup",
+    "completed": false,
+    "countryId": "poland",
+    "description": "Apply at the Polish consulate with jurisdiction over your US residence (or any passport office in Poland). Fee approximately 110 PLN abroad. The Polish passport is a full EU passport granting freedom of movement, residence, and work across the European Union.",
+    "links": [
+      {
+        "label": "Polish consulates in the US",
+        "url": "https://www.gov.pl/web/usa-en/contact"
+      }
+    ]
+  },
+  {
+    "title": "Understand your dual-citizen tax obligations",
+    "category": "Phase 5: Residency Follow-up",
+    "completed": false,
+    "countryId": "poland",
+    "description": "Poland taxes residents (the 183-day rule + center-of-vital-interests test). The US taxes citizens worldwide. The US-Poland tax treaty handles most overlap. Polish income tax is 12%/32% PIT or 19% flat for business; consult a cross-border CPA before relocating.",
+    "links": [
+      {
+        "label": "Citizenship resources in app",
+        "url": "gothere://resources"
+      }
+    ]
+  },
+  {
+    "title": "Register your children's births in Poland (if applicable)",
+    "category": "Phase 5: Residency Follow-up",
+    "completed": false,
+    "countryId": "poland",
+    "description": "Any child born to you after the voivode's decision is automatically Polish, but their birth must be transcribed (transkrypcja) into the Polish civil registry to be recognized for passport applications."
+  }
+]

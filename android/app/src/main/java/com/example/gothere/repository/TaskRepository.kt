@@ -396,17 +396,19 @@ class TaskRepository {
     /**
      * Import tasks for a specific country from the appropriate seed file.
      * Asset path expected:
-     * - spain: assets/tasks_seed.json (existing)
-     * - portugal: assets/portugal_tasks.json
-     * - mexico: assets/mexico_tasks.json
+     * - spain: assets/tasks_seed.json (legacy name for Spain)
+     * - everything else: assets/<countryId>_tasks.json
+     *
+     * Seeds for canada/ireland/italy/germany/poland/argentina/hungary/uk_ancestry
+     * are ported from the iOS Seeds/ directory — keep the JSON shape in sync.
      */
     suspend fun importCountrySeedFromAssets(context: Context, countryId: String): Result<Pair<Int, Int>> {
         val uid = auth.currentUser?.uid ?: return Result.failure(Exception("Not signed in"))
 
         val seedFileName = when (countryId) {
             "spain" -> "tasks_seed.json"
-            "portugal" -> "portugal_tasks.json"
-            "mexico" -> "mexico_tasks.json"
+            "portugal", "mexico", "canada", "ireland", "italy", "germany",
+            "poland", "argentina", "hungary", "uk_ancestry" -> "${countryId}_tasks.json"
             else -> return Result.failure(Exception("Unknown country: $countryId"))
         }
 

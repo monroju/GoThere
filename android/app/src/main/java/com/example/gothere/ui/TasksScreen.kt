@@ -149,6 +149,20 @@ fun TasksScreen(
         } catch (_: Throwable) {}
     }
 
+    // Per-country auto-seed: imports the country's task seed the first time the
+    // user opens that country's checklist (no-op after that). Mirrors iOS, which
+    // bundles all 11 country seeds in the app and seeds on selection.
+    LaunchedEffect(countryId) {
+        try {
+            if (!SeedImportStore.isCountryImported(context, countryId)) {
+                TaskRepository().importCountrySeedFromAssets(context, countryId)
+                    .onSuccess { (added, _) ->
+                        if (added > 0) SeedImportStore.markCountryImported(context, countryId)
+                    }
+            }
+        } catch (_: Throwable) {}
+    }
+
     val items by vm.filtered.collectAsState()
     val allItems by vm.allTasks.collectAsState()
 

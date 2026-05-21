@@ -1,0 +1,231 @@
+[
+  {
+    "title": "Confirm you have a Canadian-born or naturalized ancestor",
+    "category": "Phase 1: Research & Planning",
+    "completed": false,
+    "countryId": "canada",
+    "description": "Bill C-3 (effective 2025-12-15) removed the first-generation limit. If any direct ancestor was born in Canada or naturalized as a Canadian citizen, you may already be Canadian — no application required to BE a citizen, only to PROVE it.",
+    "links": [
+      {
+        "label": "Open Visa Wizard in app",
+        "url": "gothere://wizard"
+      },
+      {
+        "label": "IRCC: Bill C-3 changes (2025)",
+        "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-citizenship/act-changes/rules-2025.html"
+      }
+    ]
+  },
+  {
+    "title": "Identify the Canadian-born or naturalized ancestor in your tree",
+    "category": "Phase 1: Research & Planning",
+    "completed": false,
+    "countryId": "canada",
+    "description": "Most often a parent, grandparent, or great-grandparent who was born in any modern Canadian province or territory, or who naturalized as a Canadian citizen. Pre-1947 'British subject' status in Canada also counts under the historical framework.",
+    "links": [
+      {
+        "label": "Open Visa Wizard in app",
+        "url": "gothere://wizard"
+      }
+    ]
+  },
+  {
+    "title": "Map the documentary chain from you to the Canadian ancestor",
+    "category": "Phase 1: Research & Planning",
+    "completed": false,
+    "countryId": "canada",
+    "description": "Each generation needs: birth certificate, and where surnames change, marriage certificate. Note any gaps — those are your acquisition targets.",
+    "links": [
+      {
+        "label": "Open Visa Wizard in app",
+        "url": "gothere://wizard"
+      }
+    ]
+  },
+  {
+    "title": "Check if Substantial Connection test applies",
+    "category": "Phase 1: Research & Planning",
+    "completed": false,
+    "countryId": "canada",
+    "description": "If you were born ON OR AFTER 2025-12-15 to a Canadian parent who is themselves a citizen by descent (born outside Canada), that parent must have spent ≥1,095 cumulative days physically in Canada before your birth. If you were born BEFORE 2025-12-15, the test does not apply — you are Canadian retroactively.",
+    "links": [
+      {
+        "label": "Open Visa Wizard in app",
+        "url": "gothere://wizard"
+      }
+    ]
+  },
+  {
+    "title": "Request your own birth certificate (long-form)",
+    "category": "Phase 2: Documentation",
+    "completed": false,
+    "countryId": "canada",
+    "description": "Long-form (showing parents' names) is required, not the short-form / wallet-size version.",
+    "links": [
+      {
+        "label": "Open Documents in app",
+        "url": "gothere://documents"
+      }
+    ]
+  },
+  {
+    "title": "Request birth certificates for each ancestor in the chain",
+    "category": "Phase 2: Documentation",
+    "completed": false,
+    "countryId": "canada",
+    "description": "Order from each issuing jurisdiction — US state vital records office for US ancestors, provincial vital statistics for Canadian ancestors. Allow 4–12 weeks per certificate.",
+    "links": [
+      {
+        "label": "Open Documents in app",
+        "url": "gothere://documents"
+      }
+    ]
+  },
+  {
+    "title": "Search Library and Archives Canada for ancestor records",
+    "category": "Phase 2: Documentation",
+    "completed": false,
+    "countryId": "canada",
+    "description": "Census, military, and pre-1947 immigration/naturalization records. Free public access.",
+    "links": [
+      {
+        "label": "Open Documents in app",
+        "url": "gothere://documents"
+      },
+      {
+        "label": "Library and Archives Canada",
+        "url": "https://library-archives.canada.ca/"
+      },
+      {
+        "label": "LAC genealogy and family history",
+        "url": "https://library-archives.canada.ca/eng/collection/research-help/genealogy-family-history/Pages/genealogy-family-history.aspx"
+      }
+    ]
+  },
+  {
+    "title": "If your ancestor was Quebec-born, search BAnQ",
+    "category": "Phase 2: Documentation",
+    "completed": false,
+    "countryId": "canada",
+    "description": "Bibliothèque et Archives nationales du Québec — civil registry, parish records, Drouin Collection partner. Free digital access for most pre-1900 records.",
+    "links": [
+      {
+        "label": "BAnQ digital genealogy",
+        "url": "https://numerique.banq.qc.ca/patrimoine/recherche/genealogie"
+      }
+    ]
+  },
+  {
+    "title": "Order marriage certificates for each generation where surnames change",
+    "category": "Phase 2: Documentation",
+    "completed": false,
+    "countryId": "canada",
+    "links": [
+      {
+        "label": "Open Documents in app",
+        "url": "gothere://documents"
+      }
+    ]
+  },
+  {
+    "title": "If you need the Substantial Connection test, gather travel/residency proof",
+    "category": "Phase 2: Documentation",
+    "completed": false,
+    "countryId": "canada",
+    "description": "Passport stamps, immigration records, school records, employment records, tax records — anything that shows physical presence in Canada totaling ≥1,095 days for the relevant Canadian parent."
+  },
+  {
+    "title": "Complete IRCC Application for Proof of Canadian Citizenship",
+    "category": "Phase 3: Application",
+    "completed": false,
+    "countryId": "canada",
+    "description": "Form CIT 0001 (verify current form name on IRCC site at time of application). Submit online or by mail with all supporting documents.",
+    "links": [
+      {
+        "label": "Open Documents in app",
+        "url": "gothere://documents"
+      },
+      {
+        "label": "IRCC: Apply for proof of citizenship",
+        "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-citizenship/proof-citizenship.html"
+      }
+    ]
+  },
+  {
+    "title": "Pay the IRCC application fee",
+    "category": "Phase 3: Application",
+    "completed": false,
+    "countryId": "canada",
+    "description": "Confirm the current fee on the IRCC site at time of application — fees change. Currently CAD $75 for adults at last verification."
+  },
+  {
+    "title": "Wait for IRCC processing",
+    "category": "Phase 3: Application",
+    "completed": false,
+    "countryId": "canada",
+    "description": "Currently 6–12 months historically. Bill C-3 has created a substantial backlog so 2026 timelines may extend longer. Check the IRCC processing-times page periodically.",
+    "links": [
+      {
+        "label": "IRCC processing times",
+        "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/check-processing-times.html"
+      }
+    ]
+  },
+  {
+    "title": "Receive your Canadian Citizenship Certificate",
+    "category": "Phase 4: Arrival & Setup",
+    "completed": false,
+    "countryId": "canada",
+    "description": "This is your official proof of Canadian citizenship. Keep it in a safe place — it's the foundation for your passport application."
+  },
+  {
+    "title": "Apply for a Canadian passport using your citizenship certificate",
+    "category": "Phase 4: Arrival & Setup",
+    "completed": false,
+    "countryId": "canada",
+    "description": "Submit Form PPTC 040 (adult simplified passport application). Your citizenship certificate serves as the primary proof.",
+    "links": [
+      {
+        "label": "Open Documents in app",
+        "url": "gothere://documents"
+      },
+      {
+        "label": "Canadian passport applications",
+        "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports.html"
+      }
+    ]
+  },
+  {
+    "title": "Apply for a Social Insurance Number (SIN) if planning to work in Canada",
+    "category": "Phase 4: Arrival & Setup",
+    "completed": false,
+    "countryId": "canada",
+    "description": "Required to work or receive government benefits in Canada.",
+    "links": [
+      {
+        "label": "Service Canada — SIN",
+        "url": "https://www.canada.ca/en/employment-social-development/services/sin.html"
+      }
+    ]
+  },
+  {
+    "title": "Understand your tax obligations as a dual US/Canadian citizen",
+    "category": "Phase 5: Residency Follow-up",
+    "completed": false,
+    "countryId": "canada",
+    "description": "The US taxes citizens on worldwide income regardless of residence. Canada taxes residents. The US-Canada tax treaty handles most overlap. Consider a CPA familiar with cross-border tax.",
+    "links": [
+      {
+        "label": "Citizenship resources in app",
+        "url": "gothere://resources"
+      }
+    ]
+  },
+  {
+    "title": "If you have children born abroad, document your physical presence in Canada",
+    "category": "Phase 5: Residency Follow-up",
+    "completed": false,
+    "countryId": "canada",
+    "description": "If they are born after 2025-12-15 and you want them to inherit Canadian citizenship by descent, you'll need ≥1,095 days physical presence in Canada before their birth — start the paper trail now."
+  }
+]
