@@ -3,7 +3,17 @@
     "title": "Choose the appropriate visa type for your situation",
     "description": "Mexico offers Temporary Resident (1-4 years), Permanent Resident, and tourist visa (180 days). Research which fits your situation.",
     "category": "Phase 1: Research & Planning",
-    "countryId": "mexico"
+    "countryId": "mexico",
+    "links": [
+      {
+        "label": "Open Visa Wizard in app",
+        "url": "gothere://wizard"
+      },
+      {
+        "label": "Compare visas in app",
+        "url": "gothere://compare"
+      }
+    ]
   },
   {
     "title": "Confirm your consulate jurisdiction",
@@ -15,7 +25,13 @@
     "title": "Decide on a target city or region",
     "description": "Mexico City, Guadalajara, Mérida, Puerto Vallarta, Oaxaca are popular. Consider climate, cost, and lifestyle.",
     "category": "Phase 1: Research & Planning",
-    "countryId": "mexico"
+    "countryId": "mexico",
+    "links": [
+      {
+        "label": "Open Decision Tree in app",
+        "url": "gothere://decision"
+      }
+    ]
   },
   {
     "title": "Create a relocation budget",
@@ -51,7 +67,13 @@
     "title": "Complete visa application form",
     "description": "Download and fill out the application form from the Mexican consulate website.",
     "category": "Phase 2: Documentation",
-    "countryId": "mexico"
+    "countryId": "mexico",
+    "links": [
+      {
+        "label": "Open Documents in app",
+        "url": "gothere://documents"
+      }
+    ]
   },
   {
     "title": "Schedule visa appointment at consulate",
@@ -99,13 +121,25 @@
     "title": "Open Mexican bank account",
     "description": "Major banks: BBVA, Santander, Banorte, HSBC. Requires resident card, proof of address, and sometimes RFC.",
     "category": "Phase 5: Settlement",
-    "countryId": "mexico"
+    "countryId": "mexico",
+    "links": [
+      {
+        "label": "Banking resources in app",
+        "url": "gothere://resources"
+      }
+    ]
   },
   {
     "title": "Find long-term housing",
     "description": "Search on Inmuebles24, Segundamano, or Facebook groups. Consider furnished vs unfurnished.",
     "category": "Phase 5: Settlement",
-    "countryId": "mexico"
+    "countryId": "mexico",
+    "links": [
+      {
+        "label": "Housing resources in app",
+        "url": "gothere://resources"
+      }
+    ]
   },
   {
     "title": "Set up utilities",
@@ -123,7 +157,13 @@
     "title": "Research health insurance options",
     "description": "Options include IMSS (public), private insurance (GNP, AXA), or international plans. Consider Seguro Popular for basic coverage.",
     "category": "Phase 5: Settlement",
-    "countryId": "mexico"
+    "countryId": "mexico",
+    "links": [
+      {
+        "label": "Healthcare resources in app",
+        "url": "gothere://resources"
+      }
+    ]
   },
   {
     "title": "Register for IMSS if eligible",

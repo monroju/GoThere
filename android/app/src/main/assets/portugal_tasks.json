@@ -3,7 +3,17 @@
     "title": "Choose the appropriate visa type for your situation",
     "description": "Portugal offers D7 (passive income), D8 (digital nomad), Golden Visa, and other options. Research which fits your situation best.",
     "category": "Phase 1: Research & Planning",
-    "countryId": "portugal"
+    "countryId": "portugal",
+    "links": [
+      {
+        "label": "Open Visa Wizard in app",
+        "url": "gothere://wizard"
+      },
+      {
+        "label": "Compare visas in app",
+        "url": "gothere://compare"
+      }
+    ]
   },
   {
     "title": "Confirm your consulate jurisdiction",
@@ -15,7 +25,13 @@
     "title": "Decide on a target city or region",
     "description": "Lisbon, Porto, Algarve, and Madeira are popular choices. Consider cost of living, weather, and community.",
     "category": "Phase 1: Research & Planning",
-    "countryId": "portugal"
+    "countryId": "portugal",
+    "links": [
+      {
+        "label": "Open Decision Tree in app",
+        "url": "gothere://decision"
+      }
+    ]
   },
   {
     "title": "Create a relocation budget",
@@ -45,7 +61,13 @@
     "title": "Secure health insurance valid in Portugal",
     "description": "Travel insurance is needed for the visa application. You'll switch to Portuguese health insurance (SNS or private) after arrival.",
     "category": "Phase 2: Documentation",
-    "countryId": "portugal"
+    "countryId": "portugal",
+    "links": [
+      {
+        "label": "Healthcare resources in app",
+        "url": "gothere://resources"
+      }
+    ]
   },
   {
     "title": "Write a cover letter / statement of purpose",
@@ -87,7 +109,13 @@
     "title": "Open Portuguese bank account",
     "description": "Major banks include Millennium BCP, Novo Banco, Santander. You'll need NIF and proof of address.",
     "category": "Phase 4: Arrival",
-    "countryId": "portugal"
+    "countryId": "portugal",
+    "links": [
+      {
+        "label": "Banking resources in app",
+        "url": "gothere://resources"
+      }
+    ]
   },
   {
     "title": "Register with local health center",
@@ -99,7 +127,13 @@
     "title": "Find long-term housing",
     "description": "Search on Idealista, Imovirtual, or Facebook groups. Be prepared for competitive market in Lisbon/Porto.",
     "category": "Phase 5: Settlement",
-    "countryId": "portugal"
+    "countryId": "portugal",
+    "links": [
+      {
+        "label": "Housing resources in app",
+        "url": "gothere://resources"
+      }
+    ]
   },
   {
     "title": "Set up utilities",
