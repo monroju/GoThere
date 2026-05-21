@@ -37,14 +37,29 @@ object VisaCatalog {
             "5 years", "10y (2y Latin Am/Sephardic)", "€100 + employer-sponsored",
             listOf("Direct work rights", "Employer typically covers paperwork", "Counts toward PR/citizenship"),
             listOf("Labor market test required", "Tied to specific employer", "Limited transferability"),
-            "https://www.inclusion.gob.es/web/migraciones/w/empleo-y-trabajo", null),
+            "https://www.inclusion.gob.es/web/migraciones/w/empleo-y-trabajo", "es_work"),
         VisaInfo("es_student", "spain", "🇪🇸", "Spain", "Student Visa (D Type)", "Student",
             VisaCategory.Student,
             "~€600/mo proof of funds", "3-6 weeks", "Length of study programme", "20-30h/wk (50% full-time)",
             "No direct path — must switch", "10y from PR (counts half during studies)", "€100 + university fees",
             listOf("Easy initial entry", "Schengen-wide travel", "Can switch to work after 3yr study"),
             listOf("Time only counts half toward residency", "Must remain enrolled", "Limited work hours"),
-            "https://www.exteriores.gob.es/Consulados/sanfrancisco/en/InformacionParaExtranjeros/Paginas/Estudios.aspx", null)
+            "https://www.exteriores.gob.es/Consulados/sanfrancisco/en/InformacionParaExtranjeros/Paginas/Estudios.aspx", "es_student"),
+        VisaInfo("es_family_reunification", "spain", "🇪🇸", "Spain", "Family Reunification", "Family",
+            VisaCategory.Family,
+            "Sponsor must show 150% IPREM + 50% per extra member", "3-6 months (sponsor-initiated)",
+            "Matches sponsor's residency", "Yes once sponsor has 1yr+ residency",
+            "5 years", "10y (2y Latin Am/Sephardic)", "€60-€100 + apostille/translation costs",
+            listOf("No income requirement on applicant", "Path to PR + citizenship", "Includes minor children"),
+            listOf("Sponsor must initiate from Spain", "Housing adequacy report required", "Approval timeline tied to sponsor's province"),
+            "https://www.inclusion.gob.es/web/migraciones/w/reagrupacion-familiar", "es_family_reunification"),
+        VisaInfo("es_autonomo", "spain", "🇪🇸", "Spain", "Self-Employed (Autónomo)", "Autónomo",
+            VisaCategory.SelfEmployed,
+            "Business plan + ~€30k+ starting capital recommended", "2-4 months", "1yr → 4yr → permanent", "Yes, in your declared activity",
+            "5 years", "10y (2y Latin Am/Sephardic)", "€100 + lawyer/gestor ~€1,000",
+            listOf("Full work rights for your business", "No employer dependency", "Counts toward PR/citizenship"),
+            listOf("Viable business plan required (memoria de actividad)", "Quarterly tax filings from day one", "Social Security autónomo fee even when revenue is low"),
+            "https://www.inclusion.gob.es/web/migraciones/w/empleo-y-trabajo", "es_autonomo")
     )
 
     private val portugal = listOf(

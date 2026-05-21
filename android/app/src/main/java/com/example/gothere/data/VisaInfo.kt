@@ -4,6 +4,7 @@ enum class VisaCategory(val displayName: String) {
     PassiveIncome("Passive Income / Retiree"),
     DigitalNomad("Digital Nomad"),
     Work("Work / Skilled"),
+    SelfEmployed("Self-Employed"),
     Ancestry("Ancestry / Descent"),
     Investment("Investment"),
     Student("Student"),

@@ -60,8 +60,11 @@ val md_theme_light_surfaceTint        = md_theme_light_primary
 
 // ---------- Material 3 tokens (DARK) ----------
 
-val md_theme_dark_primary             = TealLight
-val md_theme_dark_onPrimary           = Color(0xFF003732)
+// Dark-mode primary matches the brand teal in the logo (#15B8A6) rather than
+// the pale TealLight variant. The user explicitly asked for accent parity with
+// the logo on dark backgrounds.
+val md_theme_dark_primary             = Teal
+val md_theme_dark_onPrimary           = White
 val md_theme_dark_primaryContainer    = TealDark
 val md_theme_dark_onPrimaryContainer  = White
 

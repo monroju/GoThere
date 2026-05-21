@@ -12,7 +12,11 @@ object SeedImportStore {
 
     private const val PREFS = "seed_import_store"
     private const val KEY_IMPORTED = "tasks_seed_imported_v1"
-    private const val KEY_DEDUPED = "tasks_deduped_v1"
+    // Bumped to v2 because the v1 dedupe used countryId|category|title which let
+    // dupes through when the category string drifted (e.g., "Phase 1" vs "Phase 1:
+    // Research & Planning"). v2 keys on countryId|title only.
+    private const val KEY_DEDUPED = "tasks_deduped_v2"
+    private const val KEY_LINKS_BACKFILLED = "tasks_links_backfilled_v1"
 
     fun isImported(context: Context): Boolean {
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -50,5 +54,21 @@ object SeedImportStore {
         if (countryId == "spain") { markImported(context); return }
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         prefs.edit().putBoolean("country_imported_$countryId", true).apply()
+    }
+
+    /**
+     * Tracks the one-shot backfill that copies the current seed's `links` arrays
+     * onto Firestore tasks whose titles match. Needed because the v1 importer only
+     * adds new tasks — it never updates existing ones — so seed-side link edits
+     * like the gothere:// deep-link audit don't reach users with pre-existing docs.
+     */
+    fun isLinksBackfilled(context: Context): Boolean {
+        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        return prefs.getBoolean(KEY_LINKS_BACKFILLED, false)
+    }
+
+    fun markLinksBackfilled(context: Context) {
+        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(KEY_LINKS_BACKFILLED, true).apply()
     }
 }

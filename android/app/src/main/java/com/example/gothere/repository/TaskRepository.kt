@@ -357,14 +357,16 @@ class TaskRepository {
         return try {
             val docs = colFor(uid).get().await().documents
 
+            // v2: key on countryId|title (case-folded) only. Category strings drift
+            // across seed revisions ("Phase 1" vs "Phase 1: Research & Planning") and
+            // would otherwise let true duplicates escape the grouping. Different
+            // tasks in different phases sharing the exact same title is vanishingly
+            // rare in our seeds, so this tradeoff is safe.
             fun effectiveKey(d: com.google.firebase.firestore.DocumentSnapshot): String? {
-                val seedKey = d.getString("seedKey")?.trim()
-                if (!seedKey.isNullOrBlank()) return seedKey
-                val title = d.getString("title")?.trim() ?: return null
+                val title = d.getString("title")?.trim()?.lowercase() ?: return null
                 if (title.isBlank()) return null
-                val category = d.getString("category")?.trim()?.ifBlank { "General" } ?: "General"
                 val country = d.getString("countryId")?.trim()?.ifBlank { "spain" } ?: "spain"
-                return "$country|$category|$title"
+                return "$country|$title"
             }
 
             val groups = docs.groupBy { effectiveKey(it) }
@@ -389,6 +391,94 @@ class TaskRepository {
             Result.success(removed)
         } catch (e: Exception) {
             Log.e("SeedImport", "dedupeSeedTasks FAILED", e)
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * One-shot backfill: walks every seed asset and copies its `links` array onto
+     * any Firestore task whose (countryId, title) matches. Needed because
+     * importSeedFromAssetsIfMissing only ADDS new tasks — it never updates an
+     * existing one — so when we enrich a seed (e.g., the gothere:// deep-link
+     * audit), users with already-imported docs never see the new links until they
+     * run this.
+     *
+     * Matching is by case-folded title within country; the doc's existing links
+     * are merged with the seed's (deduped by url, seed wins on duplicates).
+     */
+    suspend fun backfillSeedLinks(context: Context): Result<Int> {
+        val uid = auth.currentUser?.uid ?: return Result.failure(Exception("Not signed in"))
+
+        // Map (countryId, titleLower) -> seed links
+        val seedLinks = mutableMapOf<Pair<String, String>, List<Map<String, String>>>()
+
+        fun harvest(assetName: String, fallbackCountry: String) {
+            try {
+                val json = context.assets.open(assetName).bufferedReader().use { it.readText() }
+                val arr = JSONArray(json)
+                for (i in 0 until arr.length()) {
+                    val o = arr.optJSONObject(i) ?: continue
+                    val title = o.optString("title").trim()
+                    if (title.isBlank()) continue
+                    val country = o.optString("countryId").trim().ifBlank { fallbackCountry }
+                    val linksArr = o.optJSONArray("links") ?: continue
+                    val links = (0 until linksArr.length()).mapNotNull { j ->
+                        val lo = linksArr.optJSONObject(j) ?: return@mapNotNull null
+                        val label = lo.optString("label").trim()
+                        val url = lo.optString("url").trim()
+                        if (label.isBlank() || url.isBlank()) null else mapOf("label" to label, "url" to url)
+                    }
+                    if (links.isNotEmpty()) {
+                        seedLinks[country to title.lowercase()] = links
+                    }
+                }
+            } catch (_: Exception) { /* asset missing or malformed — skip */ }
+        }
+
+        return try {
+            val assetFiles = context.assets.list("") ?: emptyArray()
+            for (asset in assetFiles) {
+                when {
+                    asset == "tasks_seed.json" -> harvest(asset, "spain")
+                    asset.endsWith("_tasks.json") -> {
+                        val country = asset.removeSuffix("_tasks.json")
+                        harvest(asset, country)
+                    }
+                }
+            }
+
+            val docs = colFor(uid).get().await().documents
+            var updated = 0
+            val batch = db.batch()
+
+            for (d in docs) {
+                val title = d.getString("title")?.trim()?.lowercase() ?: continue
+                val country = d.getString("countryId")?.trim()?.ifBlank { "spain" } ?: "spain"
+                val seed = seedLinks[country to title] ?: continue
+
+                // Merge: existing links + seed links, deduped by url (seed wins on dupes).
+                val existingArr = d.get("links") as? List<*>
+                val existingLinks = existingArr?.mapNotNull { it as? Map<*, *> }?.mapNotNull { m ->
+                    val l = (m["label"] as? String)?.trim()
+                    val u = (m["url"] as? String)?.trim()
+                    if (l.isNullOrBlank() || u.isNullOrBlank()) null else mapOf("label" to l, "url" to u)
+                } ?: emptyList()
+
+                val seedUrls = seed.map { it["url"] }.toSet()
+                val merged = seed + existingLinks.filter { it["url"] !in seedUrls }
+
+                // Skip if already identical to avoid pointless writes.
+                if (merged == existingLinks) continue
+
+                batch.update(d.reference, "links", merged)
+                updated++
+            }
+
+            if (updated > 0) batch.commit().await()
+            Log.i("SeedImport", "backfillSeedLinks uid=$uid updated=$updated total=${docs.size} seedsCovered=${seedLinks.size}")
+            Result.success(updated)
+        } catch (e: Exception) {
+            Log.e("SeedImport", "backfillSeedLinks FAILED", e)
             Result.failure(e)
         }
     }

@@ -146,6 +146,14 @@ fun TasksScreen(
                     SeedImportStore.markDeduped(context)
                 }
             }
+            // Backfill `links` from current seeds onto pre-existing Firestore tasks.
+            // The v1 importer skipped existing matches outright, so users with old
+            // imported tasks didn't get the gothere:// deep-link audit. Runs once.
+            if (!SeedImportStore.isLinksBackfilled(context)) {
+                repo.backfillSeedLinks(context).onSuccess {
+                    SeedImportStore.markLinksBackfilled(context)
+                }
+            }
         } catch (_: Throwable) {}
     }
 
@@ -559,8 +567,10 @@ private fun TaskRow(
     onLinkClick: (String) -> Unit
 ) {
     val context = LocalContext.current
-    var isExpanded by remember { mutableStateOf(false) }
     val hasDetails = !task.description.isNullOrBlank() || !task.links.isNullOrEmpty() || !task.notes.isNullOrBlank()
+    // Default expanded when there's any sub-content (description, links, notes) so
+    // resource links aren't hidden behind a chevron tap. User can still collapse.
+    var isExpanded by remember(task.id) { mutableStateOf(hasDetails) }
 
     Card(modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))) {

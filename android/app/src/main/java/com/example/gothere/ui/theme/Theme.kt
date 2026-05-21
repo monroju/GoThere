@@ -77,7 +77,10 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun GoThereTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    // Brand palette wins on all devices. Material You dynamic color was overriding
+    // our defined dark scheme on Android 12+ — the accent ended up wallpaper-derived
+    // instead of the logo teal.
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
