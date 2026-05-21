@@ -1,6 +1,6 @@
 {
   "name": "gothere-functions",
-  "description": "GoThere IAP notification handlers — Apple ASC Server Notifications v2 + Google Play RTDN",
+  "description": "GoThere Firebase Functions — Apple/Google IAP notifications + Anthropic AI proxy",
   "private": true,
   "engines": {
     "node": "20"
@@ -8,7 +8,10 @@
   "main": "index.js",
   "scripts": {
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "deploy:ai": "firebase deploy --only functions:aiProxy",
+    "logs": "firebase functions:log",
+    "logs:ai": "firebase functions:log --only aiProxy",
+    "test": "node aiProxy.test.js"
   },
   "dependencies": {
     "firebase-admin": "^12.6.0",
