@@ -5,6 +5,8 @@
     "category": "Phase 1: Research & Planning",
     "completed": false,
     "links": [
+      { "label": "Open Visa Wizard in app", "url": "gothere://wizard" },
+      { "label": "Compare Spain visas in app", "url": "gothere://compare" },
       { "label": "Spain Consulates (US)", "url": "https://www.exteriores.gob.es/Consulados/" },
       { "label": "Long-stay visa overview", "url": "https://www.schengenvisainfo.com/long-stay-visas/" }
     ]
@@ -20,8 +22,13 @@
   },
   {
     "title": "Choose the appropriate visa type for your situation",
+    "description": "Use the in-app Visa Wizard for a guided recommendation, or compare visa types side-by-side.",
     "category": "Phase 1: Research & Planning",
-    "completed": false
+    "completed": false,
+    "links": [
+      { "label": "Open Visa Wizard in app", "url": "gothere://wizard" },
+      { "label": "Compare Spain visas in app", "url": "gothere://compare" }
+    ]
   },
   {
     "title": "Research cost of living in different Spanish cities/regions",
@@ -35,7 +42,10 @@
     "title": "Decide on a target city or region in Spain",
     "description": "Consider jobs/schools, healthcare access, climate, transit, and housing costs.",
     "category": "Phase 1: Research & Planning",
-    "completed": false
+    "completed": false,
+    "links": [
+      { "label": "Open Decision Tree in app", "url": "gothere://decision" }
+    ]
   },
   {
     "title": "Start learning Spanish (apps, courses, tutors)",
@@ -50,9 +60,11 @@
     "title": "Estimate monthly budget and proof-of-funds requirements",
     "description": "Calculate required savings/income for your chosen visa and your family size. Build a conservative buffer.",
     "category": "Phase 1: Research & Planning",
-    "completed": false
+    "completed": false,
+    "links": [
+      { "label": "Open Visa Wizard in app", "url": "gothere://wizard" }
+    ]
   },
-
   {
     "title": "Ensure passport is valid for at least 6 months beyond intended stay",
     "category": "Phase 2: Documentation & Visa Application",
@@ -87,7 +99,10 @@
   {
     "title": "Gather proof of financial means (bank statements, investments)",
     "category": "Phase 2: Documentation & Visa Application",
-    "completed": false
+    "completed": false,
+    "links": [
+      { "label": "Open Documents in app", "url": "gothere://documents" }
+    ]
   },
   {
     "title": "Secure Spanish-compliant health insurance",
@@ -95,6 +110,7 @@
     "category": "Phase 2: Documentation & Visa Application",
     "completed": false,
     "links": [
+      { "label": "Insurer resources in app", "url": "gothere://resources" },
       { "label": "Visa insurance overview", "url": "https://www.schengenvisainfo.com/visa-insurance/" }
     ]
   },
@@ -141,7 +157,6 @@
     "category": "Phase 2: Documentation & Visa Application",
     "completed": false
   },
-
   {
     "title": "Receive visa approval and collect passport with visa",
     "category": "Phase 3: Pre-Move Preparations",
@@ -166,6 +181,7 @@
     "category": "Phase 3: Pre-Move Preparations",
     "completed": false,
     "links": [
+      { "label": "Housing resources in app", "url": "gothere://resources" },
       { "label": "Idealista", "url": "https://www.idealista.com/en/" },
       { "label": "Fotocasa", "url": "https://www.fotocasa.es/en/" }
     ]
@@ -184,7 +200,10 @@
     "title": "Digitize and securely store important documents",
     "description": "Keep encrypted backups (passport, visa, apostilles, insurance, bank statements, birth certificates).",
     "category": "Phase 3: Pre-Move Preparations",
-    "completed": false
+    "completed": false,
+    "links": [
+      { "label": "Open Documents in app", "url": "gothere://documents" }
+    ]
   },
   {
     "title": "Sell, donate, or store belongings in the US",
@@ -214,7 +233,6 @@
     "category": "Phase 3: Pre-Move Preparations",
     "completed": false
   },
-
   {
     "title": "Arrive in Spain",
     "category": "Phase 4: Arrival & Settling In Spain",
@@ -222,9 +240,12 @@
   },
   {
     "title": "Register on the Padrón (Empadronamiento) at your local town hall",
-    "description": "You’ll often need the padrón certificate for TIE, school enrollment, and some utilities.",
+    "description": "You'll often need the padrón certificate for TIE, school enrollment, and some utilities.",
     "category": "Phase 4: Arrival & Settling In Spain",
-    "completed": false
+    "completed": false,
+    "links": [
+      { "label": "Real Journey: Padrón phase", "url": "gothere://resources" }
+    ]
   },
   {
     "title": "Obtain NIE (Número de Identificación de Extranjero) if not issued with visa",
@@ -232,6 +253,7 @@
     "category": "Phase 4: Arrival & Settling In Spain",
     "completed": false,
     "links": [
+      { "label": "Real Journey: TIE phase", "url": "gothere://resources" },
       { "label": "NIE info / EX-15", "url": "https://sede.policia.gob.es/portalCiudadano/extranjeria/ex15" }
     ]
   },
@@ -240,6 +262,7 @@
     "category": "Phase 4: Arrival & Settling In Spain",
     "completed": false,
     "links": [
+      { "label": "Real Journey: TIE phase", "url": "gothere://resources" },
       { "label": "Cita Previa Portal", "url": "https://sede.administracionespublicas.gob.es/icpplustie/" }
     ]
   },
@@ -267,7 +290,10 @@
   {
     "title": "Open/finalize Spanish bank account",
     "category": "Phase 4: Arrival & Settling In Spain",
-    "completed": false
+    "completed": false,
+    "links": [
+      { "label": "Banking resources in app", "url": "gothere://resources" }
+    ]
   },
   {
     "title": "Set up utilities (electricity, water, internet, gas)",
@@ -282,96 +308,88 @@
   {
     "title": "Register for public healthcare (if eligible) or confirm private coverage",
     "category": "Phase 4: Arrival & Settling In Spain",
-    "completed": false
+    "completed": false,
+    "links": [
+      { "label": "Healthcare resources in app", "url": "gothere://resources" }
+    ]
   },
   {
     "title": "Register with a local doctor (Centro de Salud)",
     "category": "Phase 4: Arrival & Settling In Spain",
     "completed": false
   },
-  [
-    {
-      "title": "Exchange US driver's license for Spanish one (if applicable, within 6 months)",
-      "category": "Phase 4: Arrival & Settling In Spain",
-      "completed": false,
-      "links": [
-        {
-          "label": "DGT License Exchange",
-          "url": "https://sede.dgt.gob.es/es/permisos-de-conducir/canje-de-permisos/"
-        }
-      ]
-    },
-    {
-      "title": "Phase 5: Long-Term Setup & Ongoing Compliance — Start",
-      "description": "Long-term admin tasks that keep life smooth: taxes, digital identity, renewals, school, and ongoing compliance.",
-      "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
-      "completed": false
-    },
-    {
-      "title": "Set up Cl@ve (digital identity) for online government services",
-      "description": "Cl@ve helps you use Spanish public administration portals for appointments, taxes, and paperwork.",
-      "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
-      "completed": false
-    },
-    {
-      "title": "Create a system for storing and renewing residency documents",
-      "description": "Track renewal deadlines for TIE, insurance policies, passport expiration, and required supporting documents.",
-      "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
-      "completed": false
-    },
-    {
-      "title": "Confirm your tax residency status and obligations (Spain + US)",
-      "description": "If you live in Spain long enough, you may become a Spanish tax resident. Understand timelines, reporting, and US filing overlap.",
-      "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
-      "completed": false
-    },
-    {
-      "title": "Choose a Spanish tax advisor (gestor) if your situation is complex",
-      "description": "Recommended if you have US income, investments, self-employment, or multiple countries involved.",
-      "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
-      "completed": false
-    },
-    {
-      "title": "Set up recurring bill payments (utilities, rent/mortgage, mobile, insurance)",
-      "description": "Use direct debit (domiciliación) where appropriate to avoid missed payments and admin friction.",
-      "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
-      "completed": false
-    },
-    {
-      "title": "Register children for school or childcare (if applicable)",
-      "description": "Confirm enrollment requirements, local zoning/catchment rules, and required documents.",
-      "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
-      "completed": false
-    },
-    {
-      "title": "Enroll with a dentist / pediatrician and set up routine care schedule",
-      "description": "Get established before you need urgent care. Keep insurance and referral rules handy.",
-      "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
-      "completed": false
-    },
-    {
-      "title": "If staying longer than 6 months, plan long-term driving requirements",
-      "description": "Confirm whether you must exchange, re-test, or obtain a Spanish license depending on your situation and bilateral agreements.",
-      "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
-      "completed": false
-    },
-    {
-      "title": "Set up local registrations and accounts (libraries, transit cards, local services)",
-      "description": "Small upgrades that dramatically improve daily life and reduce friction.",
-      "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
-      "completed": false
-    },
-    {
-      "title": "Review insurance coverage annually (health, renters/home, liability)",
-      "description": "As your residency and life changes, your insurance needs change too.",
-      "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
-      "completed": false
-    },
-    {
-      "title": "Phase 5: Long-Term Setup & Ongoing Compliance — Complete",
-      "description": "You’ve built the boring-but-powerful foundation: compliance, stability, and fewer surprises.",
-      "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
-      "completed": false
-    }
-  ]]
-
+  {
+    "title": "Exchange US driver's license for Spanish one (if applicable, within 6 months)",
+    "category": "Phase 4: Arrival & Settling In Spain",
+    "completed": false,
+    "links": [
+      { "label": "DGT License Exchange", "url": "https://sede.dgt.gob.es/es/permisos-de-conducir/canje-de-permisos/" }
+    ]
+  },
+  {
+    "title": "Set up Cl@ve (digital identity) for online government services",
+    "description": "Cl@ve helps you use Spanish public administration portals for appointments, taxes, and paperwork.",
+    "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
+    "completed": false
+  },
+  {
+    "title": "Create a system for storing and renewing residency documents",
+    "description": "Track renewal deadlines for TIE, insurance policies, passport expiration, and required supporting documents.",
+    "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
+    "completed": false,
+    "links": [
+      { "label": "Open Documents in app", "url": "gothere://documents" }
+    ]
+  },
+  {
+    "title": "Confirm your tax residency status and obligations (Spain + US)",
+    "description": "If you live in Spain long enough, you may become a Spanish tax resident. Understand timelines, reporting, and US filing overlap.",
+    "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
+    "completed": false,
+    "links": [
+      { "label": "Real Journey: Beckham Law", "url": "gothere://resources" }
+    ]
+  },
+  {
+    "title": "Choose a Spanish tax advisor (gestor) if your situation is complex",
+    "description": "Recommended if you have US income, investments, self-employment, or multiple countries involved.",
+    "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
+    "completed": false
+  },
+  {
+    "title": "Set up recurring bill payments (utilities, rent/mortgage, mobile, insurance)",
+    "description": "Use direct debit (domiciliación) where appropriate to avoid missed payments and admin friction.",
+    "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
+    "completed": false
+  },
+  {
+    "title": "Register children for school or childcare (if applicable)",
+    "description": "Confirm enrollment requirements, local zoning/catchment rules, and required documents.",
+    "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
+    "completed": false
+  },
+  {
+    "title": "Enroll with a dentist / pediatrician and set up routine care schedule",
+    "description": "Get established before you need urgent care. Keep insurance and referral rules handy.",
+    "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
+    "completed": false
+  },
+  {
+    "title": "If staying longer than 6 months, plan long-term driving requirements",
+    "description": "Confirm whether you must exchange, re-test, or obtain a Spanish license depending on your situation and bilateral agreements.",
+    "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
+    "completed": false
+  },
+  {
+    "title": "Set up local registrations and accounts (libraries, transit cards, local services)",
+    "description": "Small upgrades that dramatically improve daily life and reduce friction.",
+    "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
+    "completed": false
+  },
+  {
+    "title": "Review insurance coverage annually (health, renters/home, liability)",
+    "description": "As your residency and life changes, your insurance needs change too.",
+    "category": "Phase 5: Long-Term Setup & Ongoing Compliance",
+    "completed": false
+  }
+]

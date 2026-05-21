@@ -570,8 +570,8 @@ private fun AppNavHost(
         startDestination = Route.Tasks.route,
         modifier = modifier
     ) {
-        composable(Route.Tasks.route) { 
-            TasksScreen(countryId = selectedCountryId) 
+        composable(Route.Tasks.route) {
+            TasksScreen(countryId = selectedCountryId, navController = navController)
         }
         composable(Route.Calendar.route) { CalendarScreen() }
         composable(Route.Documents.route) { DocumentsScreen() }

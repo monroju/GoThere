@@ -29,8 +29,8 @@ android {
         applicationId = "com.gothere.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 26
-        versionName = "1.7.2"
+        versionCode = 27
+        versionName = "1.8.0"
         vectorDrawables.useSupportLibrary = true
     }
 

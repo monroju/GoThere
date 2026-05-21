@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -76,6 +77,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.example.gothere.Route
 import com.example.gothere.model.Task
 import com.example.gothere.repository.SeedImportStore
 import com.example.gothere.repository.TaskRepository
@@ -90,6 +93,7 @@ import java.util.Locale
 @Composable
 fun TasksScreen(
     countryId: String = "spain",
+    navController: NavHostController? = null,
     vm: TasksViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -125,15 +129,22 @@ fun TasksScreen(
         vm.setCountryFilter(countryId)
     }
 
-    // Auto-seed
+    // Auto-seed + one-shot dedupe
     LaunchedEffect(Unit) {
         try {
+            val repo = TaskRepository()
             if (!SeedImportStore.isImported(context)) {
-                val repo = TaskRepository()
                 repo.importSeedFromAssetsIfMissing(context)
                     .onSuccess { (added, _) ->
                         if (added > 0) SeedImportStore.markImported(context)
                     }
+            }
+            // Clean up the duplicate Spain tasks that early users accumulated when
+            // two parallel imports raced. Runs at most once per install.
+            if (!SeedImportStore.isDeduped(context)) {
+                repo.dedupeSeedTasks().onSuccess {
+                    SeedImportStore.markDeduped(context)
+                }
             }
         } catch (_: Throwable) {}
     }
@@ -513,6 +524,9 @@ fun TasksScreen(
                             onEditNotes = {
                                 notesText = task.notes ?: ""
                                 notesTask = task
+                            },
+                            onLinkClick = { url ->
+                                handleTaskLink(context, navController, countryId, url)
                             }
                         )
                     }
@@ -527,7 +541,8 @@ private fun TaskRow(
     task: Task,
     onToggle: () -> Unit,
     onSetDate: () -> Unit,
-    onEditNotes: () -> Unit
+    onEditNotes: () -> Unit,
+    onLinkClick: (String) -> Unit
 ) {
     val context = LocalContext.current
     var isExpanded by remember { mutableStateOf(false) }
@@ -591,12 +606,16 @@ private fun TaskRow(
                     task.links?.forEach { link ->
                         val url = link.url
                         if (!url.isNullOrBlank()) {
-                            Row(modifier = Modifier.clickable {
-                                context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)))
-                            }.padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically,
+                            val isInternal = url.startsWith("gothere://")
+                            Row(modifier = Modifier.clickable { onLinkClick(url) }
+                                .padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                Icon(Icons.Outlined.Link, contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
+                                Icon(
+                                    imageVector = if (isInternal) Icons.AutoMirrored.Outlined.ArrowForward else Icons.Outlined.Link,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(14.dp)
+                                )
                                 Text(link.label ?: url, style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.primary,
                                     maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -635,4 +654,38 @@ private fun PhaseHeader(title: String) {
             color = MaterialTheme.colorScheme.onPrimaryContainer,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
     }
+}
+
+/**
+ * Resolves task links. `gothere://<path>` URLs route through the nav controller for
+ * in-app deep links; anything else opens externally via ACTION_VIEW. Supported paths:
+ *   - gothere://wizard          → Visa Wizard for the current country
+ *   - gothere://compare         → Visa Compare for the current country
+ *   - gothere://resources       → Resources tab
+ *   - gothere://decision        → Decision Tree tab
+ *   - gothere://documents       → Documents tab
+ */
+private fun handleTaskLink(
+    context: Context,
+    navController: NavHostController?,
+    countryId: String,
+    url: String
+) {
+    if (url.startsWith("gothere://") && navController != null) {
+        // gothere://compare currently aliases to the Wizard since VisaCompareScreen is
+        // only wired as a sub-screen inside VisaWizardScreen, not on the top-level graph.
+        when (url.removePrefix("gothere://").substringBefore('?').trim('/').lowercase()) {
+            "wizard",
+            "compare"      -> navController.navigate(Route.VisaWizard.create(countryId))
+            "resources"    -> navController.navigate(Route.Resources.route)
+            "decision",
+            "decisiontree" -> navController.navigate(Route.DecisionTree.route)
+            "documents"    -> navController.navigate(Route.Documents.route)
+            "calendar"     -> navController.navigate(Route.Calendar.route)
+            "tasks"        -> navController.navigate(Route.Tasks.route)
+            else -> Log.w("TasksScreen", "Unknown gothere:// deep link: $url")
+        }
+        return
+    }
+    context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)))
 }

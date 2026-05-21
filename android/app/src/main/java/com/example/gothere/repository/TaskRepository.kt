@@ -343,6 +343,57 @@ class TaskRepository {
     }
 
     /**
+     * One-shot cleanup: removes duplicate task docs that share the same effective
+     * seedKey. A few users had two parallel seed imports run on the first sign-in
+     * (before the import-marker landed), and Firestore ended up with each Spain
+     * task duplicated. The seed-key dedupe in importSeedFromAssetsIfMissing prevents
+     * NEW duplicates but doesn't clean up existing ones.
+     *
+     * Keeps the doc with completed=true if any; otherwise the oldest createdAt.
+     */
+    suspend fun dedupeSeedTasks(): Result<Int> {
+        val uid = auth.currentUser?.uid ?: return Result.failure(Exception("Not signed in"))
+
+        return try {
+            val docs = colFor(uid).get().await().documents
+
+            fun effectiveKey(d: com.google.firebase.firestore.DocumentSnapshot): String? {
+                val seedKey = d.getString("seedKey")?.trim()
+                if (!seedKey.isNullOrBlank()) return seedKey
+                val title = d.getString("title")?.trim() ?: return null
+                if (title.isBlank()) return null
+                val category = d.getString("category")?.trim()?.ifBlank { "General" } ?: "General"
+                val country = d.getString("countryId")?.trim()?.ifBlank { "spain" } ?: "spain"
+                return "$country|$category|$title"
+            }
+
+            val groups = docs.groupBy { effectiveKey(it) }
+            var removed = 0
+            val batch = db.batch()
+
+            for ((key, group) in groups) {
+                if (key == null || group.size <= 1) continue
+                // Prefer to keep a completed doc (preserves user progress); else oldest.
+                val keep = group.firstOrNull { it.getBoolean("completed") == true }
+                    ?: group.minByOrNull { it.getLong("createdAt") ?: Long.MAX_VALUE }
+                    ?: group.first()
+                for (d in group) {
+                    if (d.id == keep.id) continue
+                    batch.delete(d.reference)
+                    removed++
+                }
+            }
+
+            if (removed > 0) batch.commit().await()
+            Log.i("SeedImport", "dedupeSeedTasks uid=$uid removed=$removed total=${docs.size}")
+            Result.success(removed)
+        } catch (e: Exception) {
+            Log.e("SeedImport", "dedupeSeedTasks FAILED", e)
+            Result.failure(e)
+        }
+    }
+
+    /**
      * Import tasks for a specific country from the appropriate seed file.
      * Asset path expected:
      * - spain: assets/tasks_seed.json (existing)
