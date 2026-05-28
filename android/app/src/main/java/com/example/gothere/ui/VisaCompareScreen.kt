@@ -43,11 +43,13 @@ fun VisaCompareScreen(
     var categoryFilter by remember { mutableStateOf<VisaCategory?>(null) }
     var selectedIds by remember { mutableStateOf<Set<String>>(emptySet()) }
     var showComparison by remember { mutableStateOf(false) }
+    var maxMonthlyIncomeUSD by remember { mutableFloatStateOf(INCOME_SLIDER_MAX) }
 
-    val filtered = remember(countryFilter, categoryFilter) {
+    val filtered = remember(countryFilter, categoryFilter, maxMonthlyIncomeUSD) {
         VisaCatalog.all.filter { v ->
             (countryFilter == null || v.countryId == countryFilter) &&
-            (categoryFilter == null || v.category == categoryFilter)
+            (categoryFilter == null || v.category == categoryFilter) &&
+            passesIncomeFilter(v, maxMonthlyIncomeUSD)
         }
     }
 
@@ -132,6 +134,11 @@ fun VisaCompareScreen(
                         VisaCategory.entries.map { it to it.displayName },
                     selected = categoryFilter,
                     onSelect = { categoryFilter = it }
+                )
+
+                IncomeFilter(
+                    value = maxMonthlyIncomeUSD,
+                    onChange = { maxMonthlyIncomeUSD = it }
                 )
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -509,6 +516,60 @@ private fun ActionButton(v: VisaInfo, onStartWizard: (String) -> Unit) {
             Icon(Icons.Outlined.OpenInNew, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
             Text("Open Official — ${v.shortName}")
+        }
+    }
+}
+
+// Income-tier filter — surfaces low/no-income visas (ancestry, work, points-based)
+// alongside passive-income visas under the slider value. Mirrors iOS implementation.
+private const val EUR_TO_USD = 1.08
+private const val INCOME_SLIDER_MIN = 500f
+private const val INCOME_SLIDER_MAX = 10000f
+
+private fun passesIncomeFilter(v: VisaInfo, maxUSD: Float): Boolean {
+    if (maxUSD >= INCOME_SLIDER_MAX) return true
+    val eur = v.monthlyIncomeEUR ?: return true
+    return eur * EUR_TO_USD <= maxUSD
+}
+
+@Composable
+private fun IncomeFilter(value: Float, onChange: (Float) -> Unit) {
+    val active = value < INCOME_SLIDER_MAX
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.06f),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(10.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    "Max monthly income required",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.weight(1f))
+                Text(
+                    if (active) "≤ \$${value.toInt()}/mo" else "Any",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            Slider(
+                value = value,
+                onValueChange = onChange,
+                valueRange = INCOME_SLIDER_MIN..INCOME_SLIDER_MAX,
+                steps = ((INCOME_SLIDER_MAX - INCOME_SLIDER_MIN) / 100).toInt() - 1
+            )
+            Text(
+                "Visas with no income test (ancestry, work, points-based) always show.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
