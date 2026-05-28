@@ -69,6 +69,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.gothere.auth.AuthRepository
 import com.example.gothere.billing.PurchaseManager
 import com.example.gothere.ui.CalendarScreen
+import com.example.gothere.ui.AncestryCheckerScreen
 import com.example.gothere.ui.DecisionTreeScreen
 import com.example.gothere.ui.DocumentsScreen
 import com.example.gothere.ui.OfflineBanner
@@ -126,6 +127,7 @@ sealed class Route(val route: String) {
     data object Documents : Route("documents")
     data object Resources : Route("resources")
     data object DecisionTree : Route("decision_tree")
+    data object Ancestry : Route("ancestry")
     data object VisaWizard : Route("visa_wizard/{countryId}") {
         fun create(countryId: String) = "visa_wizard/$countryId"
     }
@@ -192,6 +194,13 @@ class MainActivity : ComponentActivity() {
         // Create notification channel + schedule weekly digest
         com.example.gothere.util.NotificationHelper.createNotificationChannel(this)
         com.example.gothere.util.WeeklyDigestScheduler.schedule(this)
+
+        // Subscribe to US policy alerts FCM topic (no permission needed for topics;
+        // POST_NOTIFICATIONS will be requested separately via the notify-toggle UX).
+        com.example.gothere.notify.FcmTopicManager.subscribeToUSPolicyAlertsIfNeeded(this)
+
+        // 7-day sampler: unlock one paid country (Portugal) for the first week post-install.
+        com.example.gothere.billing.FirstWeekTrialService.bootstrap(this)
 
         setContent {
             var isDark by rememberSaveable { mutableStateOf(true) }
@@ -475,6 +484,19 @@ private fun MainAppContent(
                                 navController.navigate(Route.VisaWizard.create(selectedCountryId))
                             }
                         )
+                        DropdownMenuItem(
+                            text = { Text("Ancestry Citizenship") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.AccountTree,
+                                    contentDescription = null
+                                )
+                            },
+                            onClick = {
+                                showSettingsMenu = false
+                                navController.navigate(Route.Ancestry.route)
+                            }
+                        )
                         androidx.compose.material3.HorizontalDivider()
                         DropdownMenuItem(
                             text = { Text("Sign Out") },
@@ -581,6 +603,9 @@ private fun AppNavHost(
                 navController = navController,
                 countryId = selectedCountryId
             )
+        }
+        composable(Route.Ancestry.route) {
+            AncestryCheckerScreen(onBack = { navController.popBackStack() })
         }
         composable(Route.VisaWizard.route) { backStackEntry ->
             VisaWizardScreen(

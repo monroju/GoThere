@@ -29,8 +29,8 @@ android {
         applicationId = "com.gothere.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 27
-        versionName = "1.8.0"
+        versionCode = 28
+        versionName = "1.8.1"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -132,6 +132,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
+    implementation("com.google.firebase:firebase-messaging-ktx")
 
     // Google Play Billing — 7.x ships 16 KB-aligned native libs
     implementation("com.android.billingclient:billing-ktx:7.1.1")

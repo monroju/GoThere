@@ -70,7 +70,7 @@ sealed class SubscriptionStatus {
  * user has all-access through a subscription, the `all_countries` IAP, or both
  * region bundles, every paid country is automatically added to the set.
  */
-class PurchaseManager private constructor(context: Context) : PurchasesUpdatedListener {
+class PurchaseManager private constructor(private val appContext: Context) : PurchasesUpdatedListener {
 
     companion object {
         private const val TAG = "PurchaseManager"
@@ -131,7 +131,7 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
         }
     }
 
-    private val billingClient: BillingClient = BillingClient.newBuilder(context)
+    private val billingClient: BillingClient = BillingClient.newBuilder(appContext)
         .setListener(this)
         .enablePendingPurchases()
         .build()
@@ -427,6 +427,7 @@ class PurchaseManager private constructor(context: Context) : PurchasesUpdatedLi
      */
     fun isCountryUnlocked(countryId: String): Boolean {
         if (hasAllAccess()) return true
+        if (FirstWeekTrialService.unlocksCountry(appContext, countryId)) return true
         return _purchasedCountries.value.contains(countryId)
     }
 
