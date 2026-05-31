@@ -61,6 +61,25 @@ data class VisaInfo(
             if (countryId in usTotalization) flags += InclusivityFlag.VETERAN_BENEFITS
             return flags
         }
+
+    /** True when the track does NOT strictly require a university degree — the key
+     *  unlock for lower-income / no-degree users. Mirrors iOS `requiresNoDegree`. */
+    val requiresNoDegree: Boolean
+        get() = id !in DEGREE_REQUIRED_IDS
+
+    /** True when the track can be satisfied with independent income (freelance/gig,
+     *  self-employment, savings, passive) rather than employer sponsorship.
+     *  Mirrors iOS `acceptsIndependentIncome`. */
+    val acceptsIndependentIncome: Boolean
+        get() = category == VisaCategory.PassiveIncome ||
+                category == VisaCategory.SelfEmployed ||
+                category == VisaCategory.DigitalNomad ||
+                category == VisaCategory.Investment
+
+    companion object {
+        // Curated rather than stored per-entry so the 47-row catalog stays readable.
+        private val DEGREE_REQUIRED_IDS = setOf("it_dnv", "de_blue_card", "de_job_seeker")
+    }
 }
 
 /// Canonical inclusivity-flag values. Kept in sync with iOS `InclusivityFlag`

@@ -2,6 +2,7 @@ package com.example.gothere.ui
 
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -49,6 +50,52 @@ data class ResourceCategory(
     val resources: List<ResourceItem> = emptyList()
 )
 
+/** Tier-targeting tools hosted via state-swap inside ResourcesScreen. Mirror of the
+ *  iOS Resources CTA stack. */
+enum class ResourceTool {
+    StartHere, CostCalc, Family, RemoteWork, Healthcare, Timeline,
+    Investment, Concierge, PolicyWatch, RightsSafety, Ancestry, Compare
+}
+
+/** Reusable CTA row for a tier-targeting tool. */
+@Composable
+private fun ToolCta(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    highlight: Boolean = false,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(
+            containerColor = if (highlight) MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
+            else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Surface(shape = RoundedCornerShape(10.dp), color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(40.dp)) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                }
+            }
+            Column(Modifier.weight(1f)) {
+                Text(title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                Text(subtitle, style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2, overflow = TextOverflow.Ellipsis)
+            }
+            Icon(Icons.Outlined.ChevronRight, contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResourcesScreen(
@@ -61,6 +108,39 @@ fun ResourcesScreen(
     val isUnlocked = purchasedCountries.contains(countryId)
     var showPaywall by remember { mutableStateOf(false) }
     var presentedJourney by remember { mutableStateOf<RealJourney?>(null) }
+    // Tier-targeting tool hub — state-swap navigation (mirror of iOS Resources CTAs).
+    var activeTool by remember { mutableStateOf<ResourceTool?>(null) }
+
+    // Hardware-back dismisses the active tool back to the Resources list (iOS gets this
+    // free via NavigationLink).
+    BackHandler(enabled = activeTool != null) { activeTool = null }
+
+    when (activeTool) {
+        ResourceTool.StartHere -> {
+            StartHereScreen(
+                onDismiss = { activeTool = null },
+                onCostCalc = { activeTool = ResourceTool.CostCalc },
+                onFamily = { activeTool = ResourceTool.Family },
+                onRemote = { activeTool = ResourceTool.RemoteWork },
+                onAncestry = { activeTool = ResourceTool.Ancestry },
+                onInvestment = { activeTool = ResourceTool.Investment },
+                onRights = { activeTool = ResourceTool.RightsSafety },
+                onCompare = { activeTool = ResourceTool.Compare }
+            ); return
+        }
+        ResourceTool.CostCalc -> { MoveCostCalculatorScreen(initialCountryId = countryId, onDismiss = { activeTool = null }); return }
+        ResourceTool.Family -> { FamilyMoveScreen(initialCountryId = countryId, onDismiss = { activeTool = null }); return }
+        ResourceTool.RemoteWork -> { RemoteWorkScreen(onDismiss = { activeTool = null }); return }
+        ResourceTool.Healthcare -> { HealthcareCompareScreen(initialCountryId = countryId, onDismiss = { activeTool = null }); return }
+        ResourceTool.Timeline -> { RelocationTimelineScreen(onDismiss = { activeTool = null }); return }
+        ResourceTool.Investment -> { InvestmentMigrationScreen(onDismiss = { activeTool = null }, onOpenAncestry = { activeTool = ResourceTool.Ancestry }); return }
+        ResourceTool.Concierge -> { ConciergeScreen(onDismiss = { activeTool = null }); return }
+        ResourceTool.PolicyWatch -> { PolicyWatchScreen(onDismiss = { activeTool = null }); return }
+        ResourceTool.RightsSafety -> { RightsSafetyScreen(onDismiss = { activeTool = null }); return }
+        ResourceTool.Ancestry -> { AncestryCheckerScreen(onBack = { activeTool = null }); return }
+        ResourceTool.Compare -> { VisaCompareScreen(initialCountryId = countryId, onDismiss = { activeTool = null }, onStartWizard = { activeTool = null }); return }
+        null -> {}
+    }
 
     // Observe ViewModel state
     val documentsByFolder by vm.documentsByFolder.collectAsState()
@@ -121,6 +201,19 @@ fun ResourcesScreen(
     val webResourceCategories = remember(countryId) { getResourcesForCountry(countryId) }
     val realJourney = remember(countryId) { RealJourneys.forCountry(countryId).firstOrNull() }
 
+    // "For You" inclusivity state — hoisted to composable scope. `remember` cannot be
+    // called inside the LazyListScope builder lambda (not a @Composable context).
+    val forYouState = remember(countryId) {
+        com.example.gothere.repository.UserConsiderationsStore.load(context)
+    }
+    val forYouCats = remember(countryId, forYouState) {
+        InclusivityResources.categories(
+            considerations = forYouState.considerations,
+            isSingleParent = forYouState.isSingleParent,
+            countryId = countryId
+        )
+    }
+
     // Map Firebase folder names to display names
     val folderDisplayNames = mapOf(
         "Arrival" to "Arrival Guides",
@@ -160,6 +253,49 @@ fun ResourcesScreen(
                 }
             }
 
+            // Tier-targeting tool CTAs — all free, non-paywalled hooks. StartHere first.
+            item {
+                ToolCta(Icons.Outlined.Explore, "Where do I start?",
+                    "Answer one question — we'll point you to the right tool",
+                    highlight = true) { activeTool = ResourceTool.StartHere }
+            }
+            item {
+                ToolCta(Icons.Outlined.Paid, "Can I afford to move?",
+                    "Estimate your real cost to land in $countryName") { activeTool = ResourceTool.CostCalc }
+            }
+            item {
+                ToolCta(Icons.Outlined.FamilyRestroom, "Moving with kids",
+                    "Schooling, healthcare & visas for your children in $countryName") { activeTool = ResourceTool.Family }
+            }
+            item {
+                ToolCta(Icons.Outlined.Computer, "Bring your job abroad",
+                    "Employer-letter templates + the tax-residency traps to avoid") { activeTool = ResourceTool.RemoteWork }
+            }
+            item {
+                ToolCta(Icons.Outlined.LocalHospital, "Healthcare costs vs the US",
+                    "See $countryName premiums and public coverage next to US prices") { activeTool = ResourceTool.Healthcare }
+            }
+            item {
+                ToolCta(Icons.Outlined.CalendarMonth, "Build my move timeline",
+                    "\"Gone in N months\" → a personalized month-by-month plan") { activeTool = ResourceTool.Timeline }
+            }
+            item {
+                ToolCta(Icons.Outlined.TrendingUp, "Golden visas & second passports",
+                    "Residency & citizenship by investment — incl. Caribbean CBI") { activeTool = ResourceTool.Investment }
+            }
+            item {
+                ToolCta(Icons.Outlined.Favorite, "Rights & Safety",
+                    "Compare destinations on LGBTQ+, disability, reproductive & senior protections") { activeTool = ResourceTool.RightsSafety }
+            }
+            item {
+                ToolCta(Icons.Outlined.Notifications, "Policy Watch",
+                    "US policy changes that affect your move — with alerts") { activeTool = ResourceTool.PolicyWatch }
+            }
+            item {
+                ToolCta(Icons.Outlined.Star, "GoThere Concierge (soon)",
+                    "White-glove relocation: vetted lawyers, done-with-you prep") { activeTool = ResourceTool.Concierge }
+            }
+
             // Error message
             error?.let { errorMsg ->
                 item {
@@ -197,6 +333,42 @@ fun ResourcesScreen(
                         isProUnlocked = purchaseManager.hasAllAccess(),
                         onClick = { presentedJourney = realJourney }
                     )
+                }
+            }
+
+            // "For You" — inclusivity-aware resources driven by the wizard's
+            // PersonalConsiderations + Household. Renders only when at least one
+            // persona was selected (or Single Parent household).
+            if (isUnlocked) {
+                if (forYouCats.isNotEmpty() || forYouState.considerations.isNotEmpty() || forYouState.isSingleParent) {
+                    item {
+                        InclusionNotesCard(
+                            countryId = countryId,
+                            considerations = forYouState.considerations,
+                            isSingleParent = forYouState.isSingleParent,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+                    if (forYouCats.isNotEmpty()) {
+                        item {
+                            Text(
+                                text = "For You",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                            )
+                        }
+                        items(forYouCats) { category ->
+                            ResourceCategoryCard(
+                                category = category,
+                                onResourceClick = { resource ->
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(resource.url))
+                                    context.startActivity(intent)
+                                }
+                            )
+                        }
+                    }
                 }
             }
 

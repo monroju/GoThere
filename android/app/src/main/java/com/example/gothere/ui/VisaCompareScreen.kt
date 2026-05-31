@@ -33,6 +33,14 @@ import com.example.gothere.data.VisaInfo
 
 private const val MAX_SELECTION = 3
 
+/** Ordering for the visa list. LOWEST_INCOME is the lower-class "what can I afford"
+ *  win — floats the cheapest income-bar tracks to the top. No-income-test visas
+ *  (ancestry/work/points-based) sink to the bottom of that sort. Mirrors iOS. */
+enum class SortMode(val label: String) {
+    DEFAULT("Default"),
+    LOWEST_INCOME("Lowest income")
+}
+
 @Composable
 fun VisaCompareScreen(
     initialCountryId: String? = null,
@@ -44,12 +52,24 @@ fun VisaCompareScreen(
     var selectedIds by remember { mutableStateOf<Set<String>>(emptySet()) }
     var showComparison by remember { mutableStateOf(false) }
     var maxMonthlyIncomeUSD by remember { mutableFloatStateOf(INCOME_SLIDER_MAX) }
+    var sortMode by remember { mutableStateOf(SortMode.DEFAULT) }
+    var noDegreeOnly by remember { mutableStateOf(false) }
+    var independentIncomeOnly by remember { mutableStateOf(false) }
 
-    val filtered = remember(countryFilter, categoryFilter, maxMonthlyIncomeUSD) {
-        VisaCatalog.all.filter { v ->
+    val filtered = remember(countryFilter, categoryFilter, maxMonthlyIncomeUSD, sortMode, noDegreeOnly, independentIncomeOnly) {
+        val list = VisaCatalog.all.filter { v ->
             (countryFilter == null || v.countryId == countryFilter) &&
             (categoryFilter == null || v.category == categoryFilter) &&
-            passesIncomeFilter(v, maxMonthlyIncomeUSD)
+            passesIncomeFilter(v, maxMonthlyIncomeUSD) &&
+            (!noDegreeOnly || v.requiresNoDegree) &&
+            (!independentIncomeOnly || v.acceptsIndependentIncome)
+        }
+        when (sortMode) {
+            SortMode.DEFAULT -> list
+            // Cheapest income bar first; no-income-test visas (null) sort last.
+            SortMode.LOWEST_INCOME -> list.sortedWith(
+                compareBy({ it.monthlyIncomeEUR ?: Int.MAX_VALUE }, { it.countryName })
+            )
         }
     }
 
@@ -140,6 +160,30 @@ fun VisaCompareScreen(
                     value = maxMonthlyIncomeUSD,
                     onChange = { maxMonthlyIncomeUSD = it }
                 )
+
+                // Lower-income unlock filters: no-degree + independent-income paths.
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FilterChip(
+                        selected = noDegreeOnly,
+                        onClick = { noDegreeOnly = !noDegreeOnly },
+                        label = { Text("No degree needed", fontSize = 12.sp) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    )
+                    FilterChip(
+                        selected = independentIncomeOnly,
+                        onClick = { independentIncomeOnly = !independentIncomeOnly },
+                        label = { Text("Freelance / self income OK", fontSize = 12.sp) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    )
+                }
+
+                SortControl(selected = sortMode, onSelect = { sortMode = it })
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
@@ -388,6 +432,18 @@ private fun ComparisonTable(
             ProsConsCard(v)
         }
 
+        // Tax-optimization overlay — surfaces preferential regimes for visas carrying
+        // them (mirror of iOS). Ends in an advisor handoff.
+        val taxableVisas = visas.filter { com.example.gothere.data.TaxRegimes.forVisa(it.id).isNotEmpty() }
+        if (taxableVisas.isNotEmpty()) {
+            taxableVisas.forEach { v -> TaxRegimeCard(v) }
+            Text(
+                "Preferential tax regimes are time-sensitive and conditional — election windows are short. Confirm eligibility with a cross-border tax advisor before relying on a rate.",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
         // Action buttons
         visas.forEach { v ->
             ActionButton(v, onStartWizard)
@@ -486,6 +542,48 @@ private fun ProsConsCard(v: VisaInfo) {
 }
 
 @Composable
+private fun TaxRegimeCard(v: VisaInfo) {
+    val regimes = com.example.gothere.data.TaxRegimes.forVisa(v.id)
+    Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.06f),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text(
+                "${v.countryFlag} ${v.shortName} — tax regimes",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            regimes.forEach { r ->
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(r.name, style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                        r.flatRatePercent?.let { rate ->
+                            Surface(color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(6.dp)) {
+                                Text("${(rate * 100).toInt()}% flat",
+                                    style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp))
+                            }
+                        }
+                    }
+                    r.eligibilityCriteria.forEach { c ->
+                        Text("• $c", style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    r.applicationWindow?.let { w ->
+                        Text("⏱ $w", style = MaterialTheme.typography.labelSmall, color = Color(0xFFE65100))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun ActionButton(v: VisaInfo, onStartWizard: (String) -> Unit) {
     val context = LocalContext.current
     val trackId = v.wizardTrackId
@@ -530,6 +628,32 @@ private fun passesIncomeFilter(v: VisaInfo, maxUSD: Float): Boolean {
     if (maxUSD >= INCOME_SLIDER_MAX) return true
     val eur = v.monthlyIncomeEUR ?: return true
     return eur * EUR_TO_USD <= maxUSD
+}
+
+@Composable
+private fun SortControl(selected: SortMode, onSelect: (SortMode) -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            "Sort",
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        SortMode.entries.forEach { mode ->
+            FilterChip(
+                selected = mode == selected,
+                onClick = { onSelect(mode) },
+                label = { Text(mode.label, fontSize = 12.sp) },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        }
+    }
 }
 
 @Composable

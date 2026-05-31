@@ -19,7 +19,7 @@ data class UserProfile(
 )
 
 enum class Household { Singles, Couple, FamilyKids, SingleParent, Retiree }
-enum class PersonalConsideration { LGBTQ, Disabled, Veteran, Pregnant }
+enum class PersonalConsideration { LGBTQ, Disabled, Veteran, Pregnant, Neurodivergent, Senior }
 enum class Budget { Low, Medium, High }
 enum class ClimatePref { WarmCoastal, Temperate, Mountain, Continental }
 enum class Language { None, Basic, Intermediate }

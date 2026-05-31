@@ -95,6 +95,27 @@ object DecisionEngine {
                         }
                         if (d.type == "Big City") { score += 3; reasons += "Top-tier hospitals" }
                     }
+                    PersonalConsideration.Neurodivergent -> {
+                        when (countryId) {
+                            "germany", "canada", "ireland", "uk_ancestry" -> { score += 9; reasons += "Adult ND assessment via public system" }
+                            "spain", "portugal", "italy" -> { score += 6; reasons += "Growing ND support networks" }
+                            "poland", "hungary", "argentina", "mexico" -> { score += 3 }
+                        }
+                        if ("walkable" in d.tags) { score += 4; reasons += "Walkable — lower sensory load" }
+                        if (d.expatDensity >= 4) { score += 3; reasons += "English-speaking ND community" }
+                        if (d.type == "Big City" && "walkable" !in d.tags) score -= 2
+                    }
+                    PersonalConsideration.Senior -> {
+                        when (countryId) {
+                            "portugal", "spain", "italy" -> { score += 10; reasons += "Top retiree healthcare & climate" }
+                            "ireland", "germany", "canada", "uk_ancestry" -> { score += 8; reasons += "Strong public healthcare" }
+                            "mexico", "argentina" -> { score += 6; reasons += "Lower cost of senior living" }
+                            "poland", "hungary" -> { score += 4 }
+                        }
+                        if ("retiree_friendly" in d.tags) score += 5
+                        if ("walkable" in d.tags) score += 3
+                        if ("warm_coastal" in d.tags || d.climate == "warm_coastal") score += 3
+                    }
                 }
             }
 

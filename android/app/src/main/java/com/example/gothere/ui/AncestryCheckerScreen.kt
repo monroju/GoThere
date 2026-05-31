@@ -81,6 +81,19 @@ private fun Header() {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        // Upper-tier "second passport / Plan B" framing — the same route a CBI buyer
+        // pays $200k+ for, available for the cost of document research if you qualify.
+        Surface(
+            shape = RoundedCornerShape(10.dp),
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                "A second passport for the cost of paperwork. What investors pay \$200k+ for via citizenship-by-investment, you may inherit — full EU mobility, a tax-residency option, and a real Plan B.",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(12.dp)
+            )
+        }
     }
 }
 
