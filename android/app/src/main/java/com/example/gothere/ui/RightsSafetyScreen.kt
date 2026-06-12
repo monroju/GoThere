@@ -24,6 +24,7 @@ import com.example.gothere.repository.UserConsiderationsStore
 
 private fun PersonalConsideration.label(): String = when (this) {
     PersonalConsideration.LGBTQ -> "LGBTQ+"
+    PersonalConsideration.Trans -> "Transgender"
     PersonalConsideration.Disabled -> "Disabled / Accessibility"
     PersonalConsideration.Veteran -> "Veteran"
     PersonalConsideration.Pregnant -> "Pregnant / Expecting"
@@ -32,13 +33,14 @@ private fun PersonalConsideration.label(): String = when (this) {
 }
 
 private val DISPLAY_ORDER = listOf(
-    PersonalConsideration.LGBTQ, PersonalConsideration.Disabled, PersonalConsideration.Veteran,
-    PersonalConsideration.Pregnant, PersonalConsideration.Neurodivergent, PersonalConsideration.Senior
+    PersonalConsideration.LGBTQ, PersonalConsideration.Trans, PersonalConsideration.Disabled,
+    PersonalConsideration.Veteran, PersonalConsideration.Pregnant,
+    PersonalConsideration.Neurodivergent, PersonalConsideration.Senior
 )
 
 /** Rights & Safety comparison. Mirror of iOS RightsSafetyView. */
 @Composable
-fun RightsSafetyScreen(onDismiss: () -> Unit) {
+fun RightsSafetyScreen(onDismiss: () -> Unit, onOpenCare: (() -> Unit)? = null) {
     val context = LocalContext.current
     val initial = remember {
         val stored = UserConsiderationsStore.load(context).considerations
@@ -120,6 +122,23 @@ fun RightsSafetyScreen(onDismiss: () -> Unit) {
                                 }
                             }
                         }
+                    }
+                }
+            }
+            onOpenCare?.let { open ->
+                Card(
+                    onClick = open,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    )
+                ) {
+                    Column(Modifier.padding(14.dp)) {
+                        Text("Your meds & care abroad", style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold)
+                        Text("ADHD meds, HRT, insulin — what's available and what you can carry in",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }

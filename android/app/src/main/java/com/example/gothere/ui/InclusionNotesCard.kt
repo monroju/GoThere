@@ -89,6 +89,7 @@ fun InclusionNotesCard(
 
 private fun personaLabel(c: PersonalConsideration): String = when (c) {
     PersonalConsideration.LGBTQ          -> "LGBTQ+"
+    PersonalConsideration.Trans          -> "Transgender"
     PersonalConsideration.Disabled       -> "Disabled / Accessibility"
     PersonalConsideration.Veteran        -> "Veteran"
     PersonalConsideration.Pregnant       -> "Pregnant / Expecting"

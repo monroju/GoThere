@@ -1,5 +1,5 @@
 {
-  "wizardVersion": 1,
+  "wizardVersion": 2,
   "tracks": {
     "es_non_lucrative": {
       "displayName": "Spain - Non-Lucrative Visa",
@@ -4145,6 +4145,186 @@
           "conditions": {},
           "estimatedWeeks": 0,
           "order": 18
+        }
+      ]
+    },
+    "ca_descent": {
+      "displayName": "Canada - Citizenship by Descent (Bill C-3)",
+      "countryId": "canada",
+      "shortName": "Descent",
+      "eligibilityRule": {
+        "summary": "Bill C-3 (in force 15 December 2025) eliminated the first-generation limit and restored citizenship to many 'Lost Canadians'. Future descent past the first generation now requires a 1,095-day 'substantial connection' to Canada.",
+        "generationCutoff": null,
+        "maternalLineCutoff": false,
+        "criteria": [
+          "You were born outside Canada to a Canadian-citizen parent (regardless of where the parent was born) before 15 December 2025",
+          "OR you lost citizenship under the pre-2009 first-generation-limit rules and Bill C-3 restored it",
+          "Future generations born abroad after 15 December 2025 need the Canadian parent to have accumulated 1,095 days physical presence in Canada"
+        ],
+        "inFlux": true,
+        "inFluxNote": "Bill C-3 came into force 15 December 2025; IRCC application processes and the 1,095-day substantial-connection test are still settling. IRCC currently quotes 9-12 months for proof-of-citizenship applications and backlogs are growing. Verify the latest IRCC guidance before paying any fees."
+      },
+      "steps": [
+        {
+          "id": "heritage",
+          "title": "Your Canadian Heritage",
+          "subtitle": "Bill C-3 widened citizenship by descent for births before 15 December 2025. These questions confirm the route that applies to you.",
+          "questions": [
+            {
+              "id": "canadian_parent",
+              "type": "boolean",
+              "label": "Was at least one of your parents a Canadian citizen at the time of your birth?",
+              "required": true,
+              "hint": "Includes parents who themselves were born abroad — Bill C-3 removed the first-generation limit for births before 15 December 2025."
+            },
+            {
+              "id": "born_before_c3_cutoff",
+              "type": "boolean",
+              "label": "Were you born before 15 December 2025?",
+              "required": true,
+              "hint": "Post-cutoff births require the Canadian parent to have accumulated 1,095 days of physical presence in Canada."
+            },
+            {
+              "id": "lost_canadian",
+              "type": "boolean",
+              "label": "Did you previously try to claim Canadian citizenship and get denied under the first-generation-limit rule?",
+              "required": false,
+              "hint": "Bill C-3 specifically restored citizenship to many people in this category."
+            }
+          ]
+        },
+        {
+          "id": "documents",
+          "title": "Documents You Already Have",
+          "subtitle": "Anything you already hold drops a task — you can update this list later.",
+          "questions": [
+            {
+              "id": "has_own_birth_cert",
+              "type": "boolean",
+              "label": "Your own long-form birth certificate (showing parents' names)?",
+              "required": true
+            },
+            {
+              "id": "has_parent_canadian_proof",
+              "type": "boolean",
+              "label": "Your Canadian-citizen parent's birth certificate or citizenship certificate?",
+              "required": true
+            },
+            {
+              "id": "has_parents_marriage_cert",
+              "type": "boolean",
+              "label": "Your parents' marriage certificate (if applicable)?",
+              "required": true
+            }
+          ]
+        }
+      ],
+      "taskRules": [
+        {
+          "taskTitle": "Confirm your route under Bill C-3",
+          "phase": "Phase 1: Research & Planning",
+          "description": "Bill C-3 came into force 15 December 2025 and eliminated the first-generation limit on citizenship by descent. Confirm whether you qualify automatically as a citizen (born before the cutoff to a Canadian parent) or whether the substantial-connection rule applies.",
+          "links": [
+            {
+              "label": "IRCC: Bill C-3 in effect",
+              "url": "https://www.canada.ca/en/immigration-refugees-citizenship/news/2025/12/bill-c-3-an-act-to-amend-the-citizenship-act-2025-comes-into-effect.html"
+            }
+          ],
+          "conditions": {},
+          "estimatedWeeks": 40,
+          "order": 1
+        },
+        {
+          "taskTitle": "Gather your own long-form birth certificate",
+          "phase": "Phase 2: Documentation",
+          "description": "Long-form birth certificate showing both parents' names. Short-form or wallet-size versions are not accepted.",
+          "conditions": {
+            "has_own_birth_cert": false
+          },
+          "estimatedWeeks": 36,
+          "order": 2,
+          "documentSlot": {
+            "key": "ca_own_birth_cert",
+            "label": "Your long-form birth certificate",
+            "description": "Long-form, showing both parents' names",
+            "whereToObtain": "Issuing jurisdiction's vital records office (state or country of birth).",
+            "validityPeriod": null,
+            "apostilleRequired": false,
+            "swornTranslationRequired": false
+          }
+        },
+        {
+          "taskTitle": "Gather the Canadian parent's proof of citizenship",
+          "phase": "Phase 2: Documentation",
+          "description": "Either the Canadian parent's Canadian birth certificate or their citizenship certificate. If neither is available, request a citizenship search from IRCC.",
+          "conditions": {
+            "has_parent_canadian_proof": false
+          },
+          "estimatedWeeks": 32,
+          "order": 3,
+          "documentSlot": {
+            "key": "ca_parent_canadian_proof",
+            "label": "Parent's Canadian citizenship proof",
+            "description": "Canadian birth certificate or citizenship certificate",
+            "whereToObtain": "Provincial vital records (for birth certificates) or IRCC (for citizenship certificates).",
+            "validityPeriod": null,
+            "apostilleRequired": false,
+            "swornTranslationRequired": false
+          }
+        },
+        {
+          "taskTitle": "Gather your parents' marriage certificate if relevant",
+          "phase": "Phase 2: Documentation",
+          "description": "Required when surname or filiation needs to link parent to child. Order from the issuing jurisdiction.",
+          "conditions": {
+            "has_parents_marriage_cert": false
+          },
+          "estimatedWeeks": 30,
+          "order": 4
+        },
+        {
+          "taskTitle": "Submit a proof-of-citizenship application to IRCC",
+          "phase": "Phase 3: Application",
+          "description": "Form CIT 0001 (Application for a Citizenship Certificate). IRCC currently quotes 9-12 months for proof-of-citizenship applications, with Q1 2026 filings tracking closer to the upper end as Bill C-3 volume grows.",
+          "links": [
+            {
+              "label": "Apply for proof of Canadian citizenship",
+              "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-citizenship/proof-citizenship.html"
+            }
+          ],
+          "conditions": {},
+          "estimatedWeeks": 24,
+          "order": 5
+        },
+        {
+          "taskTitle": "Track your IRCC application and respond to requests for information",
+          "phase": "Phase 3: Application",
+          "description": "Use IRCC's online tracker. RFIs (requests for information) typically have a 30-day deadline — set a calendar reminder so you don't miss it.",
+          "conditions": {},
+          "estimatedWeeks": 12,
+          "order": 6
+        },
+        {
+          "taskTitle": "Apply for your Canadian passport once you hold the certificate",
+          "phase": "Phase 4: Arrival & Setup",
+          "description": "Once IRCC issues your citizenship certificate you can apply for a Canadian passport. You are a full Canadian citizen with the right to live, work, and study in Canada immediately.",
+          "links": [
+            {
+              "label": "Canadian passport applications",
+              "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports.html"
+            }
+          ],
+          "conditions": {},
+          "estimatedWeeks": 0,
+          "order": 7
+        },
+        {
+          "taskTitle": "Understand the 1,095-day substantial-connection rule for your children",
+          "phase": "Phase 5: Residency Follow-up",
+          "description": "Bill C-3 introduced a substantial-connection test for descent past the first generation born after 15 December 2025: the Canadian parent must accumulate 1,095 days of physical presence in Canada before passing citizenship to a child born abroad.",
+          "conditions": {},
+          "estimatedWeeks": 0,
+          "order": 8
         }
       ]
     },

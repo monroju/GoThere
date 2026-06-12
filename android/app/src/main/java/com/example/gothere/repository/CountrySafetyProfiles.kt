@@ -13,6 +13,7 @@ import org.json.JSONObject
  */
 data class CountrySafetyProfile(
     val lgbtq: String?,
+    val trans: String?,
     val disabled: String?,
     val singleParent: String?,
     val veteran: String?,
@@ -22,6 +23,7 @@ data class CountrySafetyProfile(
 ) {
     fun note(consideration: PersonalConsideration): String? = when (consideration) {
         PersonalConsideration.LGBTQ          -> lgbtq
+        PersonalConsideration.Trans          -> trans
         PersonalConsideration.Disabled       -> disabled
         PersonalConsideration.Veteran        -> veteran
         PersonalConsideration.Pregnant       -> pregnant
@@ -48,6 +50,7 @@ object CountrySafetyProfiles {
             val obj = countries.getJSONObject(id)
             parsed[id] = CountrySafetyProfile(
                 lgbtq          = obj.optString("lgbtq").ifBlank { null },
+                trans          = obj.optString("trans").ifBlank { null },
                 disabled       = obj.optString("disabled").ifBlank { null },
                 singleParent   = obj.optString("single_parent").ifBlank { null },
                 veteran        = obj.optString("veteran").ifBlank { null },
@@ -74,9 +77,10 @@ object CountrySafetyProfiles {
     ): List<Pair<PersonalConsideration, String>> {
         val profile = profile(context, countryId) ?: return emptyList()
         val order = listOf(
-            PersonalConsideration.LGBTQ, PersonalConsideration.Disabled,
-            PersonalConsideration.Veteran, PersonalConsideration.Pregnant,
-            PersonalConsideration.Neurodivergent, PersonalConsideration.Senior
+            PersonalConsideration.LGBTQ, PersonalConsideration.Trans,
+            PersonalConsideration.Disabled, PersonalConsideration.Veteran,
+            PersonalConsideration.Pregnant, PersonalConsideration.Neurodivergent,
+            PersonalConsideration.Senior
         )
         return order.mapNotNull { c ->
             if (c in considerations) profile.note(c)?.let { c to it } else null

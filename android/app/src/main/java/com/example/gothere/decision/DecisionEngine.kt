@@ -71,6 +71,20 @@ object DecisionEngine {
                         }
                         if ("lgbtq_friendly" in d.tags) score += 5
                     }
+                    PersonalConsideration.Trans -> {
+                        // Legal gender recognition + gender-affirming care access. Self-ID countries
+                        // and Argentina's Ley 26.743 care guarantee score highest; Hungary's
+                        // recognition ban is a hard negative.
+                        when (countryId) {
+                            "spain", "portugal", "germany", "canada", "argentina" -> { score += 12; reasons += "Self-ID gender recognition + care access" }
+                            "ireland" -> { score += 8; reasons += "Self-ID recognition (care waits long)" }
+                            "mexico", "italy" -> { score += 5; reasons += "Trans recognition varies by region" }
+                            "uk_ancestry" -> { score += 4; reasons += "Long NHS gender-care waits" }
+                            "poland" -> { score -= 2; reasons += "Gender recognition needs court process" }
+                            "hungary" -> { score -= 8; reasons += "Legal gender recognition banned" }
+                        }
+                        if ("lgbtq_friendly" in d.tags) score += 5
+                    }
                     PersonalConsideration.Disabled -> {
                         when (countryId) {
                             "germany", "spain", "portugal", "ireland", "italy", "poland", "hungary" -> { score += 8; reasons += "EU Disability Card recognised" }

@@ -18,9 +18,10 @@ object InclusivityResources {
     ): List<ResourceCategory> {
         val out = mutableListOf<ResourceCategory>()
         val order = listOf(
-            PersonalConsideration.LGBTQ, PersonalConsideration.Disabled,
-            PersonalConsideration.Veteran, PersonalConsideration.Pregnant,
-            PersonalConsideration.Neurodivergent, PersonalConsideration.Senior
+            PersonalConsideration.LGBTQ, PersonalConsideration.Trans,
+            PersonalConsideration.Disabled, PersonalConsideration.Veteran,
+            PersonalConsideration.Pregnant, PersonalConsideration.Neurodivergent,
+            PersonalConsideration.Senior
         )
         for (c in order) {
             if (c in considerations) {
@@ -423,9 +424,80 @@ object InclusivityResources {
         return ResourceCategory("incl_single_parent", "Single Parent Support", "child_care", specific)
     }
 
+    // ---- Transgender ----
+
+    private fun trans(countryId: String): ResourceCategory {
+        val common = listOf(
+            ResourceItem("tgeu-map", "TGEU Trans Rights Map",
+                "Legal gender recognition + care access by country",
+                "https://transrightsmap.tgeu.org/", "official")
+        )
+        val specific = when (countryId) {
+            "spain" -> listOf(
+                ResourceItem("plataforma-trans", "Federación Plataforma Trans",
+                    "National trans federation; 2023 trans-law guidance",
+                    "https://plataformatrans.org/", "community")
+            )
+            "portugal" -> listOf(
+                ResourceItem("ilga-pt-trans", "ILGA Portugal",
+                    "Self-ID law guidance + trans peer support",
+                    "https://ilga-portugal.pt/", "service")
+            )
+            "germany" -> listOf(
+                ResourceItem("dgti", "dgti e.V.",
+                    "Trans association; supplementary ID (Ergänzungsausweis)",
+                    "https://dgti.org/", "community")
+            )
+            "ireland" -> listOf(
+                ResourceItem("teni", "TENI",
+                    "Transgender Equality Network Ireland — legal + peer support",
+                    "https://teni.ie/", "community")
+            )
+            "uk_ancestry" -> listOf(
+                ResourceItem("gendered-intelligence", "Gendered Intelligence",
+                    "UK trans charity; care-pathway navigation",
+                    "https://genderedintelligence.co.uk/", "community")
+            )
+            "canada" -> listOf(
+                ResourceItem("egale-trans", "Egale Canada — Trans resources",
+                    "Documents, provincial care coverage guides",
+                    "https://egale.ca/", "community")
+            )
+            "argentina" -> listOf(
+                ResourceItem("ley-identidad", "Ley de Identidad de Género",
+                    "Official guide to document change + guaranteed care",
+                    "https://www.argentina.gob.ar/justicia/derechofacil/leysimple/identidad-de-genero",
+                    "official")
+            )
+            "mexico" -> listOf(
+                ResourceItem("condesa", "Clínica Especializada Condesa",
+                    "Mexico City public HRT + trans health clinic",
+                    "https://condesadf.mx/", "service")
+            )
+            "italy" -> listOf(
+                ResourceItem("mit-italia", "MIT — Movimento Identità Trans",
+                    "Bologna-based trans org; legal + health desk",
+                    "https://mit-italia.it/", "community")
+            )
+            "poland" -> listOf(
+                ResourceItem("trans-fuzja", "Fundacja Trans-Fuzja",
+                    "Polish trans foundation; court-process guidance",
+                    "https://transfuzja.org/", "community")
+            )
+            "hungary" -> listOf(
+                ResourceItem("transvanilla", "Transvanilla",
+                    "Hungarian trans association; recognition-ban updates",
+                    "https://transvanilla.hu/", "community")
+            )
+            else -> emptyList()
+        }
+        return ResourceCategory("incl_trans", "Trans Resources", "diversity", specific + common)
+    }
+
     private fun categoryFor(c: PersonalConsideration, countryId: String): ResourceCategory? {
         val cat = when (c) {
             PersonalConsideration.LGBTQ          -> lgbtq(countryId)
+            PersonalConsideration.Trans          -> trans(countryId)
             PersonalConsideration.Disabled       -> disabled(countryId)
             PersonalConsideration.Veteran        -> veteran(countryId)
             PersonalConsideration.Pregnant       -> pregnant(countryId)

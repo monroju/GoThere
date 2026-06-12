@@ -121,18 +121,18 @@
     ]
   },
   {
-    "title": "Receive your decision and travel to the UK within 30 days of visa issue",
-    "category": "Phase 1: Research & Planning",
-    "completed": false,
-    "countryId": "uk_ancestry",
-    "description": "Standard processing is 3 weeks; priority service (~£500 extra) is 5 working days. Once issued, you receive a 30-day entry vignette in your passport — you must travel to the UK within those 30 days and collect your Biometric Residence Permit (BRP) within 10 days of arrival."
-  },
-  {
     "title": "Attend your biometrics appointment at a visa application centre (VAC)",
     "category": "Phase 1: Research & Planning",
     "completed": false,
     "countryId": "uk_ancestry",
     "description": "Book a biometrics appointment at the VFS Global or TLScontact centre handling UK visas in your country. Provide fingerprints, photo, and submit original documents (or scans, depending on the VAC)."
+  },
+  {
+    "title": "Receive your decision and travel to the UK within 30 days of visa issue",
+    "category": "Phase 1: Research & Planning",
+    "completed": false,
+    "countryId": "uk_ancestry",
+    "description": "Standard processing is 3 weeks; priority service (~£500 extra) is 5 working days. Once issued, you receive a 30-day entry vignette in your passport — you must travel to the UK within those 30 days and collect your Biometric Residence Permit (BRP) within 10 days of arrival."
   },
   {
     "title": "Maintain continuous residence — absences under 180 days/year",

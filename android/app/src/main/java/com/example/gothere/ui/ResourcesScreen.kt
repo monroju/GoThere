@@ -54,7 +54,7 @@ data class ResourceCategory(
  *  iOS Resources CTA stack. */
 enum class ResourceTool {
     StartHere, CostCalc, Family, RemoteWork, Healthcare, Timeline,
-    Investment, Concierge, PolicyWatch, RightsSafety, Ancestry, Compare
+    Investment, Concierge, PolicyWatch, RightsSafety, CareContinuity, Ancestry, Compare
 }
 
 /** Reusable CTA row for a tier-targeting tool. */
@@ -136,7 +136,8 @@ fun ResourcesScreen(
         ResourceTool.Investment -> { InvestmentMigrationScreen(onDismiss = { activeTool = null }, onOpenAncestry = { activeTool = ResourceTool.Ancestry }); return }
         ResourceTool.Concierge -> { ConciergeScreen(onDismiss = { activeTool = null }); return }
         ResourceTool.PolicyWatch -> { PolicyWatchScreen(onDismiss = { activeTool = null }); return }
-        ResourceTool.RightsSafety -> { RightsSafetyScreen(onDismiss = { activeTool = null }); return }
+        ResourceTool.RightsSafety -> { RightsSafetyScreen(onDismiss = { activeTool = null }, onOpenCare = { activeTool = ResourceTool.CareContinuity }); return }
+        ResourceTool.CareContinuity -> { CareContinuityScreen(initialCountryId = countryId, onDismiss = { activeTool = null }); return }
         ResourceTool.Ancestry -> { AncestryCheckerScreen(onBack = { activeTool = null }); return }
         ResourceTool.Compare -> { VisaCompareScreen(initialCountryId = countryId, onDismiss = { activeTool = null }, onStartWizard = { activeTool = null }); return }
         null -> {}
@@ -286,6 +287,10 @@ fun ResourcesScreen(
             item {
                 ToolCta(Icons.Outlined.Favorite, "Rights & Safety",
                     "Compare destinations on LGBTQ+, disability, reproductive & senior protections") { activeTool = ResourceTool.RightsSafety }
+            }
+            item {
+                ToolCta(Icons.Outlined.Medication, "Meds & Care Abroad",
+                    "ADHD meds, HRT, insulin — availability and what you can carry in") { activeTool = ResourceTool.CareContinuity }
             }
             item {
                 ToolCta(Icons.Outlined.Notifications, "Policy Watch",

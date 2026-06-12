@@ -152,6 +152,7 @@ fun DecisionTreeScreen(
                                 Text(
                                     when (opt) {
                                         PersonalConsideration.LGBTQ -> "LGBTQ+"
+                                        PersonalConsideration.Trans -> "Transgender"
                                         PersonalConsideration.Disabled -> "Disabled / Accessibility"
                                         PersonalConsideration.Veteran -> "Veteran"
                                         PersonalConsideration.Pregnant -> "Pregnant / Expecting"
