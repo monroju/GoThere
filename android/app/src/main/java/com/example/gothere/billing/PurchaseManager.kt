@@ -133,7 +133,11 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
 
     private val billingClient: BillingClient = BillingClient.newBuilder(appContext)
         .setListener(this)
-        .enablePendingPurchases()
+        // PBL 8 removed the no-arg enablePendingPurchases(); this call is the documented
+        // functional equivalent (one-time products only — we don't use prepaid plans).
+        .enablePendingPurchases(
+            PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
+        )
         .build()
 
     private val firestore = FirebaseFirestore.getInstance()
@@ -210,9 +214,11 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
             .setProductList(productList)
             .build()
 
-        billingClient.queryProductDetailsAsync(params) { billingResult, productDetailsList ->
+        billingClient.queryProductDetailsAsync(params) { billingResult, queryProductDetailsResult ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                val detailsMap = productDetailsList.associateBy { it.productId }
+                // PBL 8 changed the callback's second arg from List<ProductDetails> to
+                // QueryProductDetailsResult (which also carries unfetched products).
+                val detailsMap = queryProductDetailsResult.productDetailsList.associateBy { it.productId }
                 _productDetails.value = detailsMap
                 if (BuildConfig.DEBUG) Log.d(TAG, "Product details loaded: ${detailsMap.keys}")
             } else {

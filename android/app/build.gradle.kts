@@ -29,8 +29,8 @@ android {
         applicationId = "com.gothere.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 30
-        versionName = "1.10.0"
+        versionCode = 32
+        versionName = "1.11.0"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -134,8 +134,8 @@ dependencies {
     implementation("com.google.firebase:firebase-storage-ktx")
     implementation("com.google.firebase:firebase-messaging-ktx")
 
-    // Google Play Billing — 7.x ships 16 KB-aligned native libs
-    implementation("com.android.billingclient:billing-ktx:7.1.1")
+    // Google Play Billing — 8.x required by Play (Aug 31 2026 deadline); ships 16 KB-aligned native libs
+    implementation("com.android.billingclient:billing-ktx:8.3.0")
 
     // PostHog product analytics
     implementation("com.posthog:posthog-android:3.+")
