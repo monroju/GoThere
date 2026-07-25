@@ -43,7 +43,8 @@ class ReferralRepository {
         suspendCancellableCoroutine { cont ->
             functions.getHttpsCallable(name).call(params)
                 .addOnSuccessListener { result ->
-                    cont.resume((result.data as? Map<String, Any?>) ?: emptyMap())
+                    @Suppress("UNCHECKED_CAST")
+                    cont.resume((result.getData() as? Map<String, Any?>) ?: emptyMap())
                 }
                 .addOnFailureListener { e -> cont.resumeWithException(e) }
         }
