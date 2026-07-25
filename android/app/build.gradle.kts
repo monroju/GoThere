@@ -133,6 +133,8 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
     implementation("com.google.firebase:firebase-messaging-ktx")
+    // Callable Cloud Functions — powers the referral loop (getReferralCode / redeemReferral)
+    implementation("com.google.firebase:firebase-functions-ktx")
 
     // Google Play Billing — 8.x required by Play (Aug 31 2026 deadline); ships 16 KB-aligned native libs
     implementation("com.android.billingclient:billing-ktx:8.3.0")

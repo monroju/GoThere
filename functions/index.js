@@ -6,6 +6,9 @@
  *   • googleIap  — Pub/Sub function receiving Google Play RTDN messages.
  *   • aiProxy    — HTTPS function proxying iOS/Android AI chat to Anthropic,
  *                  adding the API key + the stored system prompt server-side.
+ *   • getReferralCode / redeemReferral — callable functions powering the
+ *                  give-a-month/get-a-month referral loop. Grant a server-side
+ *                  time-boxed premium window (users/{uid}.promoAccessUntil).
  *
  * The IAP handlers reconcile the user's `users/{uid}.subscriptionStatus`
  * field on Firestore and append an audit entry to `crew-notifications/`.
@@ -25,3 +28,7 @@ exports.appleIap = require('./apple').handler;
 exports.googleIap = require('./google').handler;
 exports.aiProxy = require('./aiProxy').handler;
 exports.analyzeDocument = require('./analyzeDocument').handler;
+
+const referral = require('./referral');
+exports.getReferralCode = referral.getReferralCode;
+exports.redeemReferral = referral.redeemReferral;

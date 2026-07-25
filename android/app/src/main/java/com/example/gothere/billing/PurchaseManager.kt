@@ -162,6 +162,22 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
     private val _ownedSKUs = MutableStateFlow<Set<String>>(emptySet())
     val ownedSKUs: StateFlow<Set<String>> = _ownedSKUs.asStateFlow()
 
+    /**
+     * Server-granted, time-boxed premium window from the referral loop (a "free
+     * month"), as unix seconds. Mirrored on `users/{uid}.promoAccessUntil` by the
+     * redeemReferral Cloud Function. Kept SEPARATE from `subscriptionStatus` so a
+     * launch-time Play reconcile — which has no real purchase to see behind a promo
+     * grant — never clobbers it. `savePurchasesToFirestore` omits it (merge:true),
+     * so the server value is preserved across client syncs.
+     */
+    private val _promoAccessUntil = MutableStateFlow<Double?>(null)
+    val promoAccessUntil: StateFlow<Double?> = _promoAccessUntil.asStateFlow()
+
+    private fun isPromoActive(): Boolean {
+        val until = _promoAccessUntil.value ?: return false
+        return until > System.currentTimeMillis() / 1000.0
+    }
+
     init {
         connectToPlayBilling()
         loadPurchasesFromFirestore()
@@ -445,6 +461,7 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
      * treat as all-access. Mirrors iOS `hasAllAccess`.
      */
     fun hasAllAccess(): Boolean {
+        if (isPromoActive()) return true
         if (_subscriptionStatus.value.isActive) return true
         val skus = _ownedSKUs.value
         if (PRODUCT_ALL_COUNTRIES in skus) return true
@@ -524,6 +541,16 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
                 (data["subscriptionStatus"] as? Map<String, Any?>)?.let { subMap ->
                     _subscriptionStatus.value = SubscriptionStatus.fromFirestoreMap(subMap)
                 }
+                // Referral / promo grant window. When active, reflect it in the
+                // collected country set so existing gates (which read
+                // purchasedCountries) react without extra plumbing. Never written
+                // back by savePurchasesToFirestore, so a reconcile can't shorten it.
+                (data["promoAccessUntil"] as? Number)?.toDouble()?.let { until ->
+                    _promoAccessUntil.value = until
+                    if (until > System.currentTimeMillis() / 1000.0) {
+                        _purchasedCountries.value = _purchasedCountries.value + ALL_PAID_COUNTRIES
+                    }
+                }
                 if (BuildConfig.DEBUG) Log.d(TAG, "Loaded from Firestore: $data")
             }
     }
@@ -534,5 +561,18 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
         } else {
             connectToPlayBilling()
         }
+    }
+
+    /**
+     * Optimistically applies a server-granted referral month so gates unlock the
+     * moment redeemReferral returns, without waiting for the Firestore snapshot to
+     * propagate back. Extends, never shortens. Also expands the collected country
+     * set so screens reading purchasedCountries react immediately.
+     */
+    fun applyPromoGrant(untilSeconds: Double) {
+        val current = _promoAccessUntil.value ?: 0.0
+        if (current >= untilSeconds) return
+        _promoAccessUntil.value = untilSeconds
+        _purchasedCountries.value = _purchasedCountries.value + ALL_PAID_COUNTRIES
     }
 }
