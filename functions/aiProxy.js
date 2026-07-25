@@ -44,9 +44,27 @@
  *   ANTHROPIC_API_KEY   required  — Anthropic API key (set in functions/.env)
  *   ANTHROPIC_MODEL     optional  — defaults to `claude-sonnet-4-6`
  *   ANTHROPIC_MAX_TOKENS optional — defaults to 2048
- *   AI_PROXY_ALLOW_ORIGIN optional — CORS allow-origin; default '*' for
- *     dev. Tighten to https://getgothere.app + the App Store webview origin
- *     in production once we know the exact value.
+ *   AI_PROXY_ALLOW_ORIGIN optional — CORS allow-origin allowlist (comma-
+ *     separated). Default '*'. Mobile apps send no Origin header so they are
+ *     unaffected; this only gates browser callers. Set to
+ *     'https://getgothere.app,https://api.getgothere.app' in production.
+ *   AI_PROXY_APP_TOKEN   optional — shared secret the GoThere apps send in the
+ *     `X-GoThere-App-Token` header. Raises the bar against anonymous abuse of
+ *     the open endpoint (e.g. someone curling it to burn the Anthropic budget).
+ *   AI_PROXY_REQUIRE_TOKEN optional — when 'true'/'1', requests WITHOUT a
+ *     matching token are rejected with 403. Default OFF so already-shipped
+ *     clients (which don't yet send the header) keep working. Rollout: ship
+ *     iOS + Android builds that send the header, confirm traffic carries it
+ *     (look for the [aiProxy] untokenened-request warnings to stop), THEN flip
+ *     this to 'true'. A client secret is extractable from an app binary, so
+ *     this is hardening, not authentication — App Check is the real fix (see
+ *     README "Hardening" section).
+ *
+ * Abuse guards (always on, independent of the token flag):
+ *   - request body capped at MAX_BODY_BYTES
+ *   - messages array length capped at MAX_MESSAGES
+ *   - tools array length capped at MAX_TOOLS
+ *   - max_tokens clamped to HARD_MAX_TOKENS server-side regardless of env
  */
 
 const { onRequest } = require('firebase-functions/v2/https');
@@ -87,6 +105,16 @@ const DEFAULT_MODEL = 'claude-sonnet-4-6';
 const DEFAULT_MAX_TOKENS = 2048;
 const ANTHROPIC_VERSION = '2023-06-01';
 
+// --- Abuse guards. Conservative ceilings; a legitimate GoThere conversation
+// (≤6 turns, 3 tools, 2k-token replies) sits comfortably under all of them. ---
+const APP_TOKEN_HEADER = 'x-gothere-app-token';
+const MAX_BODY_BYTES = 256 * 1024;   // 256 KB — a real transcript is a few KB
+const MAX_MESSAGES = 40;             // safetyTurns=6 on the client → well under
+const MAX_TOOLS = 16;                // we ship 3
+const HARD_MAX_TOKENS = 4096;        // ceiling even if env asks for more
+
+const truthy = (v) => v === 'true' || v === '1' || v === 'yes';
+
 exports.handler = onRequest(
   {
     memory: '256MiB',
@@ -96,10 +124,20 @@ exports.handler = onRequest(
     cors: false          // We set headers manually for the SSE case
   },
   async (req, res) => {
-    const allowOrigin = process.env.AI_PROXY_ALLOW_ORIGIN || '*';
-    res.setHeader('Access-Control-Allow-Origin', allowOrigin);
+    // --- CORS: resolve the request Origin against an allowlist. Requests with
+    // no Origin (native mobile apps, curl) are always allowed through here; the
+    // app-token check below is what gates non-browser callers. ---
+    const allowList = (process.env.AI_PROXY_ALLOW_ORIGIN || '*')
+      .split(',').map(s => s.trim()).filter(Boolean);
+    const reqOrigin = req.headers.origin;
+    if (allowList.includes('*')) {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+    } else if (reqOrigin && allowList.includes(reqOrigin)) {
+      res.setHeader('Access-Control-Allow-Origin', reqOrigin);
+      res.setHeader('Vary', 'Origin');
+    }
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept, X-System-Prompt-Version');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept, X-System-Prompt-Version, X-GoThere-App-Token');
 
     if (req.method === 'OPTIONS') {
       res.status(204).send('');
@@ -107,6 +145,29 @@ exports.handler = onRequest(
     }
     if (req.method !== 'POST') {
       res.status(405).json({ error: 'Method Not Allowed' });
+      return;
+    }
+
+    // --- App-token gate. Always compare when a token is configured so we can
+    // log coverage; only REJECT when AI_PROXY_REQUIRE_TOKEN is on. ---
+    const expectedToken = process.env.AI_PROXY_APP_TOKEN;
+    const presentedToken = req.headers[APP_TOKEN_HEADER];
+    const tokenOk = !!expectedToken && presentedToken === expectedToken;
+    if (expectedToken && !tokenOk) {
+      if (truthy(process.env.AI_PROXY_REQUIRE_TOKEN)) {
+        console.warn('[aiProxy] rejected request: missing/invalid app token');
+        res.status(403).json({ error: 'Forbidden' });
+        return;
+      }
+      // Soft mode: let it through but flag it so we know when it's safe to flip.
+      console.warn('[aiProxy] untokened request (enforcement off) origin=%s', reqOrigin || 'none');
+    }
+
+    // --- Body-size guard. Cloud Functions parses req.body for us, but we can
+    // still reject oversize payloads via the declared content-length. ---
+    const declaredLen = Number(req.headers['content-length'] || 0);
+    if (declaredLen > MAX_BODY_BYTES) {
+      res.status(413).json({ error: 'Request too large' });
       return;
     }
 
@@ -140,7 +201,11 @@ exports.handler = onRequest(
       res.status(400).json({ error: 'messages array is required' });
       return;
     }
-    const tools = Array.isArray(body.tools) ? body.tools : [];
+    if (messages.length > MAX_MESSAGES) {
+      res.status(400).json({ error: `messages array too long (max ${MAX_MESSAGES})` });
+      return;
+    }
+    const tools = Array.isArray(body.tools) ? body.tools.slice(0, MAX_TOOLS) : [];
 
     // Translate the iOS wire shape to the Anthropic Messages API shape.
     // The iOS payload already uses the Messages-API block layout (text /
@@ -157,9 +222,15 @@ exports.handler = onRequest(
 
     const wantsStream = (req.headers.accept || '').toLowerCase().includes('text/event-stream');
 
+    const requestedMaxTokens = Number(process.env.ANTHROPIC_MAX_TOKENS || DEFAULT_MAX_TOKENS);
+    const maxTokens = Math.min(
+      Number.isFinite(requestedMaxTokens) ? requestedMaxTokens : DEFAULT_MAX_TOKENS,
+      HARD_MAX_TOKENS
+    );
+
     const upstreamBody = {
       model: process.env.ANTHROPIC_MODEL || DEFAULT_MODEL,
-      max_tokens: Number(process.env.ANTHROPIC_MAX_TOKENS || DEFAULT_MAX_TOKENS),
+      max_tokens: maxTokens,
       system: systemPrompt,
       messages: upstreamMessages,
       tools: upstreamTools.length ? upstreamTools : undefined,

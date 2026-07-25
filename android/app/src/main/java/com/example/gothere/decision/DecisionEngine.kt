@@ -130,6 +130,18 @@ object DecisionEngine {
                         if ("walkable" in d.tags) score += 3
                         if ("warm_coastal" in d.tags || d.climate == "warm_coastal") score += 3
                     }
+                    PersonalConsideration.Poc -> {
+                        // Anti-discrimination law strength, ethnic diversity, reported climate.
+                        // Measured and positive-only; no group steered away.
+                        when (countryId) {
+                            "canada", "uk_ancestry" -> { score += 8; reasons += "Highly multicultural; strong anti-discrimination law" }
+                            "germany", "spain", "portugal", "ireland" -> { score += 6; reasons += "Diverse cities + EU anti-discrimination law" }
+                            "italy", "mexico", "argentina" -> { score += 4; reasons += "Anti-discrimination law; diversity varies by region" }
+                            "poland", "hungary" -> { score += 2; reasons += "Anti-discrimination law applies; less ethnically diverse" }
+                        }
+                        if (d.expatDensity >= 4) { score += 3; reasons += "Established international community" }
+                        if (d.type == "Big City") score += 2
+                    }
                 }
             }
 

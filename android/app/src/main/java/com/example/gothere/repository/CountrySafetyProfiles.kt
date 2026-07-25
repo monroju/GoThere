@@ -19,7 +19,8 @@ data class CountrySafetyProfile(
     val veteran: String?,
     val pregnant: String?,
     val neurodivergent: String?,
-    val senior: String?
+    val senior: String?,
+    val poc: String?
 ) {
     fun note(consideration: PersonalConsideration): String? = when (consideration) {
         PersonalConsideration.LGBTQ          -> lgbtq
@@ -29,6 +30,7 @@ data class CountrySafetyProfile(
         PersonalConsideration.Pregnant       -> pregnant
         PersonalConsideration.Neurodivergent -> neurodivergent
         PersonalConsideration.Senior         -> senior
+        PersonalConsideration.Poc            -> poc
     }
 }
 
@@ -56,7 +58,8 @@ object CountrySafetyProfiles {
                 veteran        = obj.optString("veteran").ifBlank { null },
                 pregnant       = obj.optString("pregnant").ifBlank { null },
                 neurodivergent = obj.optString("neurodivergent").ifBlank { null },
-                senior         = obj.optString("senior").ifBlank { null }
+                senior         = obj.optString("senior").ifBlank { null },
+                poc            = obj.optString("poc").ifBlank { null }
             )
         }
         cache = parsed
@@ -80,7 +83,7 @@ object CountrySafetyProfiles {
             PersonalConsideration.LGBTQ, PersonalConsideration.Trans,
             PersonalConsideration.Disabled, PersonalConsideration.Veteran,
             PersonalConsideration.Pregnant, PersonalConsideration.Neurodivergent,
-            PersonalConsideration.Senior
+            PersonalConsideration.Senior, PersonalConsideration.Poc
         )
         return order.mapNotNull { c ->
             if (c in considerations) profile.note(c)?.let { c to it } else null

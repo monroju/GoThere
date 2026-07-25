@@ -158,6 +158,7 @@ fun DecisionTreeScreen(
                                         PersonalConsideration.Pregnant -> "Pregnant / Expecting"
                                         PersonalConsideration.Neurodivergent -> "Neurodivergent"
                                         PersonalConsideration.Senior -> "Senior (60+)"
+                                        PersonalConsideration.Poc -> "Person of Color"
                                     },
                                     modifier = Modifier.padding(vertical = 4.dp)
                                 )

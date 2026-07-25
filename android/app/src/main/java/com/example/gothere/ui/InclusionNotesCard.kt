@@ -95,4 +95,5 @@ private fun personaLabel(c: PersonalConsideration): String = when (c) {
     PersonalConsideration.Pregnant       -> "Pregnant / Expecting"
     PersonalConsideration.Neurodivergent -> "Neurodivergent"
     PersonalConsideration.Senior         -> "Senior (60+)"
+    PersonalConsideration.Poc            -> "Person of Color"
 }

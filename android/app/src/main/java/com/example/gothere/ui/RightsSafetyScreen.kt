@@ -30,12 +30,13 @@ private fun PersonalConsideration.label(): String = when (this) {
     PersonalConsideration.Pregnant -> "Pregnant / Expecting"
     PersonalConsideration.Neurodivergent -> "Neurodivergent"
     PersonalConsideration.Senior -> "Senior (60+)"
+    PersonalConsideration.Poc -> "Person of Color"
 }
 
 private val DISPLAY_ORDER = listOf(
     PersonalConsideration.LGBTQ, PersonalConsideration.Trans, PersonalConsideration.Disabled,
     PersonalConsideration.Veteran, PersonalConsideration.Pregnant,
-    PersonalConsideration.Neurodivergent, PersonalConsideration.Senior
+    PersonalConsideration.Neurodivergent, PersonalConsideration.Senior, PersonalConsideration.Poc
 )
 
 /** Rights & Safety comparison. Mirror of iOS RightsSafetyView. */

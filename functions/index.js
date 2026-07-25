@@ -24,3 +24,4 @@ admin.initializeApp();
 exports.appleIap = require('./apple').handler;
 exports.googleIap = require('./google').handler;
 exports.aiProxy = require('./aiProxy').handler;
+exports.analyzeDocument = require('./analyzeDocument').handler;

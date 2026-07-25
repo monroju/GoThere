@@ -68,9 +68,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.gothere.auth.AuthRepository
 import com.example.gothere.billing.PurchaseManager
+import com.example.gothere.ui.AIAssistantScreen
 import com.example.gothere.ui.CalendarScreen
 import com.example.gothere.ui.AncestryCheckerScreen
 import com.example.gothere.ui.DecisionTreeScreen
+import com.example.gothere.ui.DocumentScanScreen
 import com.example.gothere.ui.DocumentsScreen
 import com.example.gothere.ui.OfflineBanner
 import com.example.gothere.ui.OnboardingPrefs
@@ -128,6 +130,8 @@ sealed class Route(val route: String) {
     data object Resources : Route("resources")
     data object DecisionTree : Route("decision_tree")
     data object Ancestry : Route("ancestry")
+    data object AIAssistant : Route("ai_assistant")
+    data object DocumentScan : Route("document_scan")
     data object VisaWizard : Route("visa_wizard/{countryId}") {
         fun create(countryId: String) = "visa_wizard/$countryId"
     }
@@ -252,6 +256,10 @@ class MainActivity : ComponentActivity() {
                         onToggleTheme = { isDark = !isDark },
                         selectedCountryId = selectedCountryId,
                         purchasedCountries = purchasedCountries,
+                        onRequestPaywall = { id ->
+                            paywallCountryId = id
+                            showPaywall = true
+                        },
                         onCountryChange = { newId ->
                             // Check if country is unlocked
                             if (purchasedCountries.contains(newId)) {
@@ -278,6 +286,7 @@ private fun MainAppContent(
     onToggleTheme: () -> Unit,
     selectedCountryId: String,
     purchasedCountries: Set<String>,
+    onRequestPaywall: (String) -> Unit,
     onCountryChange: (String) -> Unit
 ) {
     val navController = rememberNavController()
@@ -472,6 +481,32 @@ private fun MainAppContent(
                         onDismissRequest = { showSettingsMenu = false }
                     ) {
                         DropdownMenuItem(
+                            text = { Text("Where to start (AI)") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.AutoAwesome,
+                                    contentDescription = null
+                                )
+                            },
+                            onClick = {
+                                showSettingsMenu = false
+                                navController.navigate(Route.AIAssistant.route)
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Scan a Document") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.AutoAwesome,
+                                    contentDescription = null
+                                )
+                            },
+                            onClick = {
+                                showSettingsMenu = false
+                                navController.navigate(Route.DocumentScan.route)
+                            }
+                        )
+                        DropdownMenuItem(
                             text = { Text("Visa Wizard") },
                             leadingIcon = {
                                 Icon(
@@ -563,6 +598,7 @@ private fun MainAppContent(
             AppNavHost(
                 navController = navController,
                 selectedCountryId = selectedCountryId,
+                onRequestPaywall = onRequestPaywall,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -585,6 +621,7 @@ fun LogoImage() {
 private fun AppNavHost(
     navController: NavHostController,
     selectedCountryId: String,
+    onRequestPaywall: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -606,6 +643,17 @@ private fun AppNavHost(
         }
         composable(Route.Ancestry.route) {
             AncestryCheckerScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Route.AIAssistant.route) {
+            AIAssistantScreen(
+                onRequestUpgrade = { onRequestPaywall(selectedCountryId) }
+            )
+        }
+        composable(Route.DocumentScan.route) {
+            DocumentScanScreen(
+                countryId = selectedCountryId,
+                onRequestUpgrade = { onRequestPaywall(selectedCountryId) }
+            )
         }
         composable(Route.VisaWizard.route) { backStackEntry ->
             VisaWizardScreen(

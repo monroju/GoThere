@@ -21,7 +21,7 @@ object InclusivityResources {
             PersonalConsideration.LGBTQ, PersonalConsideration.Trans,
             PersonalConsideration.Disabled, PersonalConsideration.Veteran,
             PersonalConsideration.Pregnant, PersonalConsideration.Neurodivergent,
-            PersonalConsideration.Senior
+            PersonalConsideration.Senior, PersonalConsideration.Poc
         )
         for (c in order) {
             if (c in considerations) {
@@ -494,6 +494,42 @@ object InclusivityResources {
         return ResourceCategory("incl_trans", "Trans Resources", "diversity", specific + common)
     }
 
+    // VERIFY URLs before release — official/established equality bodies.
+    private fun poc(countryId: String): ResourceCategory {
+        val specific = when (countryId) {
+            "spain" -> listOf(
+                ResourceItem("sos-racismo-es", "SOS Racismo", "Anti-racism federation; reporting + support",
+                    "https://sosracismo.eu/", "community")
+            )
+            "italy" -> listOf(
+                ResourceItem("unar-it", "UNAR", "National Office Against Racial Discrimination",
+                    "https://www.unar.it/", "official")
+            )
+            "germany" -> listOf(
+                ResourceItem("ads-de", "Antidiskriminierungsstelle", "Federal Anti-Discrimination Agency",
+                    "https://www.antidiskriminierungsstelle.de/", "official")
+            )
+            "ireland" -> listOf(
+                ResourceItem("ihrec-ie", "IHREC", "Irish Human Rights & Equality Commission",
+                    "https://www.ihrec.ie/", "official")
+            )
+            "uk_ancestry" -> listOf(
+                ResourceItem("ehrc-uk", "EHRC", "Equality & Human Rights Commission",
+                    "https://www.equalityhumanrights.com/", "official")
+            )
+            "canada" -> listOf(
+                ResourceItem("crrf-ca", "Canadian Race Relations Foundation", "Resources + reporting",
+                    "https://www.crrf-fcrr.ca/", "official")
+            )
+            "mexico" -> listOf(
+                ResourceItem("conapred-mx", "CONAPRED", "National Council to Prevent Discrimination",
+                    "https://www.conapred.org.mx/", "official")
+            )
+            else -> emptyList()
+        }
+        return ResourceCategory("incl_poc", "Anti-Racism & Equality", "diversity", specific)
+    }
+
     private fun categoryFor(c: PersonalConsideration, countryId: String): ResourceCategory? {
         val cat = when (c) {
             PersonalConsideration.LGBTQ          -> lgbtq(countryId)
@@ -503,6 +539,7 @@ object InclusivityResources {
             PersonalConsideration.Pregnant       -> pregnant(countryId)
             PersonalConsideration.Neurodivergent -> neurodivergent(countryId)
             PersonalConsideration.Senior         -> senior(countryId)
+            PersonalConsideration.Poc            -> poc(countryId)
         }
         return cat.takeIf { it.resources.isNotEmpty() }
     }

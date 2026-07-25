@@ -263,3 +263,40 @@ The iOS `PurchaseManager.swift` writes this on every subscription
 function can't map an incoming notification back to a Firebase user — it
 logs to `crew-notifications/` with `uid: null` and skips the
 `users/{uid}` write.
+
+## aiProxy hardening
+
+The proxy is a public endpoint (`invoker: 'public'`). To stop anonymous abuse
+(anyone curling `api.getgothere.app/ai/messages` to burn the Anthropic budget)
+it supports a shared app-token + always-on abuse guards.
+
+**Always on (no rollout needed):**
+
+- Request body capped at 256 KB; `messages` ≤ 40; `tools` ≤ 16.
+- `max_tokens` clamped to 4096 server-side regardless of env.
+- CORS resolves `AI_PROXY_ALLOW_ORIGIN` (comma-separated allowlist) against the
+  request Origin. Native apps send no Origin, so they're unaffected — this only
+  gates browser callers.
+
+**Shared app token (staged rollout — currently OFF):**
+
+Both apps send `X-GoThere-App-Token: <AI_PROXY_APP_TOKEN>` (iOS
+`AIService.appToken`, Android `AIClient.APP_TOKEN`). A client-embedded secret is
+extractable, so this is *hardening, not authentication* — the real fix is
+Firebase App Check (App Attest on iOS, Play Integrity on Android), a larger
+change tracked separately.
+
+Rollout so we never break already-shipped clients (which don't send the header):
+
+1. **Now:** `AI_PROXY_REQUIRE_TOKEN=false` in `.env`. Deploy the proxy. It logs
+   `[aiProxy] untokened request` for each caller missing the header but serves
+   everyone.
+2. Ship the updated **iOS** (Codemagic) and **Android** builds that send the
+   header. Wait for adoption.
+3. **When the untokened-request warnings die down**, set
+   `AI_PROXY_REQUIRE_TOKEN=true` and redeploy. Untokened requests now get `403`.
+
+Deploy: `firebase deploy --only functions:aiProxy` (env comes from `.env`).
+To rotate the token: change `AI_PROXY_APP_TOKEN` **and** both client constants,
+ship both apps, then redeploy — but keep enforcement OFF during a rotation or
+old builds break.
