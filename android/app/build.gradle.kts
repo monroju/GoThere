@@ -17,7 +17,7 @@ val localProps = Properties().apply {
 
 android {
     namespace = "com.example.gothere"
-    compileSdk = 35
+    compileSdk = 36
 
     sourceSets {
         getByName("main") {
@@ -28,9 +28,10 @@ android {
     defaultConfig {
         applicationId = "com.gothere.app"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 32
-        versionName = "1.11.0"
+        // Play requires target API 36 by Aug 30 2026 or updates get rejected.
+        targetSdk = 36
+        versionCode = 33
+        versionName = "1.11.1"
         vectorDrawables.useSupportLibrary = true
     }
 
