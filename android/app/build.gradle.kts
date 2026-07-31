@@ -17,7 +17,7 @@ val localProps = Properties().apply {
 
 android {
     namespace = "com.example.gothere"
-    compileSdk = 35
+    compileSdk = 36
 
     sourceSets {
         getByName("main") {
@@ -28,9 +28,10 @@ android {
     defaultConfig {
         applicationId = "com.gothere.app"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 27
-        versionName = "1.8.0"
+        // Play requires target API 36 by Aug 30 2026 or updates get rejected.
+        targetSdk = 36
+        versionCode = 33
+        versionName = "1.11.1"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -132,9 +133,12 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    // Callable Cloud Functions — powers the referral loop (getReferralCode / redeemReferral)
+    implementation("com.google.firebase:firebase-functions-ktx")
 
-    // Google Play Billing — 7.x ships 16 KB-aligned native libs
-    implementation("com.android.billingclient:billing-ktx:7.1.1")
+    // Google Play Billing — 8.x required by Play (Aug 31 2026 deadline); ships 16 KB-aligned native libs
+    implementation("com.android.billingclient:billing-ktx:8.3.0")
 
     // PostHog product analytics
     implementation("com.posthog:posthog-android:3.+")

@@ -34,7 +34,8 @@ fun PaywallDialog(
 ) {
     val context = LocalContext.current
     val activity = context as? Activity
-    
+    var showReferral by remember { mutableStateOf(false) }
+
     val productDetails by purchaseManager.productDetails.collectAsState()
     
     val countryName = when (countryId) {
@@ -300,11 +301,28 @@ fun PaywallDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
                 
+                // Referral cross-sell — unlock a month free instead of paying.
+                Spacer(modifier = Modifier.height(4.dp))
+                TextButton(onClick = { showReferral = true }) {
+                    Text(
+                        text = "🎁  Prefer free? Invite a friend",
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+
                 // Maybe later link
                 TextButton(onClick = onDismiss) {
                     Text(
                         text = "Maybe Later",
                         color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                if (showReferral) {
+                    ReferralDialog(
+                        onDismiss = { showReferral = false },
+                        purchaseManager = purchaseManager
                     )
                 }
             }

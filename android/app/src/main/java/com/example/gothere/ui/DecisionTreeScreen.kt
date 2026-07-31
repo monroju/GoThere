@@ -152,9 +152,13 @@ fun DecisionTreeScreen(
                                 Text(
                                     when (opt) {
                                         PersonalConsideration.LGBTQ -> "LGBTQ+"
+                                        PersonalConsideration.Trans -> "Transgender"
                                         PersonalConsideration.Disabled -> "Disabled / Accessibility"
                                         PersonalConsideration.Veteran -> "Veteran"
                                         PersonalConsideration.Pregnant -> "Pregnant / Expecting"
+                                        PersonalConsideration.Neurodivergent -> "Neurodivergent"
+                                        PersonalConsideration.Senior -> "Senior (60+)"
+                                        PersonalConsideration.Poc -> "Person of Color"
                                     },
                                     modifier = Modifier.padding(vertical = 4.dp)
                                 )
@@ -208,6 +212,11 @@ fun DecisionTreeScreen(
                         )
                         val ranked = DecisionEngine.rank(destinations, profile, countryId).take(5)
                         results = ranked
+                        // Persist personas so ResourcesScreen can render For You section
+                        // without re-running the wizard.
+                        com.example.gothere.repository.UserConsiderationsStore.save(
+                            shareContext, considerations, household
+                        )
                         scope.launch {
                             try {
                                 val id = ProfileRepository.saveProfile(profile)
@@ -255,6 +264,14 @@ fun DecisionTreeScreen(
                     "Top Recommendations",
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
                     modifier = Modifier.padding(top = 16.dp)
+                )
+
+                // Inclusion notes for active personas + single-parent households.
+                // Renders only when at least one matches.
+                InclusionNotesCard(
+                    countryId = countryId,
+                    considerations = considerations,
+                    isSingleParent = household == Household.SingleParent
                 )
 
                 results.forEachIndexed { idx, ranked ->

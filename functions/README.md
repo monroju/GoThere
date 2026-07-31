@@ -1,10 +1,19 @@
-# GoThere IAP Notification Functions
+# GoThere Firebase Functions
 
-Server-side handlers for Apple App Store Server Notifications v2 and Google
-Play Real-Time Developer Notifications. Reconcile each user's
-`users/{uid}.subscriptionStatus` field on Firestore so the iOS / Android apps
-see accurate subscription state even when the user isn't running the app at
-the moment a renewal / refund / expiration happens.
+Server-side endpoints deployed alongside the iOS/Android apps:
+
+- `appleIap`  — Apple App Store Server Notifications v2 receiver
+- `googleIap` — Google Play Real-Time Developer Notifications subscriber
+- `aiProxy`   — Anthropic API forwarder for the in-app AI chat ("I don't
+                know where to start" entry point)
+
+The IAP handlers reconcile each user's `users/{uid}.subscriptionStatus` field
+on Firestore so the iOS / Android apps see accurate subscription state even
+when the user isn't running the app at the moment a renewal / refund /
+expiration happens.
+
+The AI proxy is a stateless forwarder — it never touches Firestore and never
+sends the API key to a client.
 
 ## Firebase project
 
@@ -17,7 +26,13 @@ the moment a renewal / refund / expiration happens.
 ```
 appleIap   →  https://us-central1-gothere-e5ea7.cloudfunctions.net/appleIap
 googleIap  →  Pub/Sub trigger on topic `projects/gothere-e5ea7/topics/play-rtdn`
+aiProxy    →  https://us-central1-gothere-e5ea7.cloudfunctions.net/aiProxy
 ```
+
+The iOS app posts to `https://api.gothere.app/ai/messages` by default. Map
+that hostname to `aiProxy` either via DNS + a Firebase Hosting `api-gothere`
+site rewrite (recommended, see "AI proxy hostname" below) or by overriding
+`ai_proxy_url_override` in the app's UserDefaults during early testing.
 
 ## Operator setup (one-time)
 
@@ -119,6 +134,106 @@ then watch `firebase functions:log` for the live test.
 For Google: `gcloud pubsub topics publish play-rtdn --message='{...}'` to
 inject a synthetic RTDN payload.
 
+### 6. AI proxy (Anthropic API key + hostname)
+
+```sh
+# Add ANTHROPIC_API_KEY to functions/.env so the proxy can authenticate.
+# Anthropic console → Settings → API Keys → generate a new key, scope to
+# `messages:write`. Treat it like a production credential — never paste it
+# into a commit or chat.
+echo "ANTHROPIC_API_KEY=sk-ant-..." >> .env
+
+# Optional overrides:
+# echo "ANTHROPIC_MODEL=claude-sonnet-4-6" >> .env          # default model
+# echo "ANTHROPIC_MAX_TOKENS=2048"          >> .env         # default ceiling
+# echo "AI_PROXY_ALLOW_ORIGIN=https://getgothere.app" >> .env  # tighten CORS
+
+# Deploy just the AI function (faster iteration than full deploy).
+npm run deploy:ai
+```
+
+#### AI proxy hostname
+
+The iOS client expects `https://api.gothere.app/ai/messages`. Two paths to
+make that resolve to `aiProxy`:
+
+**(a) Firebase Hosting rewrite (recommended).** Create a separate Firebase
+Hosting site for the API hostname so it doesn't share `public/` with the
+landing page:
+
+```sh
+firebase hosting:sites:create api-gothere --project gothere-e5ea7
+```
+
+Then add an entry to your Firebase Hosting config (or `firebase.json` if
+you're managing multi-site there) like:
+
+```json
+{
+  "hosting": [
+    {
+      "site": "api-gothere",
+      "public": "public-api-stub",
+      "rewrites": [
+        { "source": "/ai/**", "function": "aiProxy", "region": "us-central1" }
+      ]
+    }
+  ]
+}
+```
+
+Add `api.gothere.app` as a custom domain on the `api-gothere` site and
+follow Firebase's DNS verification steps (TXT + A records). Once the cert
+provisions, the iOS client's hard-coded URL resolves to this function.
+
+**(b) UserDefaults override (dev/QA only).** Without the DNS work, point the
+client at the raw Cloud Function URL during testing:
+
+```sh
+xcrun simctl spawn booted defaults write com.gothere.ios ai_proxy_url_override \
+  "https://us-central1-gothere-e5ea7.cloudfunctions.net/aiProxy"
+```
+
+The override is read on app launch in `AIService.proxyURL`.
+
+#### AI proxy request shape
+
+```http
+POST /  HTTP/1.1
+Content-Type: application/json
+Accept: application/json     # or text/event-stream for SSE pass-through
+
+{
+  "system_prompt_version": "v1",
+  "messages": [ { "id": "...", "role": "user", "content": [...] } ],
+  "tools":    [ { "name": "...", "description": "...", "input_schema": {...} } ]
+}
+```
+
+Non-streaming response:
+
+```json
+{
+  "message":     { "id": "msg_...", "role": "assistant", "content": [...] },
+  "stop_reason": "end_turn",
+  "usage":       { "input_tokens": 234, "output_tokens": 47 }
+}
+```
+
+Streaming response: Anthropic SSE events forwarded byte-for-byte; the iOS
+`AIStreamHandler` parses them on the device.
+
+System-prompt content lives in `aiProxy.js#SYSTEM_PROMPTS`. The current `v1`
+prompt frames the assistant as "Informational only — verify with the
+official source. Never give specific legal/tax/medical advice." Bump the
+version + add a new entry to update; older app builds keep working because
+unknown versions fall back to `v1` with an `X-System-Prompt-Fallback`
+response header.
+
+Tools advertised by the iOS app (executed on-device, never on this proxy):
+`recommend_visas`, `list_cities_for_country`, `list_wizard_tracks_for_country`.
+The proxy passes them through to Anthropic verbatim.
+
 ## Notification → SubscriptionStatus mapping
 
 See `apple.js#mapToStatus` and `google.js#STATUS_BY_TYPE` for the
@@ -148,3 +263,40 @@ The iOS `PurchaseManager.swift` writes this on every subscription
 function can't map an incoming notification back to a Firebase user — it
 logs to `crew-notifications/` with `uid: null` and skips the
 `users/{uid}` write.
+
+## aiProxy hardening
+
+The proxy is a public endpoint (`invoker: 'public'`). To stop anonymous abuse
+(anyone curling `api.getgothere.app/ai/messages` to burn the Anthropic budget)
+it supports a shared app-token + always-on abuse guards.
+
+**Always on (no rollout needed):**
+
+- Request body capped at 256 KB; `messages` ≤ 40; `tools` ≤ 16.
+- `max_tokens` clamped to 4096 server-side regardless of env.
+- CORS resolves `AI_PROXY_ALLOW_ORIGIN` (comma-separated allowlist) against the
+  request Origin. Native apps send no Origin, so they're unaffected — this only
+  gates browser callers.
+
+**Shared app token (staged rollout — currently OFF):**
+
+Both apps send `X-GoThere-App-Token: <AI_PROXY_APP_TOKEN>` (iOS
+`AIService.appToken`, Android `AIClient.APP_TOKEN`). A client-embedded secret is
+extractable, so this is *hardening, not authentication* — the real fix is
+Firebase App Check (App Attest on iOS, Play Integrity on Android), a larger
+change tracked separately.
+
+Rollout so we never break already-shipped clients (which don't send the header):
+
+1. **Now:** `AI_PROXY_REQUIRE_TOKEN=false` in `.env`. Deploy the proxy. It logs
+   `[aiProxy] untokened request` for each caller missing the header but serves
+   everyone.
+2. Ship the updated **iOS** (Codemagic) and **Android** builds that send the
+   header. Wait for adoption.
+3. **When the untokened-request warnings die down**, set
+   `AI_PROXY_REQUIRE_TOKEN=true` and redeploy. Untokened requests now get `403`.
+
+Deploy: `firebase deploy --only functions:aiProxy` (env comes from `.env`).
+To rotate the token: change `AI_PROXY_APP_TOKEN` **and** both client constants,
+ship both apps, then redeploy — but keep enforcement OFF during a rotation or
+old builds break.

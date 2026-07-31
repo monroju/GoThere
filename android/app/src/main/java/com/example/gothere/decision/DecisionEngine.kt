@@ -71,6 +71,20 @@ object DecisionEngine {
                         }
                         if ("lgbtq_friendly" in d.tags) score += 5
                     }
+                    PersonalConsideration.Trans -> {
+                        // Legal gender recognition + gender-affirming care access. Self-ID countries
+                        // and Argentina's Ley 26.743 care guarantee score highest; Hungary's
+                        // recognition ban is a hard negative.
+                        when (countryId) {
+                            "spain", "portugal", "germany", "canada", "argentina" -> { score += 12; reasons += "Self-ID gender recognition + care access" }
+                            "ireland" -> { score += 8; reasons += "Self-ID recognition (care waits long)" }
+                            "mexico", "italy" -> { score += 5; reasons += "Trans recognition varies by region" }
+                            "uk_ancestry" -> { score += 4; reasons += "Long NHS gender-care waits" }
+                            "poland" -> { score -= 2; reasons += "Gender recognition needs court process" }
+                            "hungary" -> { score -= 8; reasons += "Legal gender recognition banned" }
+                        }
+                        if ("lgbtq_friendly" in d.tags) score += 5
+                    }
                     PersonalConsideration.Disabled -> {
                         when (countryId) {
                             "germany", "spain", "portugal", "ireland", "italy", "poland", "hungary" -> { score += 8; reasons += "EU Disability Card recognised" }
@@ -94,6 +108,39 @@ object DecisionEngine {
                             "mexico" -> { score += 4 }
                         }
                         if (d.type == "Big City") { score += 3; reasons += "Top-tier hospitals" }
+                    }
+                    PersonalConsideration.Neurodivergent -> {
+                        when (countryId) {
+                            "germany", "canada", "ireland", "uk_ancestry" -> { score += 9; reasons += "Adult ND assessment via public system" }
+                            "spain", "portugal", "italy" -> { score += 6; reasons += "Growing ND support networks" }
+                            "poland", "hungary", "argentina", "mexico" -> { score += 3 }
+                        }
+                        if ("walkable" in d.tags) { score += 4; reasons += "Walkable — lower sensory load" }
+                        if (d.expatDensity >= 4) { score += 3; reasons += "English-speaking ND community" }
+                        if (d.type == "Big City" && "walkable" !in d.tags) score -= 2
+                    }
+                    PersonalConsideration.Senior -> {
+                        when (countryId) {
+                            "portugal", "spain", "italy" -> { score += 10; reasons += "Top retiree healthcare & climate" }
+                            "ireland", "germany", "canada", "uk_ancestry" -> { score += 8; reasons += "Strong public healthcare" }
+                            "mexico", "argentina" -> { score += 6; reasons += "Lower cost of senior living" }
+                            "poland", "hungary" -> { score += 4 }
+                        }
+                        if ("retiree_friendly" in d.tags) score += 5
+                        if ("walkable" in d.tags) score += 3
+                        if ("warm_coastal" in d.tags || d.climate == "warm_coastal") score += 3
+                    }
+                    PersonalConsideration.Poc -> {
+                        // Anti-discrimination law strength, ethnic diversity, reported climate.
+                        // Measured and positive-only; no group steered away.
+                        when (countryId) {
+                            "canada", "uk_ancestry" -> { score += 8; reasons += "Highly multicultural; strong anti-discrimination law" }
+                            "germany", "spain", "portugal", "ireland" -> { score += 6; reasons += "Diverse cities + EU anti-discrimination law" }
+                            "italy", "mexico", "argentina" -> { score += 4; reasons += "Anti-discrimination law; diversity varies by region" }
+                            "poland", "hungary" -> { score += 2; reasons += "Anti-discrimination law applies; less ethnically diverse" }
+                        }
+                        if (d.expatDensity >= 4) { score += 3; reasons += "Established international community" }
+                        if (d.type == "Big City") score += 2
                     }
                 }
             }

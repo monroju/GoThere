@@ -82,3 +82,14 @@ local.properties
 keystore.properties
 android/keystore.properties
 google-services.json
+
+# Sensitive ops files — never commit (tax docs, promo/redeem codes)
+GooglePlayConsole_W9.pdf
+promotion_codes*.csv
+promotion_code_assignments.csv
+
+# Marketing / ASO / ops scratch — not app source
+/ASO/
+/marketing/
+CAMPAIGN_PROGRESS.md
+googlefc*.html
