@@ -256,13 +256,15 @@ class MainActivity : ComponentActivity() {
                         onToggleTheme = { isDark = !isDark },
                         selectedCountryId = selectedCountryId,
                         purchasedCountries = purchasedCountries,
+                        isCountryUnlocked = { purchaseManager.isCountryUnlocked(it) },
                         onRequestPaywall = { id ->
                             paywallCountryId = id
                             showPaywall = true
                         },
                         onCountryChange = { newId ->
                             // Check if country is unlocked
-                            if (purchasedCountries.contains(newId)) {
+                            // isCountryUnlocked also honours the Portugal first-week trial.
+                            if (purchaseManager.isCountryUnlocked(newId)) {
                                 selectedCountryId = newId
                                 if (BuildConfig.DEBUG) Log.d("CountrySwitch", "Switched to $newId")
                             } else {
@@ -286,6 +288,7 @@ private fun MainAppContent(
     onToggleTheme: () -> Unit,
     selectedCountryId: String,
     purchasedCountries: Set<String>,
+    isCountryUnlocked: (String) -> Boolean,
     onRequestPaywall: (String) -> Unit,
     onCountryChange: (String) -> Unit
 ) {
@@ -418,7 +421,7 @@ private fun MainAppContent(
                             onDismissRequest = { showCountryDropdown = false }
                         ) {
                             allCountryIds.forEach { countryId ->
-                                val isUnlocked = purchasedCountries.contains(countryId)
+                                val isUnlocked = isCountryUnlocked(countryId)
                                 
                                 DropdownMenuItem(
                                     text = {

@@ -30,8 +30,8 @@ android {
         minSdk = 24
         // Play requires target API 36 by Aug 30 2026 or updates get rejected.
         targetSdk = 36
-        versionCode = 33
-        versionName = "1.11.1"
+        versionCode = 34
+        versionName = "1.12.0"
         vectorDrawables.useSupportLibrary = true
     }
 

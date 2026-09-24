@@ -105,7 +105,9 @@ fun ResourcesScreen(
     val context = LocalContext.current
     val purchaseManager = remember { PurchaseManager.getInstance(context) }
     val purchasedCountries by purchaseManager.purchasedCountries.collectAsState()
-    val isUnlocked = purchasedCountries.contains(countryId)
+    // Read purchasedCountries so this recomposes on entitlement changes; the gate itself
+    // also honours the Portugal first-week trial and grandfathered installs.
+    val isUnlocked = purchasedCountries.let { purchaseManager.isCountryUnlocked(countryId) }
     var showPaywall by remember { mutableStateOf(false) }
     var presentedJourney by remember { mutableStateOf<RealJourney?>(null) }
     // Tier-targeting tool hub — state-swap navigation (mirror of iOS Resources CTAs).

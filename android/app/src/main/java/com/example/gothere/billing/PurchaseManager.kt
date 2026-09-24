@@ -7,6 +7,7 @@ import com.android.billingclient.api.*
 import com.example.gothere.BuildConfig
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.posthog.PostHog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -173,12 +174,28 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
     private val _promoAccessUntil = MutableStateFlow<Double?>(null)
     val promoAccessUntil: StateFlow<Double?> = _promoAccessUntil.asStateFlow()
 
+    /**
+     * Pre-freemium paid install (see [LegacyEntitlementService]). Grant-only: set from the
+     * device install record or from `users/{uid}.legacyPaidInstall`, never cleared.
+     */
+    private val _isLegacyPaidInstall = MutableStateFlow(false)
+    val isLegacyPaidInstall: StateFlow<Boolean> = _isLegacyPaidInstall.asStateFlow()
+
+    private fun grantLegacy() {
+        if (!_isLegacyPaidInstall.value) {
+            _isLegacyPaidInstall.value = true
+            runCatching { PostHog.capture("legacy_paid_install") }
+        }
+        _purchasedCountries.value = _purchasedCountries.value + ALL_PAID_COUNTRIES
+    }
+
     private fun isPromoActive(): Boolean {
         val until = _promoAccessUntil.value ?: return false
         return until > System.currentTimeMillis() / 1000.0
     }
 
     init {
+        if (LegacyEntitlementService.isLegacyPaidInstall(appContext)) grantLegacy()
         connectToPlayBilling()
         loadPurchasesFromFirestore()
     }
@@ -387,7 +404,7 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
         val effectivelyAllAccess = newSubStatus.isActive ||
             PRODUCT_ALL_COUNTRIES in skus ||
             (PRODUCT_EUROPE_BUNDLE in skus && PRODUCT_AMERICAS_BUNDLE in skus)
-        if (effectivelyAllAccess) {
+        if (effectivelyAllAccess || _isLegacyPaidInstall.value) {
             unlockedCountries.addAll(ALL_PAID_COUNTRIES)
         }
 
@@ -461,6 +478,7 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
      * treat as all-access. Mirrors iOS `hasAllAccess`.
      */
     fun hasAllAccess(): Boolean {
+        if (_isLegacyPaidInstall.value) return true
         if (isPromoActive()) return true
         if (_subscriptionStatus.value.isActive) return true
         val skus = _ownedSKUs.value
@@ -511,7 +529,11 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
             "ownedSKUs" to skus.toList(),
             "subscriptionStatus" to subStatus.toFirestoreMap(),
             "hasAllAccess" to hasAllAccess()
-        )
+        ).let { base ->
+            // Only ever write `true`: merge:true means omitting it never clears a
+            // grant made on another device.
+            if (_isLegacyPaidInstall.value) base + ("legacyPaidInstall" to true) else base
+        }
         firestore.collection("users").document(uid)
             .set(payload, com.google.firebase.firestore.SetOptions.merge())
             .addOnFailureListener { e ->
@@ -532,6 +554,7 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
                 (data["unlockedCountries"] as? List<*>)?.let { countries ->
                     val countrySet = countries.filterIsInstance<String>().toMutableSet()
                     countrySet.addAll(FREE_COUNTRIES)
+                    if (_isLegacyPaidInstall.value) countrySet.addAll(ALL_PAID_COUNTRIES)
                     _purchasedCountries.value = countrySet
                 }
                 (data["ownedSKUs"] as? List<*>)?.let { skuList ->
@@ -550,6 +573,10 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
                     if (until > System.currentTimeMillis() / 1000.0) {
                         _purchasedCountries.value = _purchasedCountries.value + ALL_PAID_COUNTRIES
                     }
+                }
+                if (data["legacyPaidInstall"] == true) {
+                    LegacyEntitlementService.markGranted(appContext)
+                    grantLegacy()
                 }
                 if (BuildConfig.DEBUG) Log.d(TAG, "Loaded from Firestore: $data")
             }
