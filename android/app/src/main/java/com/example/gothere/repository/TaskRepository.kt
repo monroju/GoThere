@@ -15,10 +15,15 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
 import org.json.JSONArray
 
 class TaskRepository {
+    companion object {
+        /** Shared across instances: screens create their own TaskRepository(). */
+        private val seedMutex = kotlinx.coroutines.sync.Mutex()
+    }
 
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
@@ -492,7 +497,10 @@ class TaskRepository {
      * Seeds for canada/ireland/italy/germany/poland/argentina/hungary/uk_ancestry
      * are ported from the iOS Seeds/ directory — keep the JSON shape in sync.
      */
-    suspend fun importCountrySeedFromAssets(context: Context, countryId: String): Result<Pair<Int, Int>> {
+    suspend fun importCountrySeedFromAssets(context: Context, countryId: String): Result<Pair<Int, Int>> =
+        seedMutex.withLock { importCountrySeedFromAssetsLocked(context, countryId) }
+
+    private suspend fun importCountrySeedFromAssetsLocked(context: Context, countryId: String): Result<Pair<Int, Int>> {
         val uid = auth.currentUser?.uid ?: return Result.failure(Exception("Not signed in"))
 
         val seedFileName = when (countryId) {

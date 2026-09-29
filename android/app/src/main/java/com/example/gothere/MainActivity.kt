@@ -30,6 +30,9 @@ import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Star
+import com.example.gothere.ui.SettingsScreen
+import com.example.gothere.util.AppearancePrefs
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
@@ -132,6 +135,7 @@ sealed class Route(val route: String) {
     data object Ancestry : Route("ancestry")
     data object AIAssistant : Route("ai_assistant")
     data object DocumentScan : Route("document_scan")
+    data object Settings : Route("settings")
     data object VisaWizard : Route("visa_wizard/{countryId}") {
         fun create(countryId: String) = "visa_wizard/$countryId"
     }
@@ -207,7 +211,17 @@ class MainActivity : ComponentActivity() {
         com.example.gothere.billing.FirstWeekTrialService.bootstrap(this)
 
         setContent {
-            var isDark by rememberSaveable { mutableStateOf(true) }
+            var appearance by remember { mutableStateOf(AppearancePrefs.get(this@MainActivity)) }
+            val systemDark = androidx.compose.foundation.isSystemInDarkTheme()
+            val isDark = when (appearance) {
+                AppearancePrefs.DARK -> true
+                AppearancePrefs.LIGHT -> false
+                else -> systemDark
+            }
+            val setAppearance: (String) -> Unit = { value ->
+                appearance = value
+                AppearancePrefs.set(this@MainActivity, value)
+            }
             var selectedCountryId by rememberSaveable { mutableStateOf("spain") }
             var onboardingDone by rememberSaveable {
                 mutableStateOf(OnboardingPrefs.isCompleted(this@MainActivity))
@@ -219,6 +233,14 @@ class MainActivity : ComponentActivity() {
 
             // Get purchased countries from PurchaseManager
             val purchasedCountries by purchaseManager.purchasedCountries.collectAsState()
+            // Collected so the Upgrade button and Settings plan react to purchases.
+            val subscriptionStatus by purchaseManager.subscriptionStatus.collectAsState()
+            val ownedSKUs by purchaseManager.ownedSKUs.collectAsState()
+            val isLegacy by purchaseManager.isLegacyPaidInstall.collectAsState()
+            val promoUntil by purchaseManager.promoAccessUntil.collectAsState()
+            val hasAllAccess = remember(purchasedCountries, subscriptionStatus, ownedSKUs, isLegacy, promoUntil) {
+                purchaseManager.hasAllAccess()
+            }
 
             val authRepo = AuthRepository()
             val user by authRepo.authStateFlow().collectAsState(initial = authRepo.currentUser())
@@ -232,10 +254,12 @@ class MainActivity : ComponentActivity() {
                 } else if (user == null) {
                     AuthScreen(
                         isDark = isDark,
-                        onToggleTheme = { isDark = !isDark },
+                        onToggleTheme = { setAppearance(if (isDark) AppearancePrefs.LIGHT else AppearancePrefs.DARK) },
                         onAuthSuccess = {
-                            // Restore purchases after login
+                            // Restore purchases after login, and attach the Firestore
+                            // entitlement listener (init only does it when already signed in).
                             purchaseManager.restorePurchases()
+                            purchaseManager.onSignedIn()
                         }
                     )
                 } else {
@@ -252,8 +276,11 @@ class MainActivity : ComponentActivity() {
                     }
                     
                     MainAppContent(
-                        isDark = isDark,
-                        onToggleTheme = { isDark = !isDark },
+                        appearance = appearance,
+                        onAppearanceChange = setAppearance,
+                        hasAllAccess = hasAllAccess,
+                        accessReason = if (hasAllAccess) purchaseManager.accessReason() else null,
+                        onRestorePurchases = { purchaseManager.restorePurchases() },
                         selectedCountryId = selectedCountryId,
                         purchasedCountries = purchasedCountries,
                         isCountryUnlocked = { purchaseManager.isCountryUnlocked(it) },
@@ -284,8 +311,11 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MainAppContent(
-    isDark: Boolean,
-    onToggleTheme: () -> Unit,
+    appearance: String,
+    onAppearanceChange: (String) -> Unit,
+    hasAllAccess: Boolean,
+    accessReason: String?,
+    onRestorePurchases: () -> Unit,
     selectedCountryId: String,
     purchasedCountries: Set<String>,
     isCountryUnlocked: (String) -> Boolean,
@@ -294,7 +324,6 @@ private fun MainAppContent(
 ) {
     val navController = rememberNavController()
     var showCountryDropdown by remember { mutableStateOf(false) }
-    var showSettingsMenu by remember { mutableStateOf(false) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
     var deleteError by remember { mutableStateOf<String?>(null) }
 
@@ -458,6 +487,19 @@ private fun MainAppContent(
                                     }
                                 )
                             }
+                            if (!hasAllAccess) {
+                                androidx.compose.material3.HorizontalDivider()
+                                DropdownMenuItem(
+                                    text = { Text("Unlock all countries", fontWeight = FontWeight.SemiBold) },
+                                    leadingIcon = {
+                                        Icon(Icons.Outlined.Star, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                                    },
+                                    onClick = {
+                                        showCountryDropdown = false
+                                        onRequestPaywall("all")
+                                    }
+                                )
+                            }
                         }
                     }
                 },
@@ -466,107 +508,19 @@ private fun MainAppContent(
                     containerColor = Color.Transparent
                 ),
                 actions = {
-                    IconButton(onClick = onToggleTheme) {
-                        Icon(
-                            imageVector = if (isDark) Icons.Outlined.LightMode else Icons.Outlined.DarkMode,
-                            contentDescription = "Toggle theme"
-                        )
+                    if (!hasAllAccess) {
+                        TextButton(onClick = { onRequestPaywall("all") }) {
+                            Icon(Icons.Outlined.Star, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Upgrade", fontWeight = FontWeight.SemiBold)
+                        }
                     }
-                    // Settings overflow menu
-                    IconButton(onClick = { showSettingsMenu = true }) {
+                    IconButton(onClick = {
+                        navController.navigate(Route.Settings.route) { launchSingleTop = true }
+                    }) {
                         Icon(
                             imageVector = Icons.Outlined.Settings,
                             contentDescription = "Settings"
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = showSettingsMenu,
-                        onDismissRequest = { showSettingsMenu = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("Where to start (AI)") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.AutoAwesome,
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                showSettingsMenu = false
-                                navController.navigate(Route.AIAssistant.route)
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Scan a Document") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.AutoAwesome,
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                showSettingsMenu = false
-                                navController.navigate(Route.DocumentScan.route)
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Visa Wizard") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.AutoAwesome,
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                showSettingsMenu = false
-                                navController.navigate(Route.VisaWizard.create(selectedCountryId))
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Ancestry Citizenship") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.AccountTree,
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                showSettingsMenu = false
-                                navController.navigate(Route.Ancestry.route)
-                            }
-                        )
-                        androidx.compose.material3.HorizontalDivider()
-                        DropdownMenuItem(
-                            text = { Text("Sign Out") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.Logout,
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                showSettingsMenu = false
-                                AuthRepository().signOut()
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    "Delete Account",
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.Delete,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.error
-                                )
-                            },
-                            onClick = {
-                                showSettingsMenu = false
-                                showDeleteConfirm = true
-                            }
                         )
                     }
                 }
@@ -602,7 +556,26 @@ private fun MainAppContent(
                 navController = navController,
                 selectedCountryId = selectedCountryId,
                 onRequestPaywall = onRequestPaywall,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                settings = {
+                    SettingsScreen(
+                        appearance = appearance,
+                        onAppearanceChange = onAppearanceChange,
+                        hasAllAccess = hasAllAccess,
+                        accessReason = accessReason,
+                        unlockedCount = allCountryIds.count { isCountryUnlocked(it) },
+                        totalCountries = allCountryIds.size,
+                        onSeePlans = { onRequestPaywall("all") },
+                        onRestorePurchases = onRestorePurchases,
+                        onOpenAI = { navController.navigate(Route.AIAssistant.route) },
+                        onOpenScan = { navController.navigate(Route.DocumentScan.route) },
+                        onOpenVisaWizard = { navController.navigate(Route.VisaWizard.create(selectedCountryId)) },
+                        onOpenAncestry = { navController.navigate(Route.Ancestry.route) },
+                        onSignOut = { AuthRepository().signOut() },
+                        onDeleteAccount = { showDeleteConfirm = true },
+                        appVersion = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+                    )
+                }
             )
         }
     }
@@ -625,7 +598,8 @@ private fun AppNavHost(
     navController: NavHostController,
     selectedCountryId: String,
     onRequestPaywall: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    settings: @Composable () -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -644,6 +618,7 @@ private fun AppNavHost(
                 countryId = selectedCountryId
             )
         }
+        composable(Route.Settings.route) { settings() }
         composable(Route.Ancestry.route) {
             AncestryCheckerScreen(onBack = { navController.popBackStack() })
         }

@@ -181,6 +181,10 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
     private val _isLegacyPaidInstall = MutableStateFlow(false)
     val isLegacyPaidInstall: StateFlow<Boolean> = _isLegacyPaidInstall.asStateFlow()
 
+    // Declared before init: init attaches the listener, and a later initializer would reset it.
+    private var firestoreListener: com.google.firebase.firestore.ListenerRegistration? = null
+    private var firestoreListenerUid: String? = null
+
     private fun grantLegacy() {
         if (!_isLegacyPaidInstall.value) {
             _isLegacyPaidInstall.value = true
@@ -541,9 +545,30 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
             }
     }
 
+    /** Call after sign-in: init only attaches the entitlement listener when a user
+     *  was already signed in at launch, so a fresh sign-in never saw Firestore grants. */
+    fun onSignedIn() {
+        loadPurchasesFromFirestore()
+    }
+
+    /** Plain-language reason for All Access, shown in Settings. Null when not all-access. */
+    fun accessReason(): String? {
+        if (_isLegacyPaidInstall.value) return "Early supporter: you bought GoThere before it went free"
+        if (isPromoActive()) return "Gift month from a referral"
+        if (_subscriptionStatus.value.isActive) return "All-Access subscription"
+        val skus = _ownedSKUs.value
+        if (PRODUCT_ALL_COUNTRIES in skus) return "Lifetime: all countries"
+        if (PRODUCT_EUROPE_BUNDLE in skus && PRODUCT_AMERICAS_BUNDLE in skus) return "Europe + Americas bundles"
+        if (hasAllAccess()) return "Every country purchased"
+        return null
+    }
+
     private fun loadPurchasesFromFirestore() {
         val uid = auth.currentUser?.uid ?: return
-        firestore.collection("users").document(uid)
+        if (firestoreListenerUid == uid && firestoreListener != null) return
+        firestoreListener?.remove()
+        firestoreListenerUid = uid
+        firestoreListener = firestore.collection("users").document(uid)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     if (BuildConfig.DEBUG) Log.e(TAG, "Firestore listen failed", error)

@@ -48,6 +48,7 @@ fun PaywallDialog(
         "argentina" -> "Argentina"
         "hungary" -> "Hungary"
         "uk_ancestry" -> "UK (Ancestry)"
+        "all" -> "All Countries"
         else -> "Country"
     }
 
