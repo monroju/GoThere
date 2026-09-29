@@ -162,7 +162,10 @@ fun TasksScreen(
     // bundles all 11 country seeds in the app and seeds on selection.
     LaunchedEffect(countryId) {
         try {
-            if (!SeedImportStore.isCountryImported(context, countryId)) {
+            // Spain is seeded by the launch effect above; importing it here too ran both
+            // at once on first launch and wrote the 57-task checklist twice (dedupe then
+            // deleted the copies).
+            if (countryId != "spain" && !SeedImportStore.isCountryImported(context, countryId)) {
                 TaskRepository().importCountrySeedFromAssets(context, countryId)
                     .onSuccess { (added, _) ->
                         if (added > 0) SeedImportStore.markCountryImported(context, countryId)
