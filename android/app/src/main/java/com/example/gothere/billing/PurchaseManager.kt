@@ -446,7 +446,7 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
         val paramsBuilder = BillingFlowParams.ProductDetailsParams.newBuilder()
             .setProductDetails(details)
         if (productId in SUBSCRIPTION_SKUS) {
-            val offerToken = details.subscriptionOfferDetails?.firstOrNull()?.offerToken
+            val offerToken = basePlanOffer(details)?.offerToken
             if (offerToken == null) {
                 if (BuildConfig.DEBUG) Log.e(TAG, "No offer token for subscription: $productId")
                 return false
@@ -494,11 +494,21 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
 
     fun getFormattedPrice(productId: String): String? {
         val details = _productDetails.value[productId] ?: return null
-        // Subscriptions use subscriptionOfferDetails > pricingPhases > formattedPrice.
-        details.subscriptionOfferDetails?.firstOrNull()
-            ?.pricingPhases?.pricingPhaseList?.firstOrNull()
+        // Subscriptions: the base plan's recurring (last) phase, so an offer's
+        // free-trial phase never shows up as the price.
+        basePlanOffer(details)
+            ?.pricingPhases?.pricingPhaseList?.lastOrNull()
             ?.formattedPrice?.let { return it }
         return details.oneTimePurchaseOfferDetails?.formattedPrice
+    }
+
+    /**
+     * The plain base plan (offerId == null). Play's offer order is unspecified,
+     * and the paywall doesn't disclose trial terms, so we never pick an offer.
+     */
+    private fun basePlanOffer(details: ProductDetails): ProductDetails.SubscriptionOfferDetails? {
+        val offers = details.subscriptionOfferDetails ?: return null
+        return offers.firstOrNull { it.offerId == null } ?: offers.firstOrNull()
     }
 
     /**
