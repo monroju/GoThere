@@ -21,6 +21,8 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.gothere.repository.AncestryCatalog
+import com.example.gothere.util.ReviewHelper
+import com.example.gothere.util.ReviewMilestone
 import com.example.gothere.repository.AncestryPath
 import com.example.gothere.repository.AncestryRepository
 
@@ -278,6 +280,8 @@ private fun Verdict(path: AncestryPath, answers: Map<String, Boolean>) {
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             if (allYes) {
+                val context = LocalContext.current
+                LaunchedEffect(Unit) { ReviewHelper.onMilestone(context, ReviewMilestone.ANCESTRY_LIKELY_ELIGIBLE) }
                 Text("Likely eligible ✓", style = MaterialTheme.typography.titleMedium, color = Color(0xFF1B7F3F))
                 Text(path.outcome, style = MaterialTheme.typography.bodyMedium)
             } else {
