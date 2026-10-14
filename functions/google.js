@@ -22,8 +22,8 @@
  *   11 SUBSCRIPTION_PAUSE_SCHEDULE_CHANGED → audit only
  *   12 SUBSCRIPTION_REVOKED                → expired + Telegram alert (refund-like)
  *   13 SUBSCRIPTION_EXPIRED                → expired
- *   20 ONE_TIME_PRODUCT_PURCHASED          → audit only (handled by client)
- *   21 ONE_TIME_PRODUCT_CANCELED           → audit only + Telegram alert (refund-like)
+ *   One-time products arrive as oneTimeProductNotification with their own numbering
+ *   (1 PURCHASED, 2 CANCELED = pending purchase abandoned) → audit only.
  *
  * The mapping from notificationType → SubscriptionStatus mirrors the Apple
  * mapping (`apple.js#mapToStatus`) where the semantics overlap.
@@ -32,6 +32,7 @@
 const { onMessagePublished } = require('firebase-functions/v2/pubsub');
 const { lookupUidByPurchase, writeSubscriptionStatus, logEvent } = require('./lib/firestore');
 const { sendAlert } = require('./lib/telegram');
+const { capture, googleEventName } = require('./lib/posthog');
 
 const STATUS_BY_TYPE = {
   1: 'active',          // RECOVERED
@@ -58,13 +59,16 @@ const TYPE_NAMES = {
   10: 'SUBSCRIPTION_PAUSED',
   11: 'SUBSCRIPTION_PAUSE_SCHEDULE_CHANGED',
   12: 'SUBSCRIPTION_REVOKED',
-  13: 'SUBSCRIPTION_EXPIRED',
-  20: 'ONE_TIME_PRODUCT_PURCHASED',
-  21: 'ONE_TIME_PRODUCT_CANCELED'
+  13: 'SUBSCRIPTION_EXPIRED'
 };
 
-// Refund-like events that need an operator Telegram ping.
-const REFUND_LIKE_TYPES = new Set([12, 21]);
+const ONE_TIME_TYPE_NAMES = {
+  1: 'ONE_TIME_PRODUCT_PURCHASED',
+  2: 'ONE_TIME_PRODUCT_CANCELED'
+};
+
+// Refund-like subscription events that need an operator Telegram ping.
+const REFUND_LIKE_TYPES = new Set([12]);
 
 exports.handler = onMessagePublished(
   { topic: 'play-rtdn', memory: '256MiB', timeoutSeconds: 30, region: 'us-central1' },
@@ -103,12 +107,16 @@ exports.handler = onMessagePublished(
     }
 
     const notificationType = notification.notificationType;
-    const typeName = TYPE_NAMES[notificationType] || `TYPE_${notificationType}`;
+    // oneTimeProductNotification uses its own numbering (1 PURCHASED, 2 CANCELED), which
+    // collides with the subscription types; never read it through TYPE_NAMES/STATUS_BY_TYPE.
+    const typeName = oneTimeN
+      ? (ONE_TIME_TYPE_NAMES[notificationType] || `ONE_TIME_TYPE_${notificationType}`)
+      : (TYPE_NAMES[notificationType] || `TYPE_${notificationType}`);
     const purchaseToken = notification.purchaseToken;
     const productId = notification.subscriptionId || notification.sku;
 
     const uid = await lookupUidByPurchase(purchaseToken);
-    const newStatus = STATUS_BY_TYPE[notificationType];
+    const newStatus = oneTimeN ? null : STATUS_BY_TYPE[notificationType];
 
     if (newStatus) {
       if (uid) {
@@ -135,7 +143,17 @@ exports.handler = onMessagePublished(
       }
     });
 
-    if (REFUND_LIKE_TYPES.has(notificationType)) {
+    const phEvent = googleEventName(notificationType, Boolean(oneTimeN));
+    if (phEvent) {
+      await capture(phEvent, {
+        uid,
+        fallbackId: purchaseToken ? purchaseToken.slice(0, 32) : null,
+        platform: 'android',
+        properties: { product_id: productId, store_type: typeName }
+      });
+    }
+
+    if (!oneTimeN && REFUND_LIKE_TYPES.has(notificationType)) {
       await sendAlert([
         `🚨 *GoThere Play ${typeName}*`,
         `Product: \`${productId || 'unknown'}\``,

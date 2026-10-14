@@ -33,6 +33,7 @@
 const { onRequest } = require('firebase-functions/v2/https');
 const { lookupUidByPurchase, writeSubscriptionStatus, logEvent } = require('./lib/firestore');
 const { sendAlert } = require('./lib/telegram');
+const { capture, appleEventName } = require('./lib/posthog');
 
 // Lazy-loaded so the library is only required at first invocation — keeps cold
 // starts for unrelated functions in this codebase fast.
@@ -140,6 +141,16 @@ async function processNotification(verified) {
     }
   });
 
+  const phEvent = appleEventName(notificationType, subtype);
+  if (phEvent) {
+    const properties = { product_id: productId, store_type: subtype ? `${notificationType}:${subtype}` : notificationType };
+    // price is in milliunits on newer transaction payloads.
+    if (txInfo && txInfo.price != null) properties.price = Number(txInfo.price) / 1000;
+    if (txInfo && txInfo.currency) properties.currency = txInfo.currency;
+    if (txInfo && txInfo.environment) properties.environment = txInfo.environment;
+    await capture(phEvent, { uid, fallbackId: originalTransactionId, platform: 'ios', properties });
+  }
+
   if (notificationType === 'REFUND') {
     await sendAlert([
       '🚨 *GoThere refund processed*',
@@ -180,7 +191,8 @@ exports.handler = onRequest(
       // returning 500 only for transient errors; 422 for malformed/unverifiable
       // payloads so Apple doesn't keep retrying a bad signature.
       const msg = (e && e.message) || '';
-      const isVerificationFailure = /verif|decode|signature|invalid/i.test(msg);
+      // The library throws VerificationException (numeric `status`) for bad payloads.
+      const isVerificationFailure = typeof (e && e.status) === 'number' || /verif|decode|signature|invalid/i.test(msg);
       res.status(isVerificationFailure ? 422 : 500).send(msg);
     }
   }
