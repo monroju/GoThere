@@ -89,6 +89,7 @@ fun ConciergeScreen(onDismiss: () -> Unit) {
                     submitting = true
                     val uid = FirebaseUtil.auth.currentUser?.uid
                     if (uid != null) {
+                        com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.CONCIERGE_WAITLIST_JOINED)
                         FirebaseUtil.db.collection("conciergeWaitlist").document(uid)
                             .set(mapOf(
                                 "uid" to uid,

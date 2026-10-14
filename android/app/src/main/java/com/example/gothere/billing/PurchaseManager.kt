@@ -7,7 +7,6 @@ import com.android.billingclient.api.*
 import com.example.gothere.BuildConfig
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.posthog.PostHog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -188,7 +187,8 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
     private fun grantLegacy() {
         if (!_isLegacyPaidInstall.value) {
             _isLegacyPaidInstall.value = true
-            runCatching { PostHog.capture("legacy_paid_install") }
+            // Not a sale: kept out of purchase_completed so store reconciliation stays honest.
+            com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.LEGACY_INSTALL_CONFIRMED, mapOf("\$set" to mapOf("is_paying" to true)))
         }
         _purchasedCountries.value = _purchasedCountries.value + ALL_PAID_COUNTRIES
     }
@@ -299,13 +299,18 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
     override fun onPurchasesUpdated(billingResult: BillingResult, purchases: List<Purchase>?) {
         when (billingResult.responseCode) {
             BillingClient.BillingResponseCode.OK -> {
-                purchases?.let { processPurchases(it) }
+                purchases?.let {
+                    logNewPurchases(it)
+                    processPurchases(it)
+                }
             }
             BillingClient.BillingResponseCode.USER_CANCELED -> {
                 if (BuildConfig.DEBUG) Log.d(TAG, "User canceled purchase")
+                logPurchaseFailed("user_cancelled")
             }
             else -> {
                 if (BuildConfig.DEBUG) Log.e(TAG, "Purchase error: ${billingResult.debugMessage}")
+                logPurchaseFailed("billing_${billingResult.responseCode}")
             }
         }
     }
@@ -418,9 +423,63 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
 
         savePurchasesToFirestore(unlockedCountries, skus, newSubStatus)
 
+        if (fromQueryReconcile && restoreRequested) {
+            restoreRequested = false
+            val restored = skus + (inappPurchases + subsPurchases)
+                .filter { it.purchaseState == Purchase.PurchaseState.PURCHASED }
+                .flatMap { it.products }
+            restored.toSet().forEach { productId ->
+                com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.PURCHASE_RESTORED, mapOf("product_id" to productId))
+            }
+        }
+
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "Reconciled: countries=$unlockedCountries, skus=$skus, sub=$newSubStatus")
         }
+    }
+
+    /** Product the user last tapped buy on, for purchase_failed (Play's cancel callback has no purchase). */
+    private var pendingProductId: String? = null
+    /** Set by [restorePurchases] so the next query reconcile reports purchase_restored. */
+    private var restoreRequested = false
+
+    private fun priceProps(productId: String): Map<String, Any?> {
+        val details = _productDetails.value[productId] ?: return emptyMap()
+        val phase = basePlanOffer(details)?.pricingPhases?.pricingPhaseList?.lastOrNull()
+        val micros = phase?.priceAmountMicros ?: details.oneTimePurchaseOfferDetails?.priceAmountMicros
+        val currency = phase?.priceCurrencyCode ?: details.oneTimePurchaseOfferDetails?.priceCurrencyCode
+        return mapOf("price" to micros?.let { it / 1_000_000.0 }, "currency" to currency)
+    }
+
+    /** Fresh transactions from onPurchasesUpdated: only unacknowledged ones are new sales. */
+    private fun logNewPurchases(purchases: List<Purchase>) {
+        for (purchase in purchases) {
+            val productId = purchase.products.firstOrNull() ?: continue
+            when {
+                purchase.purchaseState == Purchase.PurchaseState.PENDING ->
+                    logPurchaseFailed("pending", productId)
+                purchase.purchaseState == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged ->
+                    com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.PURCHASE_COMPLETED, mapOf(
+                        "product_id" to productId,
+                        "source" to com.example.gothere.util.Analytics.paywallSource,
+                        "is_trial" to false,
+                        "is_restore" to false,
+                        "order_id" to purchase.orderId,
+                        "is_subscription" to (productId in SUBSCRIPTION_SKUS),
+                        "\$set" to mapOf("is_paying" to true, "premium_product" to productId)
+                    ) + priceProps(productId))
+            }
+        }
+        pendingProductId = null
+    }
+
+    private fun logPurchaseFailed(reason: String, productId: String? = pendingProductId) {
+        com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.PURCHASE_FAILED, mapOf(
+            "product_id" to productId,
+            "reason" to reason,
+            "source" to com.example.gothere.util.Analytics.paywallSource
+        ))
+        pendingProductId = null
     }
 
     private fun acknowledgePurchase(purchase: Purchase) {
@@ -458,7 +517,15 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
             .setProductDetailsParamsList(listOf(paramsBuilder.build()))
             .build()
 
+        pendingProductId = productId
+        com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.PURCHASE_STARTED, mapOf(
+            "product_id" to productId,
+            "source" to com.example.gothere.util.Analytics.paywallSource
+        ) + priceProps(productId))
         val billingResult = billingClient.launchBillingFlow(activity, billingFlowParams)
+        if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
+            logPurchaseFailed("launch_${billingResult.responseCode}")
+        }
         return billingResult.responseCode == BillingClient.BillingResponseCode.OK
     }
 
@@ -617,7 +684,9 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
             }
     }
 
-    fun restorePurchases() {
+    /** [userInitiated] false for the silent restore after sign-in, which must not report purchase_restored. */
+    fun restorePurchases(userInitiated: Boolean = true) {
+        if (userInitiated) restoreRequested = true
         if (_isConnected.value) {
             queryPurchases()
         } else {

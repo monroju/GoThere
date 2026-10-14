@@ -178,6 +178,7 @@ fun ResourcesScreen(
                 onDismiss = { presentedJourney = null },
                 onOpenPaywall = {
                     presentedJourney = null
+                    com.example.gothere.util.Analytics.paywallSource = "real_journey"
                     showPaywall = true
                 }
             )
@@ -325,7 +326,7 @@ fun ResourcesScreen(
                 item {
                     LockedCountryCard(
                         countryName = countryName,
-                        onUnlockClick = { showPaywall = true }
+                        onUnlockClick = { com.example.gothere.util.Analytics.paywallSource = "resources"; showPaywall = true }
                     )
                 }
             }

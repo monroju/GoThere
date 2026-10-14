@@ -62,6 +62,7 @@ fun VisaWizardScreen(
 
     LaunchedEffect(countryId) {
         vm.loadConfig(countryId)
+        com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.WIZARD_STARTED, mapOf("country_id" to countryId))
     }
 
     val countryName = when (countryId) {
@@ -451,7 +452,10 @@ private fun SummaryScreen(
         if (saveComplete) {
             // Success state
             val context = LocalContext.current
-            LaunchedEffect(Unit) { ReviewHelper.onMilestone(context, ReviewMilestone.WIZARD_COMPLETED) }
+            LaunchedEffect(Unit) {
+                com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.WIZARD_COMPLETED)
+                ReviewHelper.onMilestone(context, ReviewMilestone.WIZARD_COMPLETED)
+            }
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally

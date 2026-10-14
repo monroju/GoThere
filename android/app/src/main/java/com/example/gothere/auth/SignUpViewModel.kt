@@ -61,6 +61,9 @@ class SignUpViewModel(
         viewModelScope.launch {
             val res = repo.createUser(s.email, s.password)
             _ui.value = if (res.isSuccess) {
+                com.example.gothere.util.Analytics.log(
+                    com.example.gothere.util.Analytics.SIGNUP_COMPLETED, mapOf("method" to "email")
+                )
                 onSuccess()
                 _ui.value.copy(isLoading = false, error = null)
             } else {

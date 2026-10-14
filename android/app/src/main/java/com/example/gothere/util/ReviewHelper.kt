@@ -42,6 +42,7 @@ object ReviewHelper {
         request.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val reviewInfo = task.result
+                Analytics.log(Analytics.REVIEW_PROMPT_REQUESTED)
                 manager.launchReviewFlow(activity, reviewInfo).addOnCompleteListener {
                     // Mark as requested regardless of outcome (Google throttles this)
                     activity.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)

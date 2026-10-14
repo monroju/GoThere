@@ -55,6 +55,9 @@ class AuthViewModel(
         viewModelScope.launch {
             val res = repo.signIn(email, password)
             _ui.value = if (res.isSuccess) {
+                com.example.gothere.util.Analytics.log(
+                    com.example.gothere.util.Analytics.LOGIN_COMPLETED, mapOf("method" to "email")
+                )
                 onSuccess()
                 _ui.value.copy(isLoading = false, error = null)
             } else {

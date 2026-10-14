@@ -47,6 +47,9 @@ fun VisaCompareScreen(
     onDismiss: () -> Unit,
     onStartWizard: (String) -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.VISA_COMPARE_VIEWED, mapOf("country_id" to (initialCountryId ?: "all")))
+    }
     var countryFilter by remember { mutableStateOf<String?>(initialCountryId) }
     var categoryFilter by remember { mutableStateOf<VisaCategory?>(null) }
     var selectedIds by remember { mutableStateOf<Set<String>>(emptySet()) }

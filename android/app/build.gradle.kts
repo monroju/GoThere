@@ -142,6 +142,7 @@ dependencies {
 
     // PostHog product analytics
     implementation("com.posthog:posthog-android:3.+")
+    implementation("com.android.installreferrer:installreferrer:2.2")
 
     // (Optional) Material Components for Android Views (if any XML screens)
     implementation("com.google.android.material:material:1.12.0")

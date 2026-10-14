@@ -176,8 +176,15 @@ class MainActivity : ComponentActivity() {
             PostHogAndroidConfig(
                 apiKey = "phc_zdWSqHah9LiyNqn38H2i3E48XPv5acrWsXedfUWVGSLb",
                 host = "https://eu.i.posthog.com"
-            )
+            ).apply { captureApplicationLifecycleEvents = true }
         )
+        com.example.gothere.util.Analytics.init(applicationContext)
+        com.example.gothere.util.InstallAttribution.resolveOnce(applicationContext)
+        runCatching {
+            com.google.firebase.auth.FirebaseAuth.getInstance().addAuthStateListener { fa ->
+                fa.currentUser?.uid?.let { com.example.gothere.util.Analytics.identify(it) }
+            }
+        }
 
         if (BuildConfig.DEBUG) {
             runCatching {
@@ -258,7 +265,7 @@ class MainActivity : ComponentActivity() {
                         onAuthSuccess = {
                             // Restore purchases after login, and attach the Firestore
                             // entitlement listener (init only does it when already signed in).
-                            purchaseManager.restorePurchases()
+                            purchaseManager.restorePurchases(userInitiated = false)
                             purchaseManager.onSignedIn()
                         }
                     )
@@ -296,6 +303,7 @@ class MainActivity : ComponentActivity() {
                                 if (BuildConfig.DEBUG) Log.d("CountrySwitch", "Switched to $newId")
                             } else {
                                 // Show paywall
+                                com.example.gothere.util.Analytics.paywallSource = "country_switch"
                                 paywallCountryId = newId
                                 showPaywall = true
                                 if (BuildConfig.DEBUG) Log.d("CountrySwitch", "Country $newId is locked, showing paywall")
@@ -496,6 +504,7 @@ private fun MainAppContent(
                                     },
                                     onClick = {
                                         showCountryDropdown = false
+                                        com.example.gothere.util.Analytics.paywallSource = "country_dropdown"
                                         onRequestPaywall("all")
                                     }
                                 )
@@ -509,7 +518,10 @@ private fun MainAppContent(
                 ),
                 actions = {
                     if (!hasAllAccess) {
-                        TextButton(onClick = { onRequestPaywall("all") }) {
+                        TextButton(onClick = {
+                            com.example.gothere.util.Analytics.paywallSource = "top_bar"
+                            onRequestPaywall("all")
+                        }) {
                             Icon(Icons.Outlined.Star, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text("Upgrade", fontWeight = FontWeight.SemiBold)
@@ -565,7 +577,10 @@ private fun MainAppContent(
                         accessReason = accessReason,
                         unlockedCount = allCountryIds.count { isCountryUnlocked(it) },
                         totalCountries = allCountryIds.size,
-                        onSeePlans = { onRequestPaywall("all") },
+                        onSeePlans = {
+                            com.example.gothere.util.Analytics.paywallSource = "settings"
+                            onRequestPaywall("all")
+                        },
                         onRestorePurchases = onRestorePurchases,
                         onOpenAI = { navController.navigate(Route.AIAssistant.route) },
                         onOpenScan = { navController.navigate(Route.DocumentScan.route) },
@@ -624,13 +639,19 @@ private fun AppNavHost(
         }
         composable(Route.AIAssistant.route) {
             AIAssistantScreen(
-                onRequestUpgrade = { onRequestPaywall(selectedCountryId) }
+                onRequestUpgrade = {
+                    com.example.gothere.util.Analytics.paywallSource = "ai_limit"
+                    onRequestPaywall(selectedCountryId)
+                }
             )
         }
         composable(Route.DocumentScan.route) {
             DocumentScanScreen(
                 countryId = selectedCountryId,
-                onRequestUpgrade = { onRequestPaywall(selectedCountryId) }
+                onRequestUpgrade = {
+                    com.example.gothere.util.Analytics.paywallSource = "document_scan_limit"
+                    onRequestPaywall(selectedCountryId)
+                }
             )
         }
         composable(Route.VisaWizard.route) { backStackEntry ->

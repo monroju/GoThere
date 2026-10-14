@@ -112,6 +112,27 @@ fun PaywallDialog(
     val subPriceSuffix = if (preferredSubProductId == PurchaseManager.PRODUCT_ALL_ACCESS_ANNUAL) "/yr" else "/mo"
     val subPrice = preferredSubProductId?.let { purchaseManager.getFormattedPrice(it) } ?: ""
 
+    // 02-metrics.md: paywall_viewed with source + products, paywall_dismissed when closed without buying.
+    DisposableEffect(Unit) {
+        val openedAt = System.currentTimeMillis()
+        val source = com.example.gothere.util.Analytics.paywallSource
+        com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.PAYWALL_VIEWED, mapOf(
+            "source" to source,
+            "variant" to "v1",
+            "country_id" to countryId,
+            "products_shown" to productDetails.keys.sorted(),
+            "default_product" to (preferredSubProductId ?: "none")
+        ))
+        onDispose {
+            if (!com.example.gothere.util.Analytics.purchasedSince(openedAt)) {
+                com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.PAYWALL_DISMISSED, mapOf(
+                    "source" to source,
+                    "seconds_on_screen" to ((System.currentTimeMillis() - openedAt) / 1000).toInt()
+                ))
+            }
+        }
+    }
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
