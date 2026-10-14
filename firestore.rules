@@ -28,10 +28,20 @@ service cloud.firestore {
 
     // Fields on users/{uid} written ONLY by Cloud Functions (Admin SDK bypasses
     // rules). Clients read them but must never set them, or a user could grant
-    // themselves referral months or forge referral state.
+    // themselves referral months, forge referral state, or unlock paid content.
+    // Entitlement fields: the apps read these back as grants, so a client write
+    // would be a free unlock. On-device StoreKit / Play Billing stay the source of
+    // truth; the apps' own mirror writes of these fields now fail silently.
     function serverOnlyUserFields() {
       return ['promoAccessUntil', 'referralCode', 'referredBy', 'referredByUid',
-              'referredAt', 'referralGrantsCount'];
+              'referredAt', 'referralGrantsCount',
+              'unlockedCountries', 'ownedSKUs', 'subscriptionStatus',
+              'hasAllAccess', 'legacyPaidInstall'];
+    }
+
+    // Concierge waitlist, one doc per user, keyed by uid.
+    match /conciergeWaitlist/{uid} {
+      allow read, create, update: if request.auth != null && request.auth.uid == uid;
     }
 
     // Per-user document
@@ -76,8 +86,41 @@ service cloud.firestore {
         allow read, write: if request.auth != null && request.auth.uid == uid;
       }
 
-      // Recommendations
+      // Recommendations (Android writes ranked rows into an items subcollection)
       match /recommendations/{recId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+
+        match /items/{itemId} {
+          allow read, write: if request.auth != null && request.auth.uid == uid;
+        }
+      }
+
+      // iOS destinations; each holds its own task list
+      match /destinations/{destId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+
+        match /tasks/{taskId} {
+          allow read, delete: if request.auth != null && request.auth.uid == uid;
+          allow create: if request.auth != null && request.auth.uid == uid
+            && request.resource.data.title is string
+            && request.resource.data.title.size() > 0
+            && request.resource.data.title.size() <= 500;
+          allow update: if request.auth != null && request.auth.uid == uid;
+        }
+      }
+
+      // iOS wizard document slots
+      match /documentSlots/{slotId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      // Android calendar notes
+      match /calendar/{dateId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      // Android user resources
+      match /resources/{resourceId} {
         allow read, write: if request.auth != null && request.auth.uid == uid;
       }
 
