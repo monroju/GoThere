@@ -3,11 +3,19 @@ package com.example.gothere.util
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.annotation.DrawableRes
+import com.example.gothere.R
 
 /** Our other apps, promoted from Settings and Resources. Mirrors iOS CrossPromo. */
-enum class PromoApp(val key: String, val packageId: String, val title: String, val subtitle: String) {
-    LOCALISTA("localista", "com.localista.spain", "Localista", "Spain news, alerts and trámites in English"),
-    PASSDGT("passdgt", "app.passdgt.twa", "PassDGT", "Practice the Spanish DGT theory test in English. Free, offline."),
+enum class PromoApp(
+    val key: String,
+    val packageId: String,
+    val title: String,
+    val subtitle: String,
+    @DrawableRes val iconRes: Int,
+) {
+    LOCALISTA("localista", "com.localista.spain", "Localista", "Spain news, alerts and trámites in English", R.drawable.promo_localista),
+    PASSDGT("passdgt", "app.passdgt.twa", "PassDGT", "Practice the Spanish DGT theory test in English. Free, offline.", R.drawable.promo_passdgt),
 }
 
 /**

@@ -2,6 +2,7 @@ package com.example.gothere.ui
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,15 +11,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountTree
 import androidx.compose.material.icons.outlined.AutoAwesome
-import androidx.compose.material.icons.outlined.DirectionsCar
 import androidx.compose.material.icons.outlined.DocumentScanner
-import androidx.compose.material.icons.outlined.Newspaper
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.Verified
@@ -39,8 +40,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.gothere.util.AppearancePrefs
@@ -155,10 +159,10 @@ fun SettingsScreen(
 
         // Our other apps
         SectionTitle("More from us")
-        CrossPromoRow(PromoApp.LOCALISTA, Icons.Outlined.Newspaper) {
+        CrossPromoRow(PromoApp.LOCALISTA) {
             CrossPromo.open(context, PromoApp.LOCALISTA, CrossPromo.PLACEMENT_SETTINGS)
         }
-        CrossPromoRow(PromoApp.PASSDGT, Icons.Outlined.DirectionsCar) {
+        CrossPromoRow(PromoApp.PASSDGT) {
             CrossPromo.open(context, PromoApp.PASSDGT, CrossPromo.PLACEMENT_SETTINGS)
         }
 
@@ -206,7 +210,7 @@ private fun SettingsRow(label: String, icon: ImageVector, onClick: () -> Unit) {
 
 /** Two-line SettingsRow for a sister app: name plus one-line pitch. */
 @Composable
-private fun CrossPromoRow(app: PromoApp, icon: ImageVector, onClick: () -> Unit) {
+private fun CrossPromoRow(app: PromoApp, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -214,7 +218,14 @@ private fun CrossPromoRow(app: PromoApp, icon: ImageVector, onClick: () -> Unit)
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        Image(
+            painter = painterResource(app.iconRes),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(32.dp)
+                .clip(RoundedCornerShape(7.dp))
+        )
         Spacer(Modifier.width(12.dp))
         Column {
             Text(app.title, style = MaterialTheme.typography.bodyLarge)

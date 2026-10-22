@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,8 +19,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -506,13 +510,13 @@ fun ResourcesScreen(
             item {
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-                CrossPromoCard(PromoApp.LOCALISTA, Icons.Outlined.Newspaper) {
+                CrossPromoCard(PromoApp.LOCALISTA) {
                     CrossPromo.open(context, PromoApp.LOCALISTA, CrossPromo.PLACEMENT_RESOURCES, countryId)
                 }
             }
             if (countryId == "spain") {
                 item {
-                    CrossPromoCard(PromoApp.PASSDGT, Icons.Outlined.DirectionsCar) {
+                    CrossPromoCard(PromoApp.PASSDGT) {
                         CrossPromo.open(context, PromoApp.PASSDGT, CrossPromo.PLACEMENT_RESOURCES, countryId)
                     }
                 }
@@ -526,7 +530,7 @@ fun ResourcesScreen(
 
 /** Card linking to one of our other apps' store listing. */
 @Composable
-private fun CrossPromoCard(app: PromoApp, icon: ImageVector, onClick: () -> Unit) {
+private fun CrossPromoCard(app: PromoApp, onClick: () -> Unit) {
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -540,11 +544,13 @@ private fun CrossPromoCard(app: PromoApp, icon: ImageVector, onClick: () -> Unit
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Icon(
-                imageVector = icon,
+            Image(
+                painter = painterResource(app.iconRes),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(36.dp)
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(RoundedCornerShape(9.dp))
             )
             Column(modifier = Modifier.weight(1f)) {
                 Text(
