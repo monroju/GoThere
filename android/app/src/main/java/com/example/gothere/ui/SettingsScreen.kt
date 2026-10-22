@@ -16,7 +16,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountTree
 import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.DirectionsCar
 import androidx.compose.material.icons.outlined.DocumentScanner
+import androidx.compose.material.icons.outlined.Newspaper
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.Verified
@@ -42,6 +44,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.gothere.util.AppearancePrefs
+import com.example.gothere.util.CrossPromo
+import com.example.gothere.util.PromoApp
 
 /**
  * One place for plan, appearance, tools and account. Opened from the gear in the
@@ -149,6 +153,17 @@ fun SettingsScreen(
 
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
+        // Our other apps
+        SectionTitle("More from us")
+        CrossPromoRow(PromoApp.LOCALISTA, Icons.Outlined.Newspaper) {
+            CrossPromo.open(context, PromoApp.LOCALISTA, CrossPromo.PLACEMENT_SETTINGS)
+        }
+        CrossPromoRow(PromoApp.PASSDGT, Icons.Outlined.DirectionsCar) {
+            CrossPromo.open(context, PromoApp.PASSDGT, CrossPromo.PLACEMENT_SETTINGS)
+        }
+
+        HorizontalDivider(Modifier.padding(vertical = 8.dp))
+
         // About
         TextButton(onClick = {
             context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://getgothere.app/privacy.html")))
@@ -186,5 +201,28 @@ private fun SettingsRow(label: String, icon: ImageVector, onClick: () -> Unit) {
         Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
         Spacer(Modifier.width(12.dp))
         Text(label, style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+/** Two-line SettingsRow for a sister app: name plus one-line pitch. */
+@Composable
+private fun CrossPromoRow(app: PromoApp, icon: ImageVector, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        Spacer(Modifier.width(12.dp))
+        Column {
+            Text(app.title, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                app.subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }

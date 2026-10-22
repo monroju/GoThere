@@ -30,6 +30,8 @@ import com.example.gothere.billing.PurchaseManager
 import com.example.gothere.data.RealJourney
 import com.example.gothere.data.RealJourneys
 import com.example.gothere.model.Document
+import com.example.gothere.util.CrossPromo
+import com.example.gothere.util.PromoApp
 import com.example.gothere.viewmodel.ResourcesViewModel
 
 /**
@@ -500,61 +502,70 @@ fun ResourcesScreen(
                 }
             }
 
-            // Cross-promotion: Localista
+            // Cross-promotion: Localista everywhere, PassDGT only on Spain
             item {
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-                ElevatedCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            val intent = Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse("https://play.google.com/store/apps/details?id=com.localista.app")
-                            )
-                            context.startActivity(intent)
-                        },
-                    colors = CardDefaults.elevatedCardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier.padding(14.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Newspaper,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(36.dp)
-                        )
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Try Localista",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            Text(
-                                text = "Spain news in English \u2014 30+ cities, emergency alerts, expat guides",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                        Icon(
-                            imageVector = Icons.Outlined.ChevronRight,
-                            contentDescription = "Open",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(18.dp)
-                        )
+                CrossPromoCard(PromoApp.LOCALISTA, Icons.Outlined.Newspaper) {
+                    CrossPromo.open(context, PromoApp.LOCALISTA, CrossPromo.PLACEMENT_RESOURCES, countryId)
+                }
+            }
+            if (countryId == "spain") {
+                item {
+                    CrossPromoCard(PromoApp.PASSDGT, Icons.Outlined.DirectionsCar) {
+                        CrossPromo.open(context, PromoApp.PASSDGT, CrossPromo.PLACEMENT_RESOURCES, countryId)
                     }
                 }
             }
 
             // Bottom spacing
             item { Spacer(Modifier.height(16.dp)) }
+        }
+    }
+}
+
+/** Card linking to one of our other apps' store listing. */
+@Composable
+private fun CrossPromoCard(app: PromoApp, icon: ImageVector, onClick: () -> Unit) {
+    ElevatedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(36.dp)
+            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = app.title,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = app.subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            Icon(
+                imageVector = Icons.Outlined.ChevronRight,
+                contentDescription = "Open",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(18.dp)
+            )
         }
     }
 }

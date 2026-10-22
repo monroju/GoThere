@@ -44,6 +44,9 @@ object Analytics {
     const val DOCUMENT_SCAN_COMPLETED = "document_scan_completed"
     const val CONCIERGE_WAITLIST_JOINED = "concierge_waitlist_joined"
 
+    // Cross-promo to our other apps
+    const val CROSS_PROMO_TAPPED = "cross_promo_tapped"
+
     private const val PREFS = "analytics_prefs"
     private const val KEY_FIRST_OPEN = "first_open_at"
     private const val KEY_ACTIVATED = "activated_v1"
