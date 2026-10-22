@@ -25,7 +25,7 @@ object CrossPromo {
     fun open(context: Context, app: PromoApp, placement: String, countryId: String? = null) {
         Analytics.log(
             Analytics.CROSS_PROMO_TAPPED,
-            mapOf("app" to app.key, "placement" to placement, "country_id" to countryId)
+            mapOf("target_app" to app.key, "placement" to placement, "country_id" to countryId)
         )
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(storeUrl(app, placement)))
         runCatching { context.startActivity(intent) }
