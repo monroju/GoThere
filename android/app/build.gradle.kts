@@ -30,8 +30,8 @@ android {
         minSdk = 24
         // Play requires target API 36 by Aug 30 2026 or updates get rejected.
         targetSdk = 36
-        versionCode = 33
-        versionName = "1.11.1"
+        versionCode = 35
+        versionName = "1.12.1"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -142,6 +142,7 @@ dependencies {
 
     // PostHog product analytics
     implementation("com.posthog:posthog-android:3.+")
+    implementation("com.android.installreferrer:installreferrer:2.2")
 
     // (Optional) Material Components for Android Views (if any XML screens)
     implementation("com.google.android.material:material:1.12.0")

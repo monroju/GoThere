@@ -8,7 +8,6 @@ import com.example.gothere.model.Task
 import com.example.gothere.repository.EventsRepository
 import com.example.gothere.repository.TaskRepository
 import com.example.gothere.util.NotificationHelper
-import com.example.gothere.util.ReviewHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -137,10 +136,6 @@ class TasksViewModel(
             Log.e("TasksViewModel", "toggleCompleted FAILED id=$id", res.exceptionOrNull())
         } else {
             Log.d("TasksViewModel", "toggleCompleted OK id=$id completed=${!task.completed}")
-            // Trigger in-app review after enough task completions
-            if (!task.completed && context != null) {
-                ReviewHelper.onTaskCompleted(context)
-            }
         }
     }
 

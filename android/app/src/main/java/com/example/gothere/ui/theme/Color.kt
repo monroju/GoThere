@@ -47,6 +47,16 @@ val md_theme_light_surface            = LightSurface
 val md_theme_light_onSurface          = Black
 
 val md_theme_light_surfaceVariant     = Color(0xFFE0E3EB)
+
+// Surface containers (cards, nav bar, sheets). Left unset, Material 3 falls back
+// to its baseline purple-tinted greys, which clash with the teal brand.
+val md_theme_light_surfaceContainerLowest  = Color(0xFFFFFFFF)
+val md_theme_light_surfaceContainerLow     = Color(0xFFF9FAFC)
+val md_theme_light_surfaceContainer        = Color(0xFFF1F4F7)
+val md_theme_light_surfaceContainerHigh    = Color(0xFFEBEEF2)
+val md_theme_light_surfaceContainerHighest = Color(0xFFE4E8EE)
+val md_theme_light_surfaceBright           = Color(0xFFFFFFFF)
+val md_theme_light_surfaceDim              = Color(0xFFD9DEE5)
 val md_theme_light_onSurfaceVariant   = Color(0xFF44474F)
 val md_theme_light_outline            = Color(0xFF75777F)
 val md_theme_light_outlineVariant     = Color(0xFFC4C6CF)
@@ -89,9 +99,18 @@ val md_theme_dark_surface             = Night
 val md_theme_dark_onSurface           = Color(0xFFF5F0E8) // bone white
 
 val md_theme_dark_surfaceVariant      = Color(0xFF2A2F37)
+
+// Surface containers stepped up from Night in the same cool blue-grey.
+val md_theme_dark_surfaceContainerLowest  = Color(0xFF10151C)
+val md_theme_dark_surfaceContainerLow     = Color(0xFF1A212A)
+val md_theme_dark_surfaceContainer        = Color(0xFF1E2530)
+val md_theme_dark_surfaceContainerHigh    = Color(0xFF252D39)
+val md_theme_dark_surfaceContainerHighest = Color(0xFF2C3542)
+val md_theme_dark_surfaceBright           = Color(0xFF333C4A)
+val md_theme_dark_surfaceDim              = Night
 val md_theme_dark_onSurfaceVariant    = Color(0xFFD9D3C7) // cream white (no purple)
 val md_theme_dark_outline             = Color(0xFF9E9890) // warm gray
-val md_theme_dark_outlineVariant      = Color(0xFF4A4740)
+val md_theme_dark_outlineVariant      = Color(0xFF353E4B) // cool hairline, matches Night
 
 val md_theme_dark_inverseOnSurface    = Black
 val md_theme_dark_inverseSurface      = LightSurface

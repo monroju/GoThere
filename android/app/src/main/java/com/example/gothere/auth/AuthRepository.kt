@@ -65,5 +65,6 @@ class AuthRepository(
     fun signOut() {
         Log.d(TAG, "Signing out user uid=${auth.currentUser?.uid}")
         auth.signOut()
+        com.example.gothere.util.Analytics.reset()
     }
 }

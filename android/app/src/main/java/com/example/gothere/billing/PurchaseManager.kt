@@ -173,12 +173,33 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
     private val _promoAccessUntil = MutableStateFlow<Double?>(null)
     val promoAccessUntil: StateFlow<Double?> = _promoAccessUntil.asStateFlow()
 
+    /**
+     * Pre-freemium paid install (see [LegacyEntitlementService]). Grant-only: set from the
+     * device install record or from `users/{uid}.legacyPaidInstall`, never cleared.
+     */
+    private val _isLegacyPaidInstall = MutableStateFlow(false)
+    val isLegacyPaidInstall: StateFlow<Boolean> = _isLegacyPaidInstall.asStateFlow()
+
+    // Declared before init: init attaches the listener, and a later initializer would reset it.
+    private var firestoreListener: com.google.firebase.firestore.ListenerRegistration? = null
+    private var firestoreListenerUid: String? = null
+
+    private fun grantLegacy() {
+        if (!_isLegacyPaidInstall.value) {
+            _isLegacyPaidInstall.value = true
+            // Not a sale: kept out of purchase_completed so store reconciliation stays honest.
+            com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.LEGACY_INSTALL_CONFIRMED, mapOf("\$set" to mapOf("is_paying" to true)))
+        }
+        _purchasedCountries.value = _purchasedCountries.value + ALL_PAID_COUNTRIES
+    }
+
     private fun isPromoActive(): Boolean {
         val until = _promoAccessUntil.value ?: return false
         return until > System.currentTimeMillis() / 1000.0
     }
 
     init {
+        if (LegacyEntitlementService.isLegacyPaidInstall(appContext)) grantLegacy()
         connectToPlayBilling()
         loadPurchasesFromFirestore()
     }
@@ -278,13 +299,18 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
     override fun onPurchasesUpdated(billingResult: BillingResult, purchases: List<Purchase>?) {
         when (billingResult.responseCode) {
             BillingClient.BillingResponseCode.OK -> {
-                purchases?.let { processPurchases(it) }
+                purchases?.let {
+                    logNewPurchases(it)
+                    processPurchases(it)
+                }
             }
             BillingClient.BillingResponseCode.USER_CANCELED -> {
                 if (BuildConfig.DEBUG) Log.d(TAG, "User canceled purchase")
+                logPurchaseFailed("user_cancelled")
             }
             else -> {
                 if (BuildConfig.DEBUG) Log.e(TAG, "Purchase error: ${billingResult.debugMessage}")
+                logPurchaseFailed("billing_${billingResult.responseCode}")
             }
         }
     }
@@ -387,7 +413,7 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
         val effectivelyAllAccess = newSubStatus.isActive ||
             PRODUCT_ALL_COUNTRIES in skus ||
             (PRODUCT_EUROPE_BUNDLE in skus && PRODUCT_AMERICAS_BUNDLE in skus)
-        if (effectivelyAllAccess) {
+        if (effectivelyAllAccess || _isLegacyPaidInstall.value) {
             unlockedCountries.addAll(ALL_PAID_COUNTRIES)
         }
 
@@ -397,9 +423,63 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
 
         savePurchasesToFirestore(unlockedCountries, skus, newSubStatus)
 
+        if (fromQueryReconcile && restoreRequested) {
+            restoreRequested = false
+            val restored = skus + (inappPurchases + subsPurchases)
+                .filter { it.purchaseState == Purchase.PurchaseState.PURCHASED }
+                .flatMap { it.products }
+            restored.toSet().forEach { productId ->
+                com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.PURCHASE_RESTORED, mapOf("product_id" to productId))
+            }
+        }
+
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "Reconciled: countries=$unlockedCountries, skus=$skus, sub=$newSubStatus")
         }
+    }
+
+    /** Product the user last tapped buy on, for purchase_failed (Play's cancel callback has no purchase). */
+    private var pendingProductId: String? = null
+    /** Set by [restorePurchases] so the next query reconcile reports purchase_restored. */
+    private var restoreRequested = false
+
+    private fun priceProps(productId: String): Map<String, Any?> {
+        val details = _productDetails.value[productId] ?: return emptyMap()
+        val phase = basePlanOffer(details)?.pricingPhases?.pricingPhaseList?.lastOrNull()
+        val micros = phase?.priceAmountMicros ?: details.oneTimePurchaseOfferDetails?.priceAmountMicros
+        val currency = phase?.priceCurrencyCode ?: details.oneTimePurchaseOfferDetails?.priceCurrencyCode
+        return mapOf("price" to micros?.let { it / 1_000_000.0 }, "currency" to currency)
+    }
+
+    /** Fresh transactions from onPurchasesUpdated: only unacknowledged ones are new sales. */
+    private fun logNewPurchases(purchases: List<Purchase>) {
+        for (purchase in purchases) {
+            val productId = purchase.products.firstOrNull() ?: continue
+            when {
+                purchase.purchaseState == Purchase.PurchaseState.PENDING ->
+                    logPurchaseFailed("pending", productId)
+                purchase.purchaseState == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged ->
+                    com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.PURCHASE_COMPLETED, mapOf(
+                        "product_id" to productId,
+                        "source" to com.example.gothere.util.Analytics.paywallSource,
+                        "is_trial" to false,
+                        "is_restore" to false,
+                        "order_id" to purchase.orderId,
+                        "is_subscription" to (productId in SUBSCRIPTION_SKUS),
+                        "\$set" to mapOf("is_paying" to true, "premium_product" to productId)
+                    ) + priceProps(productId))
+            }
+        }
+        pendingProductId = null
+    }
+
+    private fun logPurchaseFailed(reason: String, productId: String? = pendingProductId) {
+        com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.PURCHASE_FAILED, mapOf(
+            "product_id" to productId,
+            "reason" to reason,
+            "source" to com.example.gothere.util.Analytics.paywallSource
+        ))
+        pendingProductId = null
     }
 
     private fun acknowledgePurchase(purchase: Purchase) {
@@ -425,7 +505,7 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
         val paramsBuilder = BillingFlowParams.ProductDetailsParams.newBuilder()
             .setProductDetails(details)
         if (productId in SUBSCRIPTION_SKUS) {
-            val offerToken = details.subscriptionOfferDetails?.firstOrNull()?.offerToken
+            val offerToken = basePlanOffer(details)?.offerToken
             if (offerToken == null) {
                 if (BuildConfig.DEBUG) Log.e(TAG, "No offer token for subscription: $productId")
                 return false
@@ -437,7 +517,15 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
             .setProductDetailsParamsList(listOf(paramsBuilder.build()))
             .build()
 
+        pendingProductId = productId
+        com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.PURCHASE_STARTED, mapOf(
+            "product_id" to productId,
+            "source" to com.example.gothere.util.Analytics.paywallSource
+        ) + priceProps(productId))
         val billingResult = billingClient.launchBillingFlow(activity, billingFlowParams)
+        if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
+            logPurchaseFailed("launch_${billingResult.responseCode}")
+        }
         return billingResult.responseCode == BillingClient.BillingResponseCode.OK
     }
 
@@ -461,6 +549,7 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
      * treat as all-access. Mirrors iOS `hasAllAccess`.
      */
     fun hasAllAccess(): Boolean {
+        if (_isLegacyPaidInstall.value) return true
         if (isPromoActive()) return true
         if (_subscriptionStatus.value.isActive) return true
         val skus = _ownedSKUs.value
@@ -472,11 +561,21 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
 
     fun getFormattedPrice(productId: String): String? {
         val details = _productDetails.value[productId] ?: return null
-        // Subscriptions use subscriptionOfferDetails > pricingPhases > formattedPrice.
-        details.subscriptionOfferDetails?.firstOrNull()
-            ?.pricingPhases?.pricingPhaseList?.firstOrNull()
+        // Subscriptions: the base plan's recurring (last) phase, so an offer's
+        // free-trial phase never shows up as the price.
+        basePlanOffer(details)
+            ?.pricingPhases?.pricingPhaseList?.lastOrNull()
             ?.formattedPrice?.let { return it }
         return details.oneTimePurchaseOfferDetails?.formattedPrice
+    }
+
+    /**
+     * The plain base plan (offerId == null). Play's offer order is unspecified,
+     * and the paywall doesn't disclose trial terms, so we never pick an offer.
+     */
+    private fun basePlanOffer(details: ProductDetails): ProductDetails.SubscriptionOfferDetails? {
+        val offers = details.subscriptionOfferDetails ?: return null
+        return offers.firstOrNull { it.offerId == null } ?: offers.firstOrNull()
     }
 
     /**
@@ -511,7 +610,11 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
             "ownedSKUs" to skus.toList(),
             "subscriptionStatus" to subStatus.toFirestoreMap(),
             "hasAllAccess" to hasAllAccess()
-        )
+        ).let { base ->
+            // Only ever write `true`: merge:true means omitting it never clears a
+            // grant made on another device.
+            if (_isLegacyPaidInstall.value) base + ("legacyPaidInstall" to true) else base
+        }
         firestore.collection("users").document(uid)
             .set(payload, com.google.firebase.firestore.SetOptions.merge())
             .addOnFailureListener { e ->
@@ -519,9 +622,30 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
             }
     }
 
+    /** Call after sign-in: init only attaches the entitlement listener when a user
+     *  was already signed in at launch, so a fresh sign-in never saw Firestore grants. */
+    fun onSignedIn() {
+        loadPurchasesFromFirestore()
+    }
+
+    /** Plain-language reason for All Access, shown in Settings. Null when not all-access. */
+    fun accessReason(): String? {
+        if (_isLegacyPaidInstall.value) return "Early supporter: you bought GoThere before it went free"
+        if (isPromoActive()) return "Gift month from a referral"
+        if (_subscriptionStatus.value.isActive) return "All-Access subscription"
+        val skus = _ownedSKUs.value
+        if (PRODUCT_ALL_COUNTRIES in skus) return "Lifetime: all countries"
+        if (PRODUCT_EUROPE_BUNDLE in skus && PRODUCT_AMERICAS_BUNDLE in skus) return "Europe + Americas bundles"
+        if (hasAllAccess()) return "Every country purchased"
+        return null
+    }
+
     private fun loadPurchasesFromFirestore() {
         val uid = auth.currentUser?.uid ?: return
-        firestore.collection("users").document(uid)
+        if (firestoreListenerUid == uid && firestoreListener != null) return
+        firestoreListener?.remove()
+        firestoreListenerUid = uid
+        firestoreListener = firestore.collection("users").document(uid)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     if (BuildConfig.DEBUG) Log.e(TAG, "Firestore listen failed", error)
@@ -532,6 +656,7 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
                 (data["unlockedCountries"] as? List<*>)?.let { countries ->
                     val countrySet = countries.filterIsInstance<String>().toMutableSet()
                     countrySet.addAll(FREE_COUNTRIES)
+                    if (_isLegacyPaidInstall.value) countrySet.addAll(ALL_PAID_COUNTRIES)
                     _purchasedCountries.value = countrySet
                 }
                 (data["ownedSKUs"] as? List<*>)?.let { skuList ->
@@ -551,11 +676,17 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
                         _purchasedCountries.value = _purchasedCountries.value + ALL_PAID_COUNTRIES
                     }
                 }
+                if (data["legacyPaidInstall"] == true) {
+                    LegacyEntitlementService.markGranted(appContext)
+                    grantLegacy()
+                }
                 if (BuildConfig.DEBUG) Log.d(TAG, "Loaded from Firestore: $data")
             }
     }
 
-    fun restorePurchases() {
+    /** [userInitiated] false for the silent restore after sign-in, which must not report purchase_restored. */
+    fun restorePurchases(userInitiated: Boolean = true) {
+        if (userInitiated) restoreRequested = true
         if (_isConnected.value) {
             queryPurchases()
         } else {

@@ -21,6 +21,8 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.gothere.repository.AncestryCatalog
+import com.example.gothere.util.ReviewHelper
+import com.example.gothere.util.ReviewMilestone
 import com.example.gothere.repository.AncestryPath
 import com.example.gothere.repository.AncestryRepository
 
@@ -270,6 +272,13 @@ private fun Verdict(path: AncestryPath, answers: Map<String, Boolean>) {
     val answered = required.all { answers.containsKey(it.id) }
     if (!answered) return
     val allYes = required.all { answers[it.id] == true }
+    LaunchedEffect(path.id, allYes) {
+        com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.ANCESTRY_RESULT_VIEWED, mapOf(
+            "country_id" to path.countryId,
+            "path_id" to path.id,
+            "likely_eligible" to allYes
+        ))
+    }
     val bg = if (allYes) Color(0x3320C997) else Color(0x33FF9800)
     Surface(
         shape = RoundedCornerShape(12.dp),
@@ -278,6 +287,8 @@ private fun Verdict(path: AncestryPath, answers: Map<String, Boolean>) {
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             if (allYes) {
+                val context = LocalContext.current
+                LaunchedEffect(Unit) { ReviewHelper.onMilestone(context, ReviewMilestone.ANCESTRY_LIKELY_ELIGIBLE) }
                 Text("Likely eligible ✓", style = MaterialTheme.typography.titleMedium, color = Color(0xFF1B7F3F))
                 Text(path.outcome, style = MaterialTheme.typography.bodyMedium)
             } else {

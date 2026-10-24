@@ -100,12 +100,9 @@ fun DecisionTreeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Decision Tree: Best Places in $countryName",
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp
-                    ),
-                    color = MaterialTheme.colorScheme.primary,
+                    "Best Places in $countryName",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f)
                 )
 
@@ -212,6 +209,10 @@ fun DecisionTreeScreen(
                         )
                         val ranked = DecisionEngine.rank(destinations, profile, countryId).take(5)
                         results = ranked
+                        com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.DECISION_TREE_COMPLETED, mapOf(
+                            "country_id" to countryId,
+                            "top_destination" to ranked.firstOrNull()?.destination?.id
+                        ))
                         // Persist personas so ResourcesScreen can render For You section
                         // without re-running the wizard.
                         com.example.gothere.repository.UserConsiderationsStore.save(

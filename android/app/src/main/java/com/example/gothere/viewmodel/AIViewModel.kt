@@ -79,7 +79,7 @@ class AIViewModel(app: Application) : AndroidViewModel(app) {
         val trimmed = text.trim()
         if (trimmed.isEmpty() || _isWaiting.value) return
         if (isPaywallGated) {
-            capture("ai_free_limit_reached")
+            capture("free_limit_reached", mapOf("limit" to "ai"))
             _lastError.value = "You've used all free messages. Upgrade to keep going."
             return
         }

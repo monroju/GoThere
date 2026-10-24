@@ -112,6 +112,9 @@ const MAX_BODY_BYTES = 256 * 1024;   // 256 KB — a real transcript is a few KB
 const MAX_MESSAGES = 40;             // safetyTurns=6 on the client → well under
 const MAX_TOOLS = 16;                // we ship 3
 const HARD_MAX_TOKENS = 4096;        // ceiling even if env asks for more
+const UPSTREAM_TIMEOUT_MS = 55000;   // under the 60s function timeout
+const ALLOWED_ROLES = new Set(['user', 'assistant']);
+const ALLOWED_BLOCKS = new Set(['text', 'tool_use', 'tool_result', 'image', 'thinking', 'redacted_thinking']);
 
 const truthy = (v) => v === 'true' || v === '1' || v === 'yes';
 
@@ -121,6 +124,7 @@ exports.handler = onRequest(
     timeoutSeconds: 60,
     region: 'us-central1',
     invoker: 'public',  // Open endpoint; rate-limit at the model level only
+    maxInstances: 10,   // spend ceiling: bounds concurrent upstream calls
     cors: false          // We set headers manually for the SSE case
   },
   async (req, res) => {
@@ -165,8 +169,10 @@ exports.handler = onRequest(
 
     // --- Body-size guard. Cloud Functions parses req.body for us, but we can
     // still reject oversize payloads via the declared content-length. ---
+    // rawBody covers chunked requests that send no content-length.
     const declaredLen = Number(req.headers['content-length'] || 0);
-    if (declaredLen > MAX_BODY_BYTES) {
+    const actualLen = req.rawBody ? req.rawBody.length : 0;
+    if (Math.max(declaredLen, actualLen) > MAX_BODY_BYTES) {
       res.status(413).json({ error: 'Request too large' });
       return;
     }
@@ -205,6 +211,15 @@ exports.handler = onRequest(
       res.status(400).json({ error: `messages array too long (max ${MAX_MESSAGES})` });
       return;
     }
+    // Only user/assistant turns with known block types reach the model, so a
+    // client can never smuggle in system-role or server-tool content.
+    const badMessage = messages.find(m => !m || !ALLOWED_ROLES.has(m.role) ||
+      !(typeof m.content === 'string' || (Array.isArray(m.content) &&
+        m.content.every(b => b && ALLOWED_BLOCKS.has(b.type)))));
+    if (badMessage) {
+      res.status(400).json({ error: 'Unsupported message role or content block' });
+      return;
+    }
     const tools = Array.isArray(body.tools) ? body.tools.slice(0, MAX_TOOLS) : [];
 
     // Translate the iOS wire shape to the Anthropic Messages API shape.
@@ -237,6 +252,10 @@ exports.handler = onRequest(
       stream: wantsStream || undefined
     };
 
+    // Stop billing for a generation nobody will read.
+    const clientGone = new AbortController();
+    res.on('close', () => { if (!res.writableEnded) clientGone.abort(); });
+
     try {
       const upstream = await fetch(ANTHROPIC_ENDPOINT, {
         method: 'POST',
@@ -246,17 +265,16 @@ exports.handler = onRequest(
           'anthropic-version': ANTHROPIC_VERSION,
           'Accept': wantsStream ? 'text/event-stream' : 'application/json'
         },
-        body: JSON.stringify(upstreamBody)
+        body: JSON.stringify(upstreamBody),
+        signal: AbortSignal.any([AbortSignal.timeout(UPSTREAM_TIMEOUT_MS), clientGone.signal])
       });
 
       if (!upstream.ok) {
         const errText = await upstream.text().catch(() => '(no body)');
         console.error('[aiProxy] upstream error', upstream.status, errText.slice(0, 500));
-        res.status(upstream.status).json({
-          error: 'Upstream model error',
-          status: upstream.status,
-          detail: errText.slice(0, 1000)
-        });
+        // Upstream detail (billing, rate-limit internals) stays in the log.
+        const status = upstream.status === 429 || upstream.status === 529 ? 503 : 502;
+        res.status(status).json({ error: 'Upstream model error', status });
         return;
       }
 
@@ -314,10 +332,8 @@ exports.handler = onRequest(
       res.status(200).json(out);
     } catch (e) {
       console.error('[aiProxy] handler exception', e);
-      res.status(502).json({
-        error: 'AI proxy failed',
-        message: (e && e.message) || String(e)
-      });
+      if (res.headersSent) { res.end(); return; }
+      res.status(502).json({ error: 'AI proxy failed' });
     }
   }
 );

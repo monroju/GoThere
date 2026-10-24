@@ -85,7 +85,7 @@ fun DocumentScanScreen(
     ) { uri -> uri?.let { analyzeUri(it) } }
 
     fun startCamera() {
-        if (vm.isScanGated) { onRequestUpgrade(); return }
+        if (vm.isScanGated) { com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.FREE_LIMIT_REACHED, mapOf("limit" to "document_scan")); onRequestUpgrade(); return }
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED
         ) {
@@ -98,7 +98,7 @@ fun DocumentScanScreen(
     }
 
     fun startPhoto() {
-        if (vm.isScanGated) { onRequestUpgrade(); return }
+        if (vm.isScanGated) { com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.FREE_LIMIT_REACHED, mapOf("limit" to "document_scan")); onRequestUpgrade(); return }
         photoLauncher.launch(
             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
         )

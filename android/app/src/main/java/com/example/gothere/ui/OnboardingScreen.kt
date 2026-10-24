@@ -71,6 +71,7 @@ object OnboardingPrefs {
 @Composable
 fun OnboardingScreen(onFinish: () -> Unit) {
     var currentPage by remember { mutableIntStateOf(0) }
+    androidx.compose.runtime.LaunchedEffect(Unit) { com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.ONBOARDING_STARTED) }
 
     Column(
         modifier = Modifier
@@ -151,6 +152,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                     if (currentPage < pages.lastIndex) {
                         currentPage++
                     } else {
+                        com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.ONBOARDING_COMPLETED, mapOf("steps_seen" to pages.size, "skipped" to false))
                         onFinish()
                     }
                 },

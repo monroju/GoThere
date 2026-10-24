@@ -28,6 +28,9 @@ import com.example.gothere.viewmodel.VisaWizardViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.ui.platform.LocalContext
+import com.example.gothere.util.ReviewHelper
+import com.example.gothere.util.ReviewMilestone
 
 @Composable
 fun VisaWizardScreen(
@@ -59,6 +62,7 @@ fun VisaWizardScreen(
 
     LaunchedEffect(countryId) {
         vm.loadConfig(countryId)
+        com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.WIZARD_STARTED, mapOf("country_id" to countryId))
     }
 
     val countryName = when (countryId) {
@@ -447,6 +451,11 @@ private fun SummaryScreen(
     ) {
         if (saveComplete) {
             // Success state
+            val context = LocalContext.current
+            LaunchedEffect(Unit) {
+                com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.WIZARD_COMPLETED)
+                ReviewHelper.onMilestone(context, ReviewMilestone.WIZARD_COMPLETED)
+            }
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally

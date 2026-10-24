@@ -210,6 +210,7 @@ fun ReferralDialog(
                                         val result = repo.redeem(enteredCode.trim())
                                         purchaseManager.applyPromoGrant(result.premiumUntilSeconds)
                                         redeemSucceeded = true
+                                        com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.REFERRAL_REDEEMED, mapOf("reward_days" to result.rewardDays))
                                         redeemMessage = "You're in — ${result.rewardDays} days of All-Access unlocked."
                                     } catch (e: Exception) {
                                         redeemMessage = e.message ?: "Couldn't redeem that code. Please try again."

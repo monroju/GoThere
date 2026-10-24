@@ -3,7 +3,17 @@ package com.example.gothere
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import com.example.gothere.ui.theme.GoTabBar
+import com.example.gothere.ui.theme.GoTabItem
+import androidx.activity.SystemBarStyle
+import androidx.compose.runtime.LaunchedEffect
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.material.icons.automirrored.filled.ListAlt
+import androidx.compose.material.icons.filled.AccountTree
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Folder
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.gothere.BuildConfig
 import androidx.activity.compose.setContent
@@ -30,6 +40,9 @@ import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Star
+import com.example.gothere.ui.SettingsScreen
+import com.example.gothere.util.AppearancePrefs
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
@@ -38,8 +51,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -132,6 +143,7 @@ sealed class Route(val route: String) {
     data object Ancestry : Route("ancestry")
     data object AIAssistant : Route("ai_assistant")
     data object DocumentScan : Route("document_scan")
+    data object Settings : Route("settings")
     data object VisaWizard : Route("visa_wizard/{countryId}") {
         fun create(countryId: String) = "visa_wizard/$countryId"
     }
@@ -143,15 +155,18 @@ sealed class Route(val route: String) {
 data class BottomTab(
     val route: Route,
     val label: String,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector
+    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+    val selectedIcon: androidx.compose.ui.graphics.vector.ImageVector = icon,
+    // Five tabs leave ~80dp per label; anything longer wraps to two lines.
+    val shortLabel: String = label
 )
 
 private val BottomTabs = listOf(
-    BottomTab(Route.Tasks, "Tasks", Icons.AutoMirrored.Outlined.ListAlt),
-    BottomTab(Route.Calendar, "Calendar", Icons.Outlined.CalendarMonth),
-    BottomTab(Route.Documents, "Documents", Icons.Outlined.Folder),
-    BottomTab(Route.Resources, "Resources", Icons.Outlined.Description),
-    BottomTab(Route.DecisionTree, "Decision Tree", Icons.Outlined.AccountTree),
+    BottomTab(Route.Tasks, "Tasks", Icons.AutoMirrored.Outlined.ListAlt, Icons.AutoMirrored.Filled.ListAlt),
+    BottomTab(Route.Calendar, "Calendar", Icons.Outlined.CalendarMonth, Icons.Filled.CalendarMonth),
+    BottomTab(Route.Documents, "Documents", Icons.Outlined.Folder, Icons.Filled.Folder),
+    BottomTab(Route.Resources, "Resources", Icons.Outlined.Description, Icons.Filled.Description),
+    BottomTab(Route.DecisionTree, "Decision Tree", Icons.Outlined.AccountTree, Icons.Filled.AccountTree, shortLabel = "Decide"),
 )
 
 class MainActivity : ComponentActivity() {
@@ -172,8 +187,15 @@ class MainActivity : ComponentActivity() {
             PostHogAndroidConfig(
                 apiKey = "phc_zdWSqHah9LiyNqn38H2i3E48XPv5acrWsXedfUWVGSLb",
                 host = "https://eu.i.posthog.com"
-            )
+            ).apply { captureApplicationLifecycleEvents = true }
         )
+        com.example.gothere.util.Analytics.init(applicationContext)
+        com.example.gothere.util.InstallAttribution.resolveOnce(applicationContext)
+        runCatching {
+            com.google.firebase.auth.FirebaseAuth.getInstance().addAuthStateListener { fa ->
+                fa.currentUser?.uid?.let { com.example.gothere.util.Analytics.identify(it) }
+            }
+        }
 
         if (BuildConfig.DEBUG) {
             runCatching {
@@ -207,7 +229,27 @@ class MainActivity : ComponentActivity() {
         com.example.gothere.billing.FirstWeekTrialService.bootstrap(this)
 
         setContent {
-            var isDark by rememberSaveable { mutableStateOf(true) }
+            var appearance by remember { mutableStateOf(AppearancePrefs.get(this@MainActivity)) }
+            val systemDark = androidx.compose.foundation.isSystemInDarkTheme()
+            val isDark = when (appearance) {
+                AppearancePrefs.DARK -> true
+                AppearancePrefs.LIGHT -> false
+                else -> systemDark
+            }
+            // Status/nav bar icons follow the in-app theme, not the system one,
+            // so they stay readable when the user forces Dark or Light.
+            LaunchedEffect(isDark) {
+                val style = if (isDark) {
+                    SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
+                } else {
+                    SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT)
+                }
+                enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
+            }
+            val setAppearance: (String) -> Unit = { value ->
+                appearance = value
+                AppearancePrefs.set(this@MainActivity, value)
+            }
             var selectedCountryId by rememberSaveable { mutableStateOf("spain") }
             var onboardingDone by rememberSaveable {
                 mutableStateOf(OnboardingPrefs.isCompleted(this@MainActivity))
@@ -219,6 +261,14 @@ class MainActivity : ComponentActivity() {
 
             // Get purchased countries from PurchaseManager
             val purchasedCountries by purchaseManager.purchasedCountries.collectAsState()
+            // Collected so the Upgrade button and Settings plan react to purchases.
+            val subscriptionStatus by purchaseManager.subscriptionStatus.collectAsState()
+            val ownedSKUs by purchaseManager.ownedSKUs.collectAsState()
+            val isLegacy by purchaseManager.isLegacyPaidInstall.collectAsState()
+            val promoUntil by purchaseManager.promoAccessUntil.collectAsState()
+            val hasAllAccess = remember(purchasedCountries, subscriptionStatus, ownedSKUs, isLegacy, promoUntil) {
+                purchaseManager.hasAllAccess()
+            }
 
             val authRepo = AuthRepository()
             val user by authRepo.authStateFlow().collectAsState(initial = authRepo.currentUser())
@@ -232,10 +282,12 @@ class MainActivity : ComponentActivity() {
                 } else if (user == null) {
                     AuthScreen(
                         isDark = isDark,
-                        onToggleTheme = { isDark = !isDark },
+                        onToggleTheme = { setAppearance(if (isDark) AppearancePrefs.LIGHT else AppearancePrefs.DARK) },
                         onAuthSuccess = {
-                            // Restore purchases after login
-                            purchaseManager.restorePurchases()
+                            // Restore purchases after login, and attach the Firestore
+                            // entitlement listener (init only does it when already signed in).
+                            purchaseManager.restorePurchases(userInitiated = false)
+                            purchaseManager.onSignedIn()
                         }
                     )
                 } else {
@@ -252,21 +304,27 @@ class MainActivity : ComponentActivity() {
                     }
                     
                     MainAppContent(
-                        isDark = isDark,
-                        onToggleTheme = { isDark = !isDark },
+                        appearance = appearance,
+                        onAppearanceChange = setAppearance,
+                        hasAllAccess = hasAllAccess,
+                        accessReason = if (hasAllAccess) purchaseManager.accessReason() else null,
+                        onRestorePurchases = { purchaseManager.restorePurchases() },
                         selectedCountryId = selectedCountryId,
                         purchasedCountries = purchasedCountries,
+                        isCountryUnlocked = { purchaseManager.isCountryUnlocked(it) },
                         onRequestPaywall = { id ->
                             paywallCountryId = id
                             showPaywall = true
                         },
                         onCountryChange = { newId ->
                             // Check if country is unlocked
-                            if (purchasedCountries.contains(newId)) {
+                            // isCountryUnlocked also honours the Portugal first-week trial.
+                            if (purchaseManager.isCountryUnlocked(newId)) {
                                 selectedCountryId = newId
                                 if (BuildConfig.DEBUG) Log.d("CountrySwitch", "Switched to $newId")
                             } else {
                                 // Show paywall
+                                com.example.gothere.util.Analytics.paywallSource = "country_switch"
                                 paywallCountryId = newId
                                 showPaywall = true
                                 if (BuildConfig.DEBUG) Log.d("CountrySwitch", "Country $newId is locked, showing paywall")
@@ -282,16 +340,19 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MainAppContent(
-    isDark: Boolean,
-    onToggleTheme: () -> Unit,
+    appearance: String,
+    onAppearanceChange: (String) -> Unit,
+    hasAllAccess: Boolean,
+    accessReason: String?,
+    onRestorePurchases: () -> Unit,
     selectedCountryId: String,
     purchasedCountries: Set<String>,
+    isCountryUnlocked: (String) -> Boolean,
     onRequestPaywall: (String) -> Unit,
     onCountryChange: (String) -> Unit
 ) {
     val navController = rememberNavController()
     var showCountryDropdown by remember { mutableStateOf(false) }
-    var showSettingsMenu by remember { mutableStateOf(false) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
     var deleteError by remember { mutableStateOf<String?>(null) }
 
@@ -418,7 +479,7 @@ private fun MainAppContent(
                             onDismissRequest = { showCountryDropdown = false }
                         ) {
                             allCountryIds.forEach { countryId ->
-                                val isUnlocked = purchasedCountries.contains(countryId)
+                                val isUnlocked = isCountryUnlocked(countryId)
                                 
                                 DropdownMenuItem(
                                     text = {
@@ -455,6 +516,20 @@ private fun MainAppContent(
                                     }
                                 )
                             }
+                            if (!hasAllAccess) {
+                                androidx.compose.material3.HorizontalDivider()
+                                DropdownMenuItem(
+                                    text = { Text("Unlock all countries", fontWeight = FontWeight.SemiBold) },
+                                    leadingIcon = {
+                                        Icon(Icons.Outlined.Star, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                                    },
+                                    onClick = {
+                                        showCountryDropdown = false
+                                        com.example.gothere.util.Analytics.paywallSource = "country_dropdown"
+                                        onRequestPaywall("all")
+                                    }
+                                )
+                            }
                         }
                     }
                 },
@@ -463,107 +538,22 @@ private fun MainAppContent(
                     containerColor = Color.Transparent
                 ),
                 actions = {
-                    IconButton(onClick = onToggleTheme) {
-                        Icon(
-                            imageVector = if (isDark) Icons.Outlined.LightMode else Icons.Outlined.DarkMode,
-                            contentDescription = "Toggle theme"
-                        )
+                    if (!hasAllAccess) {
+                        TextButton(onClick = {
+                            com.example.gothere.util.Analytics.paywallSource = "top_bar"
+                            onRequestPaywall("all")
+                        }) {
+                            Icon(Icons.Outlined.Star, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Upgrade", fontWeight = FontWeight.SemiBold)
+                        }
                     }
-                    // Settings overflow menu
-                    IconButton(onClick = { showSettingsMenu = true }) {
+                    IconButton(onClick = {
+                        navController.navigate(Route.Settings.route) { launchSingleTop = true }
+                    }) {
                         Icon(
                             imageVector = Icons.Outlined.Settings,
                             contentDescription = "Settings"
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = showSettingsMenu,
-                        onDismissRequest = { showSettingsMenu = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("Where to start (AI)") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.AutoAwesome,
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                showSettingsMenu = false
-                                navController.navigate(Route.AIAssistant.route)
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Scan a Document") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.AutoAwesome,
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                showSettingsMenu = false
-                                navController.navigate(Route.DocumentScan.route)
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Visa Wizard") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.AutoAwesome,
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                showSettingsMenu = false
-                                navController.navigate(Route.VisaWizard.create(selectedCountryId))
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Ancestry Citizenship") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.AccountTree,
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                showSettingsMenu = false
-                                navController.navigate(Route.Ancestry.route)
-                            }
-                        )
-                        androidx.compose.material3.HorizontalDivider()
-                        DropdownMenuItem(
-                            text = { Text("Sign Out") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.Logout,
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                showSettingsMenu = false
-                                AuthRepository().signOut()
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    "Delete Account",
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.Delete,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.error
-                                )
-                            },
-                            onClick = {
-                                showSettingsMenu = false
-                                showDeleteConfirm = true
-                            }
                         )
                     }
                 }
@@ -573,33 +563,61 @@ private fun MainAppContent(
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
 
-            NavigationBar {
-                BottomTabs.forEach { tab ->
-                    NavigationBarItem(
-                        selected = currentRoute == tab.route.route,
-                        onClick = {
-                            navController.navigate(tab.route.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        icon = { Icon(tab.icon, contentDescription = tab.label) },
-                        label = { Text(tab.label) }
-                    )
-                }
+            val tabItems = remember {
+                BottomTabs.map { GoTabItem(it.label, it.shortLabel, it.icon, it.selectedIcon) }
             }
+            GoTabBar(
+                items = tabItems,
+                selectedIndex = BottomTabs.indexOfFirst { it.route.route == currentRoute },
+                onSelect = { index ->
+                    // Settings is global, not part of any tab. Close it before
+                    // switching so it is not saved into that tab's history and
+                    // reopened the next time the tab is tapped.
+                    if (currentRoute == Route.Settings.route) {
+                        navController.popBackStack(Route.Settings.route, inclusive = true)
+                    }
+                    navController.navigate(BottomTabs[index].route.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
         }
     ) { innerPadding ->
-        Column(Modifier.padding(innerPadding)) {
+        // Tab screens carry their own Scaffold/TopAppBar; consuming the insets here
+        // stops them from adding the status-bar height a second time.
+        Column(Modifier.padding(innerPadding).consumeWindowInsets(innerPadding)) {
             OfflineBanner()
             AppNavHost(
                 navController = navController,
                 selectedCountryId = selectedCountryId,
                 onRequestPaywall = onRequestPaywall,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                settings = {
+                    SettingsScreen(
+                        appearance = appearance,
+                        onAppearanceChange = onAppearanceChange,
+                        hasAllAccess = hasAllAccess,
+                        accessReason = accessReason,
+                        unlockedCount = allCountryIds.count { isCountryUnlocked(it) },
+                        totalCountries = allCountryIds.size,
+                        onSeePlans = {
+                            com.example.gothere.util.Analytics.paywallSource = "settings"
+                            onRequestPaywall("all")
+                        },
+                        onRestorePurchases = onRestorePurchases,
+                        onOpenAI = { navController.navigate(Route.AIAssistant.route) },
+                        onOpenScan = { navController.navigate(Route.DocumentScan.route) },
+                        onOpenVisaWizard = { navController.navigate(Route.VisaWizard.create(selectedCountryId)) },
+                        onOpenAncestry = { navController.navigate(Route.Ancestry.route) },
+                        onSignOut = { AuthRepository().signOut() },
+                        onDeleteAccount = { showDeleteConfirm = true },
+                        appVersion = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+                    )
+                }
             )
         }
     }
@@ -622,7 +640,8 @@ private fun AppNavHost(
     navController: NavHostController,
     selectedCountryId: String,
     onRequestPaywall: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    settings: @Composable () -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -641,18 +660,25 @@ private fun AppNavHost(
                 countryId = selectedCountryId
             )
         }
+        composable(Route.Settings.route) { settings() }
         composable(Route.Ancestry.route) {
             AncestryCheckerScreen(onBack = { navController.popBackStack() })
         }
         composable(Route.AIAssistant.route) {
             AIAssistantScreen(
-                onRequestUpgrade = { onRequestPaywall(selectedCountryId) }
+                onRequestUpgrade = {
+                    com.example.gothere.util.Analytics.paywallSource = "ai_limit"
+                    onRequestPaywall(selectedCountryId)
+                }
             )
         }
         composable(Route.DocumentScan.route) {
             DocumentScanScreen(
                 countryId = selectedCountryId,
-                onRequestUpgrade = { onRequestPaywall(selectedCountryId) }
+                onRequestUpgrade = {
+                    com.example.gothere.util.Analytics.paywallSource = "document_scan_limit"
+                    onRequestPaywall(selectedCountryId)
+                }
             )
         }
         composable(Route.VisaWizard.route) { backStackEntry ->

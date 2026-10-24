@@ -48,6 +48,7 @@ fun PaywallDialog(
         "argentina" -> "Argentina"
         "hungary" -> "Hungary"
         "uk_ancestry" -> "UK (Ancestry)"
+        "all" -> "All Countries"
         else -> "Country"
     }
 
@@ -77,8 +78,10 @@ fun PaywallDialog(
         else -> null
     }
     
-    val singlePrice = countryProductId?.let { purchaseManager.getFormattedPrice(it) } ?: "$3.99"
-    val bundlePrice = purchaseManager.getFormattedPrice(PurchaseManager.PRODUCT_ALL_COUNTRIES) ?: "$5.99"
+    // No hardcoded fallback prices: a button whose Play price didn't load is hidden rather
+    // than showing a number that may not match what Play charges.
+    val singlePrice = countryProductId?.let { purchaseManager.getFormattedPrice(it) }
+    val bundlePrice = purchaseManager.getFormattedPrice(PurchaseManager.PRODUCT_ALL_COUNTRIES)
 
     // Item 11 mirror — new freemium SKUs surface as additional CTAs when Play Console
     // has them configured (Item 13 pending). Hidden when not yet loaded so the dialog
@@ -108,6 +111,27 @@ fun PaywallDialog(
     }
     val subPriceSuffix = if (preferredSubProductId == PurchaseManager.PRODUCT_ALL_ACCESS_ANNUAL) "/yr" else "/mo"
     val subPrice = preferredSubProductId?.let { purchaseManager.getFormattedPrice(it) } ?: ""
+
+    // 02-metrics.md: paywall_viewed with source + products, paywall_dismissed when closed without buying.
+    DisposableEffect(Unit) {
+        val openedAt = System.currentTimeMillis()
+        val source = com.example.gothere.util.Analytics.paywallSource
+        com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.PAYWALL_VIEWED, mapOf(
+            "source" to source,
+            "variant" to "v1",
+            "country_id" to countryId,
+            "products_shown" to productDetails.keys.sorted(),
+            "default_product" to (preferredSubProductId ?: "none")
+        ))
+        onDispose {
+            if (!com.example.gothere.util.Analytics.purchasedSince(openedAt)) {
+                com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.PAYWALL_DISMISSED, mapOf(
+                    "source" to source,
+                    "seconds_on_screen" to ((System.currentTimeMillis() - openedAt) / 1000).toInt()
+                ))
+            }
+        }
+    }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -177,7 +201,7 @@ fun PaywallDialog(
                 Spacer(modifier = Modifier.height(24.dp))
                 
                 // Single country purchase button
-                if (countryProductId != null) {
+                if (countryProductId != null && singlePrice != null) {
                     Button(
                         onClick = {
                             activity?.let { act ->
@@ -230,7 +254,7 @@ fun PaywallDialog(
                 // Lifetime All-Access (legacy all_countries SKU repositioned).
                 // The misleading "Save over 80%" copy was dropped — subscriptions and region
                 // bundles now exist so a single fixed percentage no longer makes sense.
-                OutlinedButton(
+                if (bundlePrice != null) OutlinedButton(
                     onClick = {
                         activity?.let { act ->
                             purchaseManager.launchPurchaseFlow(act, PurchaseManager.PRODUCT_ALL_COUNTRIES)
@@ -297,6 +321,14 @@ fun PaywallDialog(
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
+                    Text(
+                        text = "Renews automatically at $subPrice$subPriceSuffix until cancelled. " +
+                            "Cancel anytime in Google Play › Payments & subscriptions.",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))

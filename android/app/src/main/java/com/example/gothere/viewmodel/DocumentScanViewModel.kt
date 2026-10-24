@@ -65,6 +65,7 @@ class DocumentScanViewModel(app: Application) : AndroidViewModel(app) {
                 val jpeg = compress(bitmap)
                 val result = DocumentAnalysisClient.analyze(jpeg, country)
                 _analysis.value = result
+                com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.DOCUMENT_SCAN_COMPLETED, mapOf("readable" to !result.unreadable))
                 if (!result.unreadable) {
                     val next = _scanCount.value + 1
                     _scanCount.value = next
