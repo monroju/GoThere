@@ -37,31 +37,51 @@ const { capture, appleEventName } = require('./lib/posthog');
 
 // Lazy-loaded so the library is only required at first invocation — keeps cold
 // starts for unrelated functions in this codebase fast.
-let verifierPromise = null;
-async function getVerifier() {
-  if (verifierPromise) return verifierPromise;
-  verifierPromise = (async () => {
+const verifierPromises = {};
+// One verifier per environment, so TestFlight / App Review (Sandbox) payloads
+// verify as well as Production ones. The verifier itself enforces that the
+// payload's environment matches, so picking by the unverified field is safe.
+async function getVerifier(envName) {
+  const key = String(envName || process.env.APPLE_ENV || 'PRODUCTION').toUpperCase() === 'SANDBOX'
+    ? 'SANDBOX'
+    : 'PRODUCTION';
+  if (verifierPromises[key]) return verifierPromises[key];
+  verifierPromises[key] = (async () => {
+    const fs = require('fs');
+    const path = require('path');
     const lib = require('@apple/app-store-server-library');
     const { SignedDataVerifier, Environment } = lib;
 
-    // Apple bundles the root certs alongside the library; they're returned as
-    // Uint8Array buffers ready for the SignedDataVerifier constructor.
-    const rootCerts = lib.AppleRootCertificates
-      ? lib.AppleRootCertificates.map(c => Buffer.from(c))
-      : [];
+    // The library does NOT ship Apple's root certs (there is no
+    // AppleRootCertificates export), and with an empty list every payload
+    // fails verification. They are bundled in certs/, downloaded from
+    // https://www.apple.com/certificateauthority/ (G3 sha256 63:34:3A:BF:...:91:79).
+    const certDir = path.join(__dirname, 'certs');
+    const rootCerts = fs.readdirSync(certDir)
+      .filter(f => f.endsWith('.cer'))
+      .map(f => fs.readFileSync(path.join(certDir, f)));
 
     const bundleId = process.env.APPLE_BUNDLE_ID || 'com.gothere.ios';
     const appAppleId = Number(process.env.APPLE_APP_ID || 6760248690);
-    const environment = (process.env.APPLE_ENV || 'PRODUCTION').toUpperCase() === 'SANDBOX'
-      ? Environment.SANDBOX
-      : Environment.PRODUCTION;
+    const environment = key === 'SANDBOX' ? Environment.SANDBOX : Environment.PRODUCTION;
 
     // enableOnlineChecks=true validates the cert chain freshness against
     // Apple's OCSP responder. Slower per request but defends against revoked
     // intermediate certs.
     return new SignedDataVerifier(rootCerts, true, environment, bundleId, appAppleId);
   })();
-  return verifierPromise;
+  return verifierPromises[key];
+}
+
+// Reads data.environment from the JWS body WITHOUT trusting it; only used to
+// choose which verifier runs the real check.
+function peekEnvironment(signedPayload) {
+  try {
+    const body = JSON.parse(Buffer.from(String(signedPayload).split('.')[1], 'base64url').toString('utf8'));
+    return (body && body.data && body.data.environment) || null;
+  } catch (e) {
+    return null;
+  }
 }
 
 /**
@@ -92,10 +112,9 @@ function mapToStatus(notificationType, subtype) {
   }
 }
 
-async function processNotification(verified) {
+async function processNotification(verified, verifier) {
   // The verified payload contains data: { signedTransactionInfo, signedRenewalInfo }.
   // Re-verify each inner JWS via the same verifier so we trust the embedded fields.
-  const verifier = await getVerifier();
   const data = verified.data || {};
   const txInfo = data.signedTransactionInfo
     ? await verifier.verifyAndDecodeTransaction(data.signedTransactionInfo)
@@ -180,9 +199,9 @@ exports.handler = onRequest(
     }
 
     try {
-      const verifier = await getVerifier();
+      const verifier = await getVerifier(peekEnvironment(signedPayload));
       const verified = await verifier.verifyAndDecodeNotification(signedPayload);
-      await processNotification(verified);
+      await processNotification(verified, verifier);
       // Apple expects a 200 OK with no body on success.
       res.status(200).send('');
     } catch (e) {
@@ -193,7 +212,8 @@ exports.handler = onRequest(
       const msg = (e && e.message) || '';
       // The library throws VerificationException (numeric `status`) for bad payloads.
       const isVerificationFailure = typeof (e && e.status) === 'number' || /verif|decode|signature|invalid/i.test(msg);
-      res.status(isVerificationFailure ? 422 : 500).send(msg);
+      // Detail stays in the log above; callers only get a generic reason.
+      res.status(isVerificationFailure ? 422 : 500).send(isVerificationFailure ? 'Unverifiable payload' : 'Internal error');
     }
   }
 );
