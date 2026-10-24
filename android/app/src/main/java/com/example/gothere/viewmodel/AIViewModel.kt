@@ -100,7 +100,11 @@ class AIViewModel(app: Application) : AndroidViewModel(app) {
                 val assistant = try {
                     client.send(_messages.value, tools)
                 } catch (e: AIClient.AIException) {
-                    _lastError.value = "Couldn't reach the assistant (HTTP ${e.statusCode})."
+                    _lastError.value = if (e.statusCode == 429) {
+                        "You've reached today's limit for the assistant. Try again tomorrow."
+                    } else {
+                        "Couldn't reach the assistant (HTTP ${e.statusCode})."
+                    }
                     capture("ai_error_returned", mapOf("error" to "http_${e.statusCode}"))
                     return
                 } catch (e: Exception) {

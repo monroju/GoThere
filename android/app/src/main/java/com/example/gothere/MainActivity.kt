@@ -9,6 +9,7 @@ import androidx.activity.SystemBarStyle
 import androidx.compose.runtime.LaunchedEffect
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.AccountTree
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -589,7 +590,9 @@ private fun MainAppContent(
     ) { innerPadding ->
         // Tab screens carry their own Scaffold/TopAppBar; consuming the insets here
         // stops them from adding the status-bar height a second time.
-        Column(Modifier.padding(innerPadding).consumeWindowInsets(innerPadding)) {
+        // imePadding: with edge-to-edge, adjustResize no longer lifts content
+        // above the keyboard, so text inputs near the bottom were hidden.
+        Column(Modifier.padding(innerPadding).consumeWindowInsets(innerPadding).imePadding()) {
             OfflineBanner()
             AppNavHost(
                 navController = navController,

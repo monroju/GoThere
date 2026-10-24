@@ -29,6 +29,7 @@ class AIClient(
     suspend fun send(messages: List<AIMessage>, tools: JSONArray): AIMessage =
         withContext(Dispatchers.IO) {
             val payload = AIProxyWire.encodeRequest(messages, tools).toString()
+            val idToken = currentIdToken()
             val conn = (URL(endpoint).openConnection() as HttpURLConnection).apply {
                 requestMethod = "POST"
                 connectTimeout = connectTimeoutMs
@@ -38,6 +39,7 @@ class AIClient(
                 setRequestProperty("Accept", "application/json")
                 setRequestProperty("X-System-Prompt-Version", AIProxyWire.SYSTEM_PROMPT_VERSION)
                 setRequestProperty("X-GoThere-App-Token", APP_TOKEN)
+                idToken?.let { setRequestProperty("Authorization", "Bearer $it") }
             }
             try {
                 conn.outputStream.use { it.write(payload.toByteArray(Charsets.UTF_8)) }
@@ -56,6 +58,19 @@ class AIClient(
         }
 
     companion object {
+        /**
+         * Firebase ID token for the signed-in user, sent as a Bearer header so the
+         * server can apply a per-user daily quota. Blocking, so call it off the main
+         * thread. Returns null when signed out or on any failure: the request then
+         * goes out untokened and falls under the smaller per-IP allowance.
+         */
+        fun currentIdToken(): String? = runCatching {
+            val user = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser ?: return null
+            com.google.android.gms.tasks.Tasks.await(
+                user.getIdToken(false), 5, java.util.concurrent.TimeUnit.SECONDS
+            ).token
+        }.getOrNull()
+
         /** Matches the iOS endpoint exactly so both clients share the proxy. */
         const val PROXY_URL = "https://api.getgothere.app/ai/messages"
 

@@ -50,6 +50,7 @@ object DocumentAnalysisClient {
                 if (!country.isNullOrEmpty()) put("country", country)
             }.toString()
 
+            val idToken = AIClient.currentIdToken()
             val conn = (URL(ENDPOINT).openConnection() as HttpURLConnection).apply {
                 requestMethod = "POST"
                 doOutput = true
@@ -58,6 +59,7 @@ object DocumentAnalysisClient {
                 setRequestProperty("Content-Type", "application/json")
                 setRequestProperty("Accept", "application/json")
                 setRequestProperty("X-GoThere-App-Token", AIClient.APP_TOKEN)
+                idToken?.let { setRequestProperty("Authorization", "Bearer $it") }
             }
             try {
                 conn.outputStream.use { it.write(body.toByteArray(Charsets.UTF_8)) }
