@@ -1,6 +1,8 @@
 // app/src/main/java/com/example/gothere/ui/DocumentsScreen.kt
 package com.example.gothere.ui
 
+import com.example.gothere.ui.theme.raisedSurface
+import com.example.gothere.ui.theme.RaisedButton
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.*
@@ -52,13 +55,13 @@ fun DocumentsScreen() {
         ) {
             Text(
                 "Your Documents",
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = { vm.refresh() }) {
                 Icon(Icons.Outlined.Refresh, contentDescription = "Refresh")
             }
-            Button(
+            RaisedButton(
                 onClick = { picker.launch(arrayOf("application/pdf", "image/*")) },
                 enabled = !uploading
             ) {
@@ -81,9 +84,9 @@ fun DocumentsScreen() {
         // Informational Text Card
         Card(
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().raisedSurface()
         ) {
             Row(
                 modifier = Modifier.padding(12.dp),
@@ -92,13 +95,13 @@ fun DocumentsScreen() {
                 Icon(
                     imageVector = Icons.Outlined.Info,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(Modifier.width(12.dp))
                 Text(
-                    text = "Upload and save important documents, correspondence, and PDFs related to your US to Spain move for easy access.",
+                    text = "Keep passports, certificates, correspondence and PDFs for your move in one place.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -107,7 +110,16 @@ fun DocumentsScreen() {
 
         if (docs.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No documents yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(Icons.Outlined.FolderOpen, contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(48.dp))
+                    Spacer(Modifier.height(12.dp))
+                    Text("No documents yet", style = MaterialTheme.typography.titleMedium)
+                    Spacer(Modifier.height(4.dp))
+                    Text("Tap Upload to add your first PDF or photo.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             }
             return@Column
         }

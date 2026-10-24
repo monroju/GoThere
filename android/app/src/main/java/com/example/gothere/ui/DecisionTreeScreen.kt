@@ -100,12 +100,9 @@ fun DecisionTreeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Decision Tree: Best Places in $countryName",
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp
-                    ),
-                    color = MaterialTheme.colorScheme.primary,
+                    "Best Places in $countryName",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f)
                 )
 

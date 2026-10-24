@@ -1,5 +1,8 @@
 package com.example.gothere.ui
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import com.example.gothere.ui.theme.raisedSurface
+import com.example.gothere.ui.theme.pressScale
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
@@ -72,12 +75,15 @@ private fun ToolCta(
     highlight: Boolean = false,
     onClick: () -> Unit
 ) {
+    val source = remember { MutableInteractionSource() }
     Card(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth().pressScale(source, 0.97f).raisedSurface(),
         colors = CardDefaults.cardColors(
             containerColor = if (highlight) MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
-            else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        )
+            else MaterialTheme.colorScheme.surfaceContainer
+        ),
+        interactionSource = source
     ) {
         Row(
             modifier = Modifier.padding(14.dp),
@@ -250,8 +256,7 @@ fun ResourcesScreen(
                     Text(
                         text = "$countryName Resources",
                         style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     IconButton(onClick = { vm.refresh() }) {
                         Icon(
@@ -757,10 +762,11 @@ private fun ResourceCategoryCard(
     var isExpanded by remember { mutableStateOf(false) } // Start collapsed for cleaner UI
 
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().raisedSurface(),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        ),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp)
     ) {
         Column {
             // Header (clickable to expand/collapse)

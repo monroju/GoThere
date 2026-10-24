@@ -1,5 +1,8 @@
 package com.example.gothere.ui
 
+import com.example.gothere.ui.theme.raisedSurface
+import com.example.gothere.ui.theme.RaisedButton
+import com.example.gothere.ui.theme.RaisedFab
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -19,6 +22,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.filled.Add
@@ -359,7 +363,7 @@ fun TasksScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snack) },
         floatingActionButton = {
-            FloatingActionButton(onClick = { showAddTask = true }, containerColor = MaterialTheme.colorScheme.primary) {
+            RaisedFab(onClick = { showAddTask = true }) {
                 Icon(Icons.Default.Add, contentDescription = "Add task")
             }
         }
@@ -368,8 +372,8 @@ fun TasksScreen(
             // Header
             Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically) {
-                Text("Relocation Checklist", style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f))
+                Text("Relocation Checklist", style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f))
                 IconButton(onClick = { showSearch = !showSearch }) {
                     Icon(Icons.Outlined.Search, contentDescription = "Search") }
                 if (filteredItems.isNotEmpty()) {
@@ -493,8 +497,8 @@ fun TasksScreen(
                 // --- Tip of the Day ---
                 if (todaysTip != null && !tipDismissed) {
                     item(key = "tip") {
-                        Card(modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
+                        Card(modifier = Modifier.fillMaxWidth().raisedSurface(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)) {
                             Row(Modifier.padding(12.dp), verticalAlignment = Alignment.Top) {
                                 Icon(Icons.Outlined.Lightbulb, contentDescription = null,
                                     tint = MaterialTheme.colorScheme.primary,
@@ -523,7 +527,7 @@ fun TasksScreen(
                                 Text("No tasks for $countryName yet", style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.onSecondaryContainer)
                                 Spacer(Modifier.height(8.dp))
-                                Button(onClick = {
+                                RaisedButton(onClick = {
                                     scope.launch {
                                         TaskRepository().importCountrySeedFromAssets(context, countryId)
                                             .onSuccess { (a, _) -> snack.showSnackbar("Added $a tasks") }
@@ -575,8 +579,8 @@ private fun TaskRow(
     // resource links aren't hidden behind a chevron tap. User can still collapse.
     var isExpanded by remember(task.id) { mutableStateOf(hasDetails) }
 
-    Card(modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))) {
+    Card(modifier = Modifier.fillMaxWidth().raisedSurface(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)) {
         Column(Modifier.padding(16.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = task.completed, onCheckedChange = { onToggle() })
@@ -675,11 +679,23 @@ private fun groupTasksByPhase(tasks: List<Task>): List<TaskPhaseSection> {
 
 @Composable
 private fun PhaseHeader(title: String) {
-    Surface(color = MaterialTheme.colorScheme.primaryContainer, shape = MaterialTheme.shapes.medium,
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-        Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+    // "Phase 1: Research & Planning" renders as a small teal overline plus a
+    // plain section title, instead of a solid banner per phase.
+    val overline = title.substringBefore(':', "").trim()
+    val heading = if (overline.isEmpty()) title else title.substringAfter(':').trim()
+    Row(modifier = Modifier.fillMaxWidth().padding(top = 20.dp, bottom = 6.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.width(4.dp).height(if (overline.isEmpty()) 22.dp else 38.dp)
+            .background(MaterialTheme.colorScheme.primary, MaterialTheme.shapes.extraSmall))
+        Spacer(Modifier.width(12.dp))
+        Column {
+            if (overline.isNotEmpty()) {
+                Text(overline.uppercase(), style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary)
+            }
+            Text(heading, style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface)
+        }
     }
 }
 

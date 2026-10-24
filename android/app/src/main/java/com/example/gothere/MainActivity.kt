@@ -3,7 +3,17 @@ package com.example.gothere
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import com.example.gothere.ui.theme.GoTabBar
+import com.example.gothere.ui.theme.GoTabItem
+import androidx.activity.SystemBarStyle
+import androidx.compose.runtime.LaunchedEffect
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.material.icons.automirrored.filled.ListAlt
+import androidx.compose.material.icons.filled.AccountTree
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Folder
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.gothere.BuildConfig
 import androidx.activity.compose.setContent
@@ -41,8 +51,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -147,15 +155,18 @@ sealed class Route(val route: String) {
 data class BottomTab(
     val route: Route,
     val label: String,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector
+    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+    val selectedIcon: androidx.compose.ui.graphics.vector.ImageVector = icon,
+    // Five tabs leave ~80dp per label; anything longer wraps to two lines.
+    val shortLabel: String = label
 )
 
 private val BottomTabs = listOf(
-    BottomTab(Route.Tasks, "Tasks", Icons.AutoMirrored.Outlined.ListAlt),
-    BottomTab(Route.Calendar, "Calendar", Icons.Outlined.CalendarMonth),
-    BottomTab(Route.Documents, "Documents", Icons.Outlined.Folder),
-    BottomTab(Route.Resources, "Resources", Icons.Outlined.Description),
-    BottomTab(Route.DecisionTree, "Decision Tree", Icons.Outlined.AccountTree),
+    BottomTab(Route.Tasks, "Tasks", Icons.AutoMirrored.Outlined.ListAlt, Icons.AutoMirrored.Filled.ListAlt),
+    BottomTab(Route.Calendar, "Calendar", Icons.Outlined.CalendarMonth, Icons.Filled.CalendarMonth),
+    BottomTab(Route.Documents, "Documents", Icons.Outlined.Folder, Icons.Filled.Folder),
+    BottomTab(Route.Resources, "Resources", Icons.Outlined.Description, Icons.Filled.Description),
+    BottomTab(Route.DecisionTree, "Decision Tree", Icons.Outlined.AccountTree, Icons.Filled.AccountTree, shortLabel = "Decide"),
 )
 
 class MainActivity : ComponentActivity() {
@@ -224,6 +235,16 @@ class MainActivity : ComponentActivity() {
                 AppearancePrefs.DARK -> true
                 AppearancePrefs.LIGHT -> false
                 else -> systemDark
+            }
+            // Status/nav bar icons follow the in-app theme, not the system one,
+            // so they stay readable when the user forces Dark or Light.
+            LaunchedEffect(isDark) {
+                val style = if (isDark) {
+                    SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
+                } else {
+                    SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT)
+                }
+                enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
             }
             val setAppearance: (String) -> Unit = { value ->
                 appearance = value
@@ -542,27 +563,33 @@ private fun MainAppContent(
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
 
-            NavigationBar {
-                BottomTabs.forEach { tab ->
-                    NavigationBarItem(
-                        selected = currentRoute == tab.route.route,
-                        onClick = {
-                            navController.navigate(tab.route.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        icon = { Icon(tab.icon, contentDescription = tab.label) },
-                        label = { Text(tab.label) }
-                    )
-                }
+            val tabItems = remember {
+                BottomTabs.map { GoTabItem(it.label, it.shortLabel, it.icon, it.selectedIcon) }
             }
+            GoTabBar(
+                items = tabItems,
+                selectedIndex = BottomTabs.indexOfFirst { it.route.route == currentRoute },
+                onSelect = { index ->
+                    // Settings is global, not part of any tab. Close it before
+                    // switching so it is not saved into that tab's history and
+                    // reopened the next time the tab is tapped.
+                    if (currentRoute == Route.Settings.route) {
+                        navController.popBackStack(Route.Settings.route, inclusive = true)
+                    }
+                    navController.navigate(BottomTabs[index].route.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
         }
     ) { innerPadding ->
-        Column(Modifier.padding(innerPadding)) {
+        // Tab screens carry their own Scaffold/TopAppBar; consuming the insets here
+        // stops them from adding the status-bar height a second time.
+        Column(Modifier.padding(innerPadding).consumeWindowInsets(innerPadding)) {
             OfflineBanner()
             AppNavHost(
                 navController = navController,

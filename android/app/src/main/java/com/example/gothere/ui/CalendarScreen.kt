@@ -2,6 +2,7 @@
 
 package com.example.gothere.ui
 
+import com.example.gothere.ui.theme.RaisedFab
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,6 +14,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -64,7 +67,8 @@ fun CalendarScreen(vm: CalendarViewModel = viewModel()) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Calendar") },
+                title = { Text("Calendar", style = MaterialTheme.typography.headlineSmall) },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = androidx.compose.ui.graphics.Color.Transparent),
                 actions = {
                     SegmentedButtons(
                         mode = mode,
@@ -74,7 +78,7 @@ fun CalendarScreen(vm: CalendarViewModel = viewModel()) {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { showAddDialog = true }) {
+            RaisedFab(onClick = { showAddDialog = true }) {
                 Icon(Icons.Default.Add, contentDescription = "Add Appointment")
             }
         }
@@ -106,26 +110,26 @@ fun CalendarScreen(vm: CalendarViewModel = viewModel()) {
                                 "${end.month.getDisplayName(TextStyle.SHORT, Locale.getDefault())} ${end.dayOfMonth}"
                     }
                 }
-                Text(headerText, style = MaterialTheme.typography.titleMedium, fontSize = 18.sp)
+                Text(headerText, style = MaterialTheme.typography.titleLarge)
 
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    FilledTonalIconButton(
                         onClick = {
                             when (mode) {
                                 CalendarMode.MONTH -> currentMonth = currentMonth.minusMonths(1)
                                 CalendarMode.WEEK -> currentWeekStart = currentWeekStart.minusWeeks(1)
                             }
                         },
-                        content = { Text("◀") },
+                        content = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Previous") },
                     )
-                    OutlinedButton(
+                    FilledTonalIconButton(
                         onClick = {
                             when (mode) {
                                 CalendarMode.MONTH -> currentMonth = currentMonth.plusMonths(1)
                                 CalendarMode.WEEK -> currentWeekStart = currentWeekStart.plusWeeks(1)
                             }
                         },
-                        content = { Text("▶") },
+                        content = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Next") },
                     )
                 }
             }
@@ -314,50 +318,44 @@ private fun DayCell(
     modifier: Modifier = Modifier
 ) {
     val isSelected = date == selectedDate
+    val isToday = date == LocalDate.now()
     val eventCount = events[date.toEpochDay()]?.size ?: 0
+    val primary = MaterialTheme.colorScheme.primary
 
-    Box(
+    // Borderless grid: selected day is a filled teal circle, today a teal ring,
+    // days with appointments get up to three dots underneath.
+    Column(
         modifier
-            .aspectRatio(1f)
-            .padding(4.dp)
+            .aspectRatio(0.9f)
             .clip(MaterialTheme.shapes.small)
-            .border(
-                width = if (isSelected) 2.dp else 1.dp,
-                color = if (isSelected) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.outlineVariant,
-                shape = MaterialTheme.shapes.small
-            )
             .clickable { onSelect(date) }
-            .padding(4.dp),
-        contentAlignment = Alignment.TopCenter
+            .padding(vertical = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top,
-            modifier = Modifier.fillMaxSize()
+        Box(
+            Modifier
+                .size(36.dp)
+                .clip(CircleShape)
+                .background(if (isSelected) primary else androidx.compose.ui.graphics.Color.Transparent)
+                .then(if (isToday && !isSelected) Modifier.border(1.5.dp, primary, CircleShape) else Modifier),
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 text = date.dayOfMonth.toString(),
-                color = if (isCurrentMonth) MaterialTheme.colorScheme.onSurface
-                else MaterialTheme.colorScheme.onSurfaceVariant,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                style = MaterialTheme.typography.bodyLarge,
+                color = when {
+                    isSelected -> MaterialTheme.colorScheme.onPrimary
+                    isToday -> primary
+                    isCurrentMonth -> MaterialTheme.colorScheme.onSurface
+                    else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f)
+                },
+                fontWeight = if (isSelected || isToday) FontWeight.SemiBold else FontWeight.Normal
             )
-            Spacer(Modifier.height(4.dp))
-            if (eventCount > 0) {
-                Box(
-                    Modifier
-                        .size(16.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = eventCount.toString(),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+        }
+        Spacer(Modifier.height(4.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+            repeat(minOf(eventCount, 3)) {
+                Box(Modifier.size(5.dp).clip(CircleShape).background(primary))
             }
         }
     }

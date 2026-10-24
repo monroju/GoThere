@@ -1,5 +1,6 @@
 package com.example.gothere.ui
 
+import com.example.gothere.ui.theme.RaisedButton
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.Image
@@ -104,7 +105,7 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Button(onClick = onSeePlans, modifier = Modifier.fillMaxWidth()) {
+            RaisedButton(onClick = onSeePlans, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Outlined.Star, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
                 Text("See plans and bundles")
