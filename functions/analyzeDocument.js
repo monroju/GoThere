@@ -28,6 +28,7 @@
  */
 
 const { onRequest } = require('firebase-functions/v2/https');
+const { guard } = require('./lib/aiGuard');
 
 const ANTHROPIC_ENDPOINT = 'https://api.anthropic.com/v1/messages';
 const ANTHROPIC_VERSION = '2023-06-01';
@@ -153,6 +154,7 @@ exports.handler = onRequest(
     region: 'us-central1',
     invoker: 'public',
     cors: false,
+    maxInstances: 5,  // spend ceiling: each call can carry 8 pages of images/PDF
   },
   async (req, res) => {
     // CORS — native apps send no Origin and are always allowed; the app-token
@@ -167,7 +169,7 @@ exports.handler = onRequest(
       res.setHeader('Vary', 'Origin');
     }
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-GoThere-App-Token');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-GoThere-App-Token');
 
     if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
     if (req.method !== 'POST') { res.status(405).json({ error: 'Method Not Allowed' }); return; }
@@ -183,8 +185,10 @@ exports.handler = onRequest(
       console.warn('[analyzeDocument] untokened request (enforcement off)');
     }
 
+    // rawBody covers chunked requests that send no content-length.
     const declaredLen = Number(req.headers['content-length'] || 0);
-    if (declaredLen > MAX_BODY_BYTES) {
+    const actualLen = req.rawBody ? req.rawBody.length : 0;
+    if (Math.max(declaredLen, actualLen) > MAX_BODY_BYTES) {
       res.status(413).json({ error: 'Image too large. Compress or downscale it and try again.' });
       return;
     }
@@ -222,8 +226,10 @@ exports.handler = onRequest(
         ? { type: 'document', source: { type: 'base64', media_type: p.media_type, data: p.data } }
         : { type: 'image', source: { type: 'base64', media_type: p.media_type, data: p.data } }
     ));
-    const countryHint = typeof body.country === 'string' && body.country
-      ? ` The reader is dealing with bureaucracy in ${body.country}.` : '';
+    // The country goes into the prompt, so only accept a short plain name.
+    const country = typeof body.country === 'string' ? body.country.trim() : '';
+    const countryHint = /^[\p{L}'-]+( [\p{L}'-]+){0,3}$/u.test(country) && country.length <= 32
+      ? ` The reader is dealing with bureaucracy in ${country}.` : '';
     const multiPageNote = pages.length > 1
       ? ' These images are consecutive pages of the SAME document — read them together as one.' : '';
     content.push({
@@ -241,6 +247,8 @@ exports.handler = onRequest(
       messages: [{ role: 'user', content }],
     };
 
+    if (!(await guard(req, res, 'analyzeDocument'))) return;
+
     try {
       const upstream = await fetch(ANTHROPIC_ENDPOINT, {
         method: 'POST',
@@ -250,6 +258,7 @@ exports.handler = onRequest(
           'anthropic-version': ANTHROPIC_VERSION,
         },
         body: JSON.stringify(upstreamBody),
+        signal: AbortSignal.timeout(55000),
       });
 
       if (!upstream.ok) {
@@ -260,6 +269,12 @@ exports.handler = onRequest(
       }
 
       const payload = await upstream.json();
+      if (payload.stop_reason === 'max_tokens') {
+        // A cut-off tool call is a partial, possibly misleading result.
+        console.error('[analyzeDocument] hit max_tokens, discarding partial result');
+        res.status(502).json({ error: 'That document was too long to read in one go. Try fewer pages.' });
+        return;
+      }
       const toolBlock = (payload.content || []).find(
         b => b.type === 'tool_use' && b.name === 'report_document');
       if (!toolBlock || !toolBlock.input) {

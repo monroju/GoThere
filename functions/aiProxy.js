@@ -68,6 +68,7 @@
  */
 
 const { onRequest } = require('firebase-functions/v2/https');
+const { guard } = require('./lib/aiGuard');
 
 /**
  * Stored system prompts. Bump the key + add a new entry when the framing
@@ -141,7 +142,7 @@ exports.handler = onRequest(
       res.setHeader('Vary', 'Origin');
     }
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept, X-System-Prompt-Version, X-GoThere-App-Token');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization, X-System-Prompt-Version, X-GoThere-App-Token');
 
     if (req.method === 'OPTIONS') {
       res.status(204).send('');
@@ -251,6 +252,10 @@ exports.handler = onRequest(
       tools: upstreamTools.length ? upstreamTools : undefined,
       stream: wantsStream || undefined
     };
+
+    // Per-user (or per-IP) daily cap. Runs after validation so malformed
+    // requests never consume quota.
+    if (!(await guard(req, res, 'aiProxy'))) return;
 
     // Stop billing for a generation nobody will read.
     const clientGone = new AbortController();

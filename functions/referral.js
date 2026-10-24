@@ -12,7 +12,9 @@
  *
  * Anti-abuse (honest-client posture — the entitlement mirror is already
  * client-trusted app-wide; App Check is the real hardening, tracked separately):
- *   - one redemption per account (users/{uid}.referredBy, set transactionally)
+ *   - one redemption per account, claimed in the server-only
+ *     referralRedemptions/{uid} doc (users/{uid}.referredBy is only a mirror:
+ *     users may delete their own user doc, which used to reset the claim)
  *   - no self-referral
  *   - members with an ACTIVE paid subscription can't redeem (reward is for
  *     bringing new people to premium, not discounting existing subscribers)
@@ -48,6 +50,9 @@ exports.redeemReferral = onCall(OPTS, async (request) => {
 
   const code = String((request.data && request.data.code) || '').trim().toUpperCase();
   if (!code) throw new HttpsError('invalid-argument', 'Enter a referral code.');
+  // Codes are 7 chars from the referral alphabet; anything else (e.g. a '/')
+  // would also be an invalid Firestore doc id.
+  if (!/^[A-HJKMNP-Z2-9]{7}$/.test(code)) throw new HttpsError('not-found', 'That code doesn’t exist.');
 
   const db = admin.firestore();
 
@@ -58,11 +63,12 @@ exports.redeemReferral = onCall(OPTS, async (request) => {
   if (ownerUid === uid) throw new HttpsError('failed-precondition', 'You can’t redeem your own code.');
 
   const redeemerRef = db.collection('users').doc(uid);
+  const claimRef = db.collection('referralRedemptions').doc(uid);
 
   // Claim the redemption atomically so a double-tap / race can't grant twice.
   await db.runTransaction(async (tx) => {
-    const snap = await tx.get(redeemerRef);
-    if (snap.get('referredBy')) {
+    const [claim, snap] = await Promise.all([tx.get(claimRef), tx.get(redeemerRef)]);
+    if (claim.exists || snap.get('referredBy')) {
       throw new HttpsError('already-exists', 'You’ve already redeemed a referral code.');
     }
     const sub = snap.get('subscriptionStatus');
@@ -70,6 +76,11 @@ exports.redeemReferral = onCall(OPTS, async (request) => {
       throw new HttpsError('failed-precondition',
         'Referral months are for new members — you already have an active subscription.');
     }
+    tx.set(claimRef, {
+      code,
+      ownerUid,
+      redeemedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
     tx.set(redeemerRef, {
       referredBy: code,
       referredByUid: ownerUid,
@@ -78,23 +89,27 @@ exports.redeemReferral = onCall(OPTS, async (request) => {
   });
 
   // Referrer reward, capped so a single code can't be farmed indefinitely.
+  // The count is read and bumped in one transaction so parallel redemptions
+  // can't push the owner past the cap.
   const ownerRef = db.collection('users').doc(ownerUid);
-  const ownerSnap = await ownerRef.get();
-  const ownerGrants = ownerSnap.get('referralGrantsCount') || 0;
-  const ownerGetsReward = ownerGrants < OWNER_REWARD_CAP;
+  const ownerGetsReward = await db.runTransaction(async (tx) => {
+    const ownerSnap = await tx.get(ownerRef);
+    const ownerGrants = ownerSnap.get('referralGrantsCount') || 0;
+    if (ownerGrants >= OWNER_REWARD_CAP) return false;
+    tx.set(ownerRef, { referralGrantsCount: ownerGrants + 1 }, { merge: true });
+    return true;
+  });
 
   const memberUntil = await grantPromoDays(uid, REWARD_DAYS);
   if (ownerGetsReward) {
     await grantPromoDays(ownerUid, REWARD_DAYS);
-    await ownerRef.set(
-      { referralGrantsCount: admin.firestore.FieldValue.increment(1) }, { merge: true });
   }
 
   await logEvent({
     source: 'referral', type: 'redeem', uid, productId: code,
     payload: { ownerUid, ownerGetsReward, rewardDays: REWARD_DAYS }
   });
-  sendAlert(`\u{1F381} *GoThere referral redeemed*\nCode: \`${code}\`\nNew member: \`${uid}\`\n` +
+  await sendAlert(`\u{1F381} *GoThere referral redeemed*\nCode: \`${code}\`\nNew member: \`${uid}\`\n` +
             `Referrer: \`${ownerUid}\`${ownerGetsReward ? '' : ' (cap reached — no referrer reward)'}`);
 
   return { rewardDays: REWARD_DAYS, premiumUntil: memberUntil, referrerRewarded: ownerGetsReward };
