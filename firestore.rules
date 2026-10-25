@@ -6,14 +6,24 @@ service cloud.firestore {
     // subscription purchase so the Firebase IAP function (Item 12) can map
     // ASC / Play notifications back to a Firebase user. Document key is the
     // transaction id (Apple) or purchaseToken (Google); body contains the uid.
-    // Client may only create rows whose uid matches their own auth — admin
-    // SDK (used by functions) bypasses this rule.
+    // Client may only create rows whose uid matches their own auth, and only
+    // with the four lookup fields: verified / rejected / checkedAt etc. are set
+    // by the checkIapPurchase function (Admin SDK bypasses these rules).
+    function iapRowFields() {
+      return ['uid', 'productId', 'platform', 'createdAt'];
+    }
     match /iapPurchases/{key} {
       allow create: if request.auth != null
-        && request.resource.data.uid == request.auth.uid;
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(iapRowFields())
+        && request.resource.data.platform in ['ios', 'android']
+        && request.resource.data.productId is string
+        && request.resource.data.productId.size() <= 100
+        && key.size() <= 1000;
       allow update: if request.auth != null
         && resource.data.uid == request.auth.uid
-        && request.resource.data.uid == request.auth.uid;
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(iapRowFields());
       allow read: if request.auth != null
         && resource.data.uid == request.auth.uid;
     }

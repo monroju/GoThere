@@ -20,12 +20,13 @@
  * functions environment.
  */
 
-const admin = require('firebase-admin');
+const { initializeApp } = require('firebase-admin/app');
 
-admin.initializeApp();
+initializeApp();
 
 exports.appleIap = require('./apple').handler;
 exports.googleIap = require('./google').handler;
+exports.checkIapPurchase = require('./purchases').handler;
 exports.aiProxy = require('./aiProxy').handler;
 exports.analyzeDocument = require('./analyzeDocument').handler;
 

@@ -11,7 +11,8 @@
  * no client rule matches it). Limits are per endpoint and overridable via env.
  */
 
-const admin = require('firebase-admin');
+const { getAuth } = require('firebase-admin/auth');
+const { getFirestore, Timestamp } = require('firebase-admin/firestore');
 const crypto = require('crypto');
 
 const truthy = (v) => v === 'true' || v === '1' || v === 'yes';
@@ -32,7 +33,7 @@ async function resolveUid(req) {
   const match = /^Bearer\s+(.+)$/i.exec(header);
   if (!match) return null;
   try {
-    const decoded = await admin.auth().verifyIdToken(match[1]);
+    const decoded = await getAuth().verifyIdToken(match[1]);
     return decoded.uid;
   } catch (e) {
     console.warn('[aiGuard] invalid ID token:', e.code || e.message);
@@ -63,11 +64,11 @@ async function guard(req, res, endpoint) {
     ? `u_${uid}`
     : `ip_${crypto.createHash('sha256').update(clientIp(req)).digest('hex').slice(0, 24)}`;
   const day = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-  const ref = admin.firestore().collection('aiUsage').doc(`${endpoint}_${day}_${who}`);
+  const ref = getFirestore().collection('aiUsage').doc(`${endpoint}_${day}_${who}`);
 
   let allowed = true;
   try {
-    allowed = await admin.firestore().runTransaction(async (tx) => {
+    allowed = await getFirestore().runTransaction(async (tx) => {
       const snap = await tx.get(ref);
       const count = snap.exists ? (snap.get('count') || 0) : 0;
       if (count >= limit) return false;
@@ -77,7 +78,7 @@ async function guard(req, res, endpoint) {
         kind,
         day,
         // Lets a Firestore TTL policy on `expireAt` clean old counters up.
-        expireAt: admin.firestore.Timestamp.fromMillis(Date.now() + 3 * 86400 * 1000)
+        expireAt: Timestamp.fromMillis(Date.now() + 3 * 86400 * 1000)
       }, { merge: true });
       return true;
     });

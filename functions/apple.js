@@ -31,7 +31,8 @@
  */
 
 const { onRequest } = require('firebase-functions/v2/https');
-const { lookupUidByPurchase, writeSubscriptionStatus, logEvent } = require('./lib/firestore');
+const crypto = require('crypto');
+const { lookupPurchase, applyStoreEvent, logEvent } = require('./lib/firestore');
 const { sendAlert } = require('./lib/telegram');
 const { capture, appleEventName } = require('./lib/posthog');
 
@@ -85,6 +86,19 @@ function peekEnvironment(signedPayload) {
 }
 
 /**
+ * The appAccountToken the app passes to StoreKit at purchase time
+ * (Product.PurchaseOption.appAccountToken): a UUID made from the uid, so the
+ * signed transaction names the account it was bought for.
+ */
+function appAccountTokenFor(uid) {
+  const h = crypto.createHash('sha256').update(`gothere:${uid}`).digest();
+  h[6] = (h[6] & 0x0f) | 0x50; // version 5 style
+  h[8] = (h[8] & 0x3f) | 0x80; // RFC 4122 variant
+  const x = h.subarray(0, 16).toString('hex');
+  return `${x.slice(0, 8)}-${x.slice(8, 12)}-${x.slice(12, 16)}-${x.slice(16, 20)}-${x.slice(20)}`;
+}
+
+/**
  * Maps a notificationType + subtype pair to our SubscriptionStatus string.
  * Returns null when the event is informational and shouldn't change state.
  */
@@ -131,15 +145,35 @@ async function processNotification(verified, verifier) {
     ? Math.floor(Number(txInfo.expiresDate) / 1000)  // Apple returns ms since epoch
     : null;
 
-  const uid = await lookupUidByPurchase(originalTransactionId);
-  const newStatus = mapToStatus(notificationType, subtype);
+  const row = await lookupPurchase(originalTransactionId);
+  const uid = row ? row.uid : null;
+  let newStatus = mapToStatus(notificationType, subtype);
 
-  if (newStatus) {
-    if (uid) {
-      await writeSubscriptionStatus(uid, newStatus, expiresAtSeconds);
-    } else {
-      console.warn('[apple] no iapPurchases lookup row for originalTransactionId:', originalTransactionId);
-    }
+  // Purchases made by builds that set appAccountToken name their account; a
+  // lookup row claiming a different uid is not applied.
+  const accountToken = txInfo && txInfo.appAccountToken;
+  if (newStatus && uid && accountToken && String(accountToken).toLowerCase() !== appAccountTokenFor(uid)) {
+    console.error('[apple] transaction appAccountToken does not match iapPurchases uid; not applying.');
+    newStatus = null;
+  }
+  if (newStatus && !uid) {
+    console.warn('[apple] no iapPurchases lookup row for originalTransactionId:', originalTransactionId);
+  }
+
+  // Apple retries until it gets a 200 and does not guarantee order:
+  // notificationUUID dedupes, signedDate orders per original transaction.
+  const outcome = await applyStoreEvent({
+    source: 'apple',
+    eventId: verified.notificationUUID,
+    stateKey: originalTransactionId,
+    orderMillis: Number(verified.signedDate) || null,
+    uid,
+    status: newStatus,
+    expiresAtSeconds
+  });
+  if (outcome === 'duplicate') {
+    console.log('[apple] duplicate notification %s skipped', verified.notificationUUID);
+    return;
   }
 
   await logEvent({
@@ -152,6 +186,8 @@ async function processNotification(verified, verifier) {
       subtype,
       originalTransactionId,
       expiresAtSeconds,
+      notificationUUID: verified.notificationUUID || null,
+      outcome,
       renewalInfo: renewalInfo ? {
         autoRenewStatus: renewalInfo.autoRenewStatus,
         autoRenewProductId: renewalInfo.autoRenewProductId,
@@ -179,6 +215,8 @@ async function processNotification(verified, verifier) {
     ].join('\n'));
   }
 }
+
+exports._internal = { appAccountTokenFor, mapToStatus };
 
 exports.handler = onRequest(
   {

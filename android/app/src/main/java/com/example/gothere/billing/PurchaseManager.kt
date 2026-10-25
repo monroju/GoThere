@@ -513,9 +513,12 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
             paramsBuilder.setOfferToken(offerToken)
         }
 
-        val billingFlowParams = BillingFlowParams.newBuilder()
+        val flowBuilder = BillingFlowParams.newBuilder()
             .setProductDetailsParamsList(listOf(paramsBuilder.build()))
-            .build()
+        // Binds the purchase to this Firebase account so the server can check
+        // iapPurchases rows against Play (functions/lib/play.js, same hash).
+        auth.currentUser?.uid?.let { flowBuilder.setObfuscatedAccountId(obfuscatedAccountId(it)) }
+        val billingFlowParams = flowBuilder.build()
 
         pendingProductId = productId
         com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.PURCHASE_STARTED, mapOf(
@@ -577,6 +580,11 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
         val offers = details.subscriptionOfferDetails ?: return null
         return offers.firstOrNull { it.offerId == null } ?: offers.firstOrNull()
     }
+
+    private fun obfuscatedAccountId(uid: String): String =
+        java.security.MessageDigest.getInstance("SHA-256")
+            .digest("gothere:$uid".toByteArray(Charsets.UTF_8))
+            .joinToString("") { "%02x".format(it) }
 
     /**
      * Writes the `iapPurchases/{purchaseToken}` lookup row used by the Firebase

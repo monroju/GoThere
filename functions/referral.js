@@ -22,7 +22,7 @@
  */
 
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
-const admin = require('firebase-admin');
+const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 const { getOrCreateCode, grantPromoDays } = require('./lib/referrals');
 const { logEvent } = require('./lib/firestore');
 const { sendAlert } = require('./lib/telegram');
@@ -54,7 +54,7 @@ exports.redeemReferral = onCall(OPTS, async (request) => {
   // would also be an invalid Firestore doc id.
   if (!/^[A-HJKMNP-Z2-9]{7}$/.test(code)) throw new HttpsError('not-found', 'That code doesn’t exist.');
 
-  const db = admin.firestore();
+  const db = getFirestore();
 
   const codeSnap = await db.collection('referralCodes').doc(code).get();
   if (!codeSnap.exists) throw new HttpsError('not-found', 'That code doesn’t exist.');
@@ -79,12 +79,12 @@ exports.redeemReferral = onCall(OPTS, async (request) => {
     tx.set(claimRef, {
       code,
       ownerUid,
-      redeemedAt: admin.firestore.FieldValue.serverTimestamp()
+      redeemedAt: FieldValue.serverTimestamp()
     });
     tx.set(redeemerRef, {
       referredBy: code,
       referredByUid: ownerUid,
-      referredAt: admin.firestore.FieldValue.serverTimestamp()
+      referredAt: FieldValue.serverTimestamp()
     }, { merge: true });
   });
 

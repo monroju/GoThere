@@ -17,7 +17,7 @@
  * referrals gives 60 days, never overwrites remaining time.
  */
 
-const admin = require('firebase-admin');
+const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 
 // Unambiguous alphabet — no 0/O/1/I/L so codes are easy to read aloud / retype.
 const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -38,7 +38,7 @@ function randomCode() {
  * user doc, so two concurrent calls can't mint two codes for the same uid.
  */
 async function getOrCreateCode(uid) {
-  const db = admin.firestore();
+  const db = getFirestore();
   const userRef = db.collection('users').doc(uid);
   for (let attempt = 0; attempt < 6; attempt++) {
     const code = randomCode();
@@ -51,7 +51,7 @@ async function getOrCreateCode(uid) {
       if (collision.exists) return null; // extremely rare — retry with a new code
       tx.set(codeRef, {
         ownerUid: uid,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
+        createdAt: FieldValue.serverTimestamp()
       });
       tx.set(userRef, { referralCode: code }, { merge: true });
       return code;
@@ -68,7 +68,7 @@ async function getOrCreateCode(uid) {
  * the new expiry in unix seconds.
  */
 async function grantPromoDays(uid, days) {
-  const db = admin.firestore();
+  const db = getFirestore();
   const userRef = db.collection('users').doc(uid);
   return db.runTransaction(async (tx) => {
     const snap = await tx.get(userRef);

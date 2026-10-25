@@ -7,11 +7,25 @@
         { "fieldPath": "category", "order": "ASCENDING" },
         { "fieldPath": "title", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "resources",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "category", "order": "ASCENDING" },
+        { "fieldPath": "label", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": [
     {
       "collectionGroup": "aiUsage",
+      "fieldPath": "expireAt",
+      "ttl": true,
+      "indexes": []
+    },
+    {
+      "collectionGroup": "iapEvents",
       "fieldPath": "expireAt",
       "ttl": true,
       "indexes": []
