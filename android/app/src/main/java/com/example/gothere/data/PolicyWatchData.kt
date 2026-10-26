@@ -17,7 +17,7 @@ object PolicyWatchData {
         PolicyWatchItem("worldwide_tax", "public",
             "The US taxes citizens on worldwide income — forever",
             "Everyone who leaves while keeping US citizenship or a green card.",
-            "You almost never pay double thanks to the FEIE (~\$126k) + Foreign Tax Credit — but you must keep filing. Pick a destination with a US tax treaty; lean on a preferential regime (Beckham, IFICI)."),
+            "You almost never pay double thanks to the FEIE (\$132,900 for 2026) + Foreign Tax Credit — but you must keep filing. Pick a destination with a US tax treaty; lean on a preferential regime (Beckham, IFICI)."),
         PolicyWatchItem("exit_tax", "logout",
             "Renouncing citizenship can trigger an exit tax",
             "High-net-worth individuals considering giving up US citizenship.",
