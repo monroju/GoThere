@@ -181,8 +181,8 @@ object VisaCatalog {
     private val ireland = listOf(
         VisaInfo("ie_fbr", "ireland", "🇮🇪", "Ireland", "Foreign Births Register (FBR)", "FBR",
             VisaCategory.Ancestry,
-            "No income test", "6-12 months", "Permanent (Irish citizenship)", "Yes — EU citizen rights",
-            "Skip — instant EU citizenship", "Immediate", "€278",
+            "No income test", "About 12 months", "Permanent (Irish citizenship)", "Yes — EU citizen rights",
+            "Skip — instant EU citizenship", "Immediate", "€278 adult, €153 under 18",
             listOf("Full EU passport", "No residency requirement", "Cheap path to EU"),
             listOf("Must register before having children for them to qualify", "Documentation rigorous", "Long DFA backlog"),
             "https://www.ireland.ie/en/dfa/citizenship/born-abroad/", "ie_fbr"),
