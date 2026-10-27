@@ -80,7 +80,10 @@
     <string name="cmp_any">Cualquiera</string>
     <string name="cmp_category">Categoría</string>
     <string name="cmp_clear_n">Borrar (%1$d)</string>
-    <string name="cmp_compare_n">Comparar %1$d visas</string>
+    <plurals name="cmp_compare_n">
+        <item quantity="one">Comparar %1$d visa</item>
+        <item quantity="other">Comparar %1$d visas</item>
+    </plurals>
     <string name="cmp_cons">En contra</string>
     <string name="cmp_country">País</string>
     <string name="cmp_feature">Característica</string>
@@ -314,9 +317,15 @@
     <string name="mc_lean">Austero</string>
     <string name="mc_legal">⚖️ Legal / gestor</string>
     <string name="mc_lifestyle">Estilo de vida</string>
-    <string name="mc_living">🍽️ Gastos de vida (%1$d meses)</string>
+    <plurals name="mc_living">
+        <item quantity="one">🍽️ Gastos de vida (%1$d mes)</item>
+        <item quantity="other">🍽️ Gastos de vida (%1$d meses)</item>
+    </plurals>
     <string name="mc_moderate">Moderado</string>
-    <string name="mc_months_short">%1$d meses</string>
+    <plurals name="mc_months_short">
+        <item quantity="one">%1$d mes</item>
+        <item quantity="other">%1$d meses</item>
+    </plurals>
     <string name="mc_runway">Colchón de efectivo</string>
     <string name="mc_runway_sub">Meses a cubrir hasta que tus ingresos se estabilicen</string>
     <string name="mc_setup">📦 Instalación y envío</string>
@@ -354,7 +363,10 @@
     <string name="paywall_per_month">/mes</string>
     <string name="paywall_per_year">/año</string>
     <string name="paywall_region_bundle">Paquete regional</string>
-    <string name="paywall_region_cta">%1$s · %2$s · %3$d países</string>
+    <plurals name="paywall_region_cta">
+        <item quantity="one">%1$s · %2$s · %3$d país</item>
+        <item quantity="other">%1$s · %2$s · %3$d países</item>
+    </plurals>
     <string name="paywall_renews">Se renueva automáticamente a %1$s%2$s hasta que la canceles. Cancela cuando quieras en Google Play › Pagos y suscripciones.</string>
     <string name="paywall_single_cta">%1$s · Desbloquea %2$s</string>
     <string name="paywall_subscribe_cta">O suscríbete · %1$s%2$s</string>
@@ -401,7 +413,10 @@
     <string name="ref_load_error">No se pudo cargar tu código. Revisa tu conexión e inténtalo de nuevo.</string>
     <string name="ref_redeem">Canjear</string>
     <string name="ref_redeem_failed">No se pudo canjear ese código. Inténtalo de nuevo.</string>
-    <string name="ref_redeemed_days">¡Listo! Desbloqueaste %1$d días de All-Access.</string>
+    <plurals name="ref_redeemed_days">
+        <item quantity="one">¡Listo! Desbloqueaste %1$d día de All-Access.</item>
+        <item quantity="other">¡Listo! Desbloqueaste %1$d días de All-Access.</item>
+    </plurals>
     <string name="ref_share_msg">Estoy usando GoThere para planear mi mudanza al extranjero y de verdad me sirve. Usa mi código %1$s y los dos ganamos un mes gratis de All-Access: %2$s</string>
     <string name="ref_signed_out">Crea una cuenta gratis para invitar amigos y canjear códigos. Los meses de regalo quedan en tu cuenta.</string>
     <string name="ref_title">Regala un mes, gana un mes</string>
@@ -509,7 +524,10 @@
     <string name="settings_restore_note">Restauración iniciada. Todo lo que compraste con esta cuenta de Google se desbloqueará.</string>
     <string name="settings_see_plans">Ver planes y paquetes</string>
     <string name="settings_tools">Herramientas</string>
-    <string name="settings_unlocked_count">%1$d de %2$d países desbloqueados</string>
+    <plurals name="settings_unlocked_count">
+        <item quantity="one">%1$d de %2$d país desbloqueado</item>
+        <item quantity="other">%1$d de %2$d países desbloqueados</item>
+    </plurals>
     <string name="settings_your_plan">Tu plan</string>
     <string name="share">Compartir</string>
     <string name="sign_out">Cerrar sesión</string>
@@ -560,7 +578,10 @@
     <string name="tasks_notes_hint">Agrega tus notas...</string>
     <string name="tasks_phase">Fase</string>
     <string name="tasks_phase_complete">¡Fase completada!</string>
-    <string name="tasks_progress">%1$d de %2$d tareas completadas</string>
+    <plurals name="tasks_progress">
+        <item quantity="one">%1$d de %2$d tarea completada</item>
+        <item quantity="other">%1$d de %2$d tareas completadas</item>
+    </plurals>
     <string name="tasks_reimport">Volver a importar tareas</string>
     <string name="tasks_reimport_body">Agrega las tareas que faltan para %1$s.</string>
     <plurals name="tasks_remaining">
@@ -571,7 +592,10 @@
     <string name="tasks_set_due">Fijar fecha límite</string>
     <string name="tasks_share_checklist">Compartir lista</string>
     <string name="tasks_share_header">GoThere - Lista de mudanza: %1$s</string>
-    <string name="tasks_share_progress">Progreso: %1$d/%2$d completadas</string>
+    <plurals name="tasks_share_progress">
+        <item quantity="one">Progreso: %1$d/%2$d tarea completada</item>
+        <item quantity="other">Progreso: %1$d/%2$d tareas completadas</item>
+    </plurals>
     <string name="tasks_show_done">Mostrar hechas</string>
     <string name="tasks_stay_on_track">¡Sigue al día con tu lista!</string>
     <string name="tasks_task_title">Título de la tarea</string>
@@ -596,7 +620,18 @@
     <string name="unlock_all_countries">Desbloquear todos los países</string>
     <string name="upgrade">Mejorar</string>
     <string name="view">Ver</string>
-    <string name="wiz_add_n">Agregar %1$d tareas a mi lista</string>
+    <string name="visa_cat_ancestry">Ascendencia</string>
+    <string name="visa_cat_digitalnomad">Nómada digital</string>
+    <string name="visa_cat_family">Familia</string>
+    <string name="visa_cat_investment">Inversión</string>
+    <string name="visa_cat_passiveincome">Rentas pasivas / jubilados</string>
+    <string name="visa_cat_selfemployed">Autónomo</string>
+    <string name="visa_cat_student">Estudiante</string>
+    <string name="visa_cat_work">Trabajo / calificado</string>
+    <plurals name="wiz_add_n">
+        <item quantity="one">Agregar %1$d tarea a mi lista</item>
+        <item quantity="other">Agregar %1$d tareas a mi lista</item>
+    </plurals>
     <string name="wiz_choose_body">Elige la visa que vas a tramitar en %1$s. Te armamos una lista personalizada paso a paso.</string>
     <string name="wiz_choose_path">Elige tu tipo de visa</string>
     <string name="wiz_compare">Comparar tipos de visa</string>
@@ -606,9 +641,23 @@
     <string name="wiz_go_tasks">Ir a Tareas</string>
     <string name="wiz_ready">Tu lista de visa personalizada está lista. Las tareas con fecha límite se programaron según tu fecha de mudanza.</string>
     <string name="wiz_step_of">Paso %1$d de %2$d</string>
-    <string name="wiz_tailored">%1$d tareas pensadas para tu situación. Revísalas y agrégalas a tus Tareas.</string>
-    <string name="wiz_tasks_added">¡Se agregaron %1$d tareas a tu lista!</string>
-    <string name="wiz_track_meta">%1$s • %2$d pasos • %3$d tareas</string>
+    <plurals name="wiz_steps_n">
+        <item quantity="one">%1$d paso</item>
+        <item quantity="other">%1$d pasos</item>
+    </plurals>
+    <plurals name="wiz_tailored">
+        <item quantity="one">%1$d tarea pensada para tu situación. Revísala y agrégala a tus Tareas.</item>
+        <item quantity="other">%1$d tareas pensadas para tu situación. Revísalas y agrégalas a tus Tareas.</item>
+    </plurals>
+    <plurals name="wiz_tasks_added">
+        <item quantity="one">¡Se agregó %1$d tarea a tu lista!</item>
+        <item quantity="other">¡Se agregaron %1$d tareas a tu lista!</item>
+    </plurals>
+    <plurals name="wiz_tasks_n">
+        <item quantity="one">%1$d tarea</item>
+        <item quantity="other">%1$d tareas</item>
+    </plurals>
+    <string name="wiz_track_meta">%1$s • %2$s • %3$s</string>
     <string name="wiz_your_checklist">Tu lista personalizada</string>
     <string name="yes">Sí</string>
 </resources>

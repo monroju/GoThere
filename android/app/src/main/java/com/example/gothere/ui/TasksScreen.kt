@@ -382,7 +382,7 @@ fun TasksScreen(
                                     appendLine("  ${if (t.completed) "\u2705" else "\u2B1C"} ${t.title}")
                                 }; appendLine()
                             }
-                            appendLine(context.getString(R.string.tasks_share_progress, completedTasks, totalTasks))
+                            appendLine(context.resources.getQuantityString(R.plurals.tasks_share_progress, totalTasks, completedTasks, totalTasks))
                         }
                         context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
                             type = "text/plain"; putExtra(Intent.EXTRA_TEXT, text)
@@ -441,7 +441,7 @@ fun TasksScreen(
                                     }
                                     Spacer(Modifier.width(16.dp))
                                     Column {
-                                        Text(stringResource(R.string.tasks_progress, completedTasks, totalTasks),
+                                        Text(pluralRes(R.plurals.tasks_progress, totalTasks, completedTasks, totalTasks),
                                             style = MaterialTheme.typography.titleSmall,
                                             fontWeight = FontWeight.SemiBold,
                                             color = MaterialTheme.colorScheme.onPrimaryContainer)

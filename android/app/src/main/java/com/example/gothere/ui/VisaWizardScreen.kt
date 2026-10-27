@@ -241,7 +241,7 @@ private fun TrackSelectionScreen(
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        stringResource(R.string.wiz_track_meta, track.shortName, track.steps.size, track.taskRules.size),
+                        stringResource(R.string.wiz_track_meta, track.shortName, pluralRes(R.plurals.wiz_steps_n, track.steps.size, track.steps.size), pluralRes(R.plurals.wiz_tasks_n, track.taskRules.size, track.taskRules.size)),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -471,7 +471,7 @@ private fun SummaryScreen(
                 )
                 Spacer(Modifier.height(16.dp))
                 Text(
-                    stringResource(R.string.wiz_tasks_added, tasks.size),
+                    pluralRes(R.plurals.wiz_tasks_added, tasks.size, tasks.size),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -497,7 +497,7 @@ private fun SummaryScreen(
                 color = MaterialTheme.colorScheme.primary
             )
             Text(
-                stringResource(R.string.wiz_tailored, tasks.size),
+                pluralRes(R.plurals.wiz_tailored, tasks.size, tasks.size),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -566,7 +566,7 @@ private fun SummaryScreen(
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text(stringResource(R.string.wiz_add_n, tasks.size))
+                    Text(pluralRes(R.plurals.wiz_add_n, tasks.size, tasks.size))
                 }
             }
 

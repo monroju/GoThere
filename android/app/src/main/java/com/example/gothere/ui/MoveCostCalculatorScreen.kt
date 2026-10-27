@@ -147,7 +147,7 @@ fun MoveCostCalculatorScreen(
                     }
                     StepperControl(monthsRunway, 1..12) { monthsRunway = it }
                     Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.mc_months_short, monthsRunway), fontWeight = FontWeight.Bold,
+                    Text(pluralRes(R.plurals.mc_months_short, monthsRunway, monthsRunway), fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary)
                 }
             }
@@ -175,7 +175,7 @@ fun MoveCostCalculatorScreen(
                         LineItem(stringResource(R.string.mc_legal), estimate.legal)
                         LineItem(stringResource(R.string.mc_deposit), estimate.upfrontRent)
                         if (estimate.firstMonthsLiving > 0) {
-                            LineItem(stringResource(R.string.mc_living, maxOf(0, monthsRunway - 1)), estimate.firstMonthsLiving)
+                            LineItem(pluralRes(R.plurals.mc_living, maxOf(0, monthsRunway - 1), maxOf(0, monthsRunway - 1)), estimate.firstMonthsLiving)
                         }
                         LineItem(stringResource(R.string.mc_setup), estimate.setup)
                     }

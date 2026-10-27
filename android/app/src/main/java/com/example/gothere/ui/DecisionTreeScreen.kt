@@ -337,7 +337,7 @@ fun DecisionTreeScreen(
 
 // ----- UI helpers -----
 
-/** Display label for the wizard enums. English keeps the enum name it always showed; the enum value itself is what gets saved. */
+/** Display label for the wizard enums. Only the label is localized; the enum value itself is what gets saved. */
 @Composable
 private fun enumLabel(e: Enum<*>): String = when (e) {
     Household.Singles -> stringResource(R.string.enum_household_singles)

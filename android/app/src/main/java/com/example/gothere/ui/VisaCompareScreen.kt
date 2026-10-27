@@ -107,7 +107,7 @@ fun VisaCompareScreen(
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(
-                            stringResource(R.string.cmp_compare_n, selectedVisas.size),
+                            pluralRes(R.plurals.cmp_compare_n, selectedVisas.size, selectedVisas.size),
                             fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -156,7 +156,7 @@ fun VisaCompareScreen(
                 FilterRow(
                     label = stringResource(R.string.cmp_category),
                     items = listOf<Pair<VisaCategory?, String>>(null to stringResource(R.string.cmp_all_categories)) +
-                        VisaCategory.entries.map { it to it.displayName },
+                        VisaCategory.entries.map { it to categoryLabel(it) },
                     selected = categoryFilter,
                     onSelect = { categoryFilter = it }
                 )
@@ -302,7 +302,7 @@ private fun VisaRow(
                     )
                 }
                 Text(
-                    "${visa.shortName} · ${visa.category.displayName}",
+                    "${visa.shortName} · ${categoryLabel(visa.category)}",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -703,3 +703,18 @@ private fun IncomeFilter(value: Float, onChange: (Float) -> Unit) {
     }
 }
 
+
+/** Localized label for a visa category; VisaCategory.displayName stays the English source. */
+@Composable
+private fun categoryLabel(c: VisaCategory): String = stringResource(
+    when (c) {
+        VisaCategory.PassiveIncome -> R.string.visa_cat_passiveincome
+        VisaCategory.DigitalNomad -> R.string.visa_cat_digitalnomad
+        VisaCategory.Work -> R.string.visa_cat_work
+        VisaCategory.SelfEmployed -> R.string.visa_cat_selfemployed
+        VisaCategory.Ancestry -> R.string.visa_cat_ancestry
+        VisaCategory.Investment -> R.string.visa_cat_investment
+        VisaCategory.Student -> R.string.visa_cat_student
+        VisaCategory.Family -> R.string.visa_cat_family
+    }
+)

@@ -238,7 +238,7 @@ fun PaywallDialog(
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Text(
-                            text = stringResource(R.string.paywall_region_cta, regionBundlePrice, regionBundleLabel, regionBundleCount),
+                            text = pluralRes(R.plurals.paywall_region_cta, regionBundleCount, regionBundlePrice, regionBundleLabel, regionBundleCount),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.primary

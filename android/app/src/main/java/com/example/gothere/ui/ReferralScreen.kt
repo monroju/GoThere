@@ -213,7 +213,7 @@ fun ReferralDialog(
                                         purchaseManager.applyPromoGrant(result.premiumUntilSeconds)
                                         redeemSucceeded = true
                                         com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.REFERRAL_REDEEMED, mapOf("reward_days" to result.rewardDays))
-                                        redeemMessage = context.getString(R.string.ref_redeemed_days, result.rewardDays)
+                                        redeemMessage = context.resources.getQuantityString(R.plurals.ref_redeemed_days, result.rewardDays, result.rewardDays)
                                     } catch (e: Exception) {
                                         redeemMessage = e.message ?: context.getString(R.string.ref_redeem_failed)
                                     }

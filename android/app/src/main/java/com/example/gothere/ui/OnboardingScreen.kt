@@ -4,6 +4,7 @@ import androidx.compose.ui.res.stringResource
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -74,9 +75,12 @@ fun OnboardingScreen(onFinish: () -> Unit) {
     var currentPage by remember { mutableIntStateOf(0) }
     androidx.compose.runtime.LaunchedEffect(Unit) { com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.ONBOARDING_STARTED) }
 
+    // Draw our own themed background: the window background follows the phone's
+    // light/dark mode, which can differ from the in-app Appearance setting.
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center

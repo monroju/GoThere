@@ -106,7 +106,7 @@ fun SettingsScreen(
         } else {
             Text(stringResource(R.string.settings_free_plan), style = MaterialTheme.typography.titleMedium)
             Text(
-                stringResource(R.string.settings_unlocked_count, unlockedCount, totalCountries),
+                pluralRes(R.plurals.settings_unlocked_count, totalCountries, unlockedCount, totalCountries),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

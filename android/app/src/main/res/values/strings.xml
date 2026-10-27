@@ -81,7 +81,10 @@
     <string name="cmp_any">Any</string>
     <string name="cmp_category">Category</string>
     <string name="cmp_clear_n">Clear (%1$d)</string>
-    <string name="cmp_compare_n">Compare %1$d Visas</string>
+    <plurals name="cmp_compare_n">
+        <item quantity="one">Compare %1$d Visa</item>
+        <item quantity="other">Compare %1$d Visas</item>
+    </plurals>
     <string name="cmp_cons">Cons</string>
     <string name="cmp_country">Country</string>
     <string name="cmp_feature">Feature</string>
@@ -239,21 +242,21 @@
     <string name="enum_businessfocus_agriculture">Agriculture</string>
     <string name="enum_businessfocus_finance">Finance</string>
     <string name="enum_businessfocus_logistics">Logistics</string>
-    <string name="enum_businessfocus_remotework">RemoteWork</string>
+    <string name="enum_businessfocus_remotework">Remote work</string>
     <string name="enum_businessfocus_tech">Tech</string>
     <string name="enum_businessfocus_tourism">Tourism</string>
     <string name="enum_climatepref_continental">Continental</string>
     <string name="enum_climatepref_mountain">Mountain</string>
     <string name="enum_climatepref_temperate">Temperate</string>
-    <string name="enum_climatepref_warmcoastal">WarmCoastal</string>
+    <string name="enum_climatepref_warmcoastal">Warm coastal</string>
     <string name="enum_density_high">High</string>
     <string name="enum_density_low">Low</string>
     <string name="enum_density_medium">Medium</string>
     <string name="enum_household_couple">Couple</string>
-    <string name="enum_household_familykids">FamilyKids</string>
+    <string name="enum_household_familykids">Family with kids</string>
     <string name="enum_household_retiree">Retiree</string>
-    <string name="enum_household_singleparent">SingleParent</string>
-    <string name="enum_household_singles">Singles</string>
+    <string name="enum_household_singleparent">Single parent</string>
+    <string name="enum_household_singles">Single</string>
     <string name="enum_language_basic">Basic</string>
     <string name="enum_language_intermediate">Intermediate</string>
     <string name="enum_language_none">None</string>
@@ -315,9 +318,15 @@
     <string name="mc_lean">Lean</string>
     <string name="mc_legal">⚖️ Legal / gestor</string>
     <string name="mc_lifestyle">Lifestyle</string>
-    <string name="mc_living">🍽️ Living runway (%1$d mo)</string>
+    <plurals name="mc_living">
+        <item quantity="one">🍽️ Living runway (%1$d mo)</item>
+        <item quantity="other">🍽️ Living runway (%1$d mo)</item>
+    </plurals>
     <string name="mc_moderate">Moderate</string>
-    <string name="mc_months_short">%1$d mo</string>
+    <plurals name="mc_months_short">
+        <item quantity="one">%1$d mo</item>
+        <item quantity="other">%1$d mo</item>
+    </plurals>
     <string name="mc_runway">Cash runway</string>
     <string name="mc_runway_sub">Months to budget before income stabilises</string>
     <string name="mc_setup">📦 Setup &amp; shipping</string>
@@ -355,7 +364,10 @@
     <string name="paywall_per_month">/mo</string>
     <string name="paywall_per_year">/yr</string>
     <string name="paywall_region_bundle">Region Bundle</string>
-    <string name="paywall_region_cta">%1$s — %2$s · %3$d countries</string>
+    <plurals name="paywall_region_cta">
+        <item quantity="one">%1$s — %2$s · %3$d country</item>
+        <item quantity="other">%1$s — %2$s · %3$d countries</item>
+    </plurals>
     <string name="paywall_renews">Renews automatically at %1$s%2$s until cancelled. Cancel anytime in Google Play › Payments &amp; subscriptions.</string>
     <string name="paywall_single_cta">%1$s — Unlock %2$s</string>
     <string name="paywall_subscribe_cta">Or subscribe — %1$s%2$s</string>
@@ -402,7 +414,10 @@
     <string name="ref_load_error">Couldn\'t load your code. Check your connection and try again.</string>
     <string name="ref_redeem">Redeem</string>
     <string name="ref_redeem_failed">Couldn\'t redeem that code. Please try again.</string>
-    <string name="ref_redeemed_days">You\'re in — %1$d days of All-Access unlocked.</string>
+    <plurals name="ref_redeemed_days">
+        <item quantity="one">You\'re in — %1$d day of All-Access unlocked.</item>
+        <item quantity="other">You\'re in — %1$d days of All-Access unlocked.</item>
+    </plurals>
     <string name="ref_share_msg">I\'m using GoThere to plan my move abroad — it\'s genuinely useful. Use my code %1$s and we both get a free month of All-Access: %2$s</string>
     <string name="ref_signed_out">Create a free account to invite friends and redeem codes. Referral months are tied to your account.</string>
     <string name="ref_title">Give a month, get a month</string>
@@ -510,7 +525,10 @@
     <string name="settings_restore_note">Restore started. Anything bought with this Google account will unlock.</string>
     <string name="settings_see_plans">See plans and bundles</string>
     <string name="settings_tools">Tools</string>
-    <string name="settings_unlocked_count">%1$d of %2$d countries unlocked</string>
+    <plurals name="settings_unlocked_count">
+        <item quantity="one">%1$d of %2$d country unlocked</item>
+        <item quantity="other">%1$d of %2$d countries unlocked</item>
+    </plurals>
     <string name="settings_your_plan">Your plan</string>
     <string name="share">Share</string>
     <string name="sign_out">Sign Out</string>
@@ -561,7 +579,10 @@
     <string name="tasks_notes_hint">Add personal notes...</string>
     <string name="tasks_phase">Phase</string>
     <string name="tasks_phase_complete">Phase Complete!</string>
-    <string name="tasks_progress">%1$d of %2$d tasks completed</string>
+    <plurals name="tasks_progress">
+        <item quantity="one">%1$d of %2$d task completed</item>
+        <item quantity="other">%1$d of %2$d tasks completed</item>
+    </plurals>
     <string name="tasks_reimport">Re-import Seed Tasks</string>
     <string name="tasks_reimport_body">Add missing seed tasks for %1$s.</string>
     <plurals name="tasks_remaining">
@@ -572,7 +593,10 @@
     <string name="tasks_set_due">Set due date</string>
     <string name="tasks_share_checklist">Share checklist</string>
     <string name="tasks_share_header">GoThere - %1$s Relocation Checklist</string>
-    <string name="tasks_share_progress">Progress: %1$d/%2$d completed</string>
+    <plurals name="tasks_share_progress">
+        <item quantity="one">Progress: %1$d/%2$d task completed</item>
+        <item quantity="other">Progress: %1$d/%2$d tasks completed</item>
+    </plurals>
     <string name="tasks_show_done">Show Done</string>
     <string name="tasks_stay_on_track">Stay on track with your checklist!</string>
     <string name="tasks_task_title">Task title</string>
@@ -597,7 +621,18 @@
     <string name="unlock_all_countries">Unlock all countries</string>
     <string name="upgrade">Upgrade</string>
     <string name="view">View</string>
-    <string name="wiz_add_n">Add %1$d Tasks to My Checklist</string>
+    <string name="visa_cat_ancestry">Ancestry / Descent</string>
+    <string name="visa_cat_digitalnomad">Digital Nomad</string>
+    <string name="visa_cat_family">Family</string>
+    <string name="visa_cat_investment">Investment</string>
+    <string name="visa_cat_passiveincome">Passive Income / Retiree</string>
+    <string name="visa_cat_selfemployed">Self-Employed</string>
+    <string name="visa_cat_student">Student</string>
+    <string name="visa_cat_work">Work / Skilled</string>
+    <plurals name="wiz_add_n">
+        <item quantity="one">Add %1$d Task to My Checklist</item>
+        <item quantity="other">Add %1$d Tasks to My Checklist</item>
+    </plurals>
     <string name="wiz_choose_body">Select the visa type you\'re pursuing in %1$s. We\'ll create a personalized step-by-step checklist.</string>
     <string name="wiz_choose_path">Choose Your Visa Path</string>
     <string name="wiz_compare">Compare Visa Types</string>
@@ -607,9 +642,23 @@
     <string name="wiz_go_tasks">Go to Tasks</string>
     <string name="wiz_ready">Your personalized visa checklist is ready. Tasks with due dates have been scheduled based on your target move date.</string>
     <string name="wiz_step_of">Step %1$d of %2$d</string>
-    <string name="wiz_tailored">%1$d tasks tailored to your situation. Review and add them to your Tasks.</string>
-    <string name="wiz_tasks_added">%1$d tasks added to your checklist!</string>
-    <string name="wiz_track_meta">%1$s • %2$d steps • %3$d tasks</string>
+    <plurals name="wiz_steps_n">
+        <item quantity="one">%1$d step</item>
+        <item quantity="other">%1$d steps</item>
+    </plurals>
+    <plurals name="wiz_tailored">
+        <item quantity="one">%1$d task tailored to your situation. Review and add it to your Tasks.</item>
+        <item quantity="other">%1$d tasks tailored to your situation. Review and add them to your Tasks.</item>
+    </plurals>
+    <plurals name="wiz_tasks_added">
+        <item quantity="one">%1$d task added to your checklist!</item>
+        <item quantity="other">%1$d tasks added to your checklist!</item>
+    </plurals>
+    <plurals name="wiz_tasks_n">
+        <item quantity="one">%1$d task</item>
+        <item quantity="other">%1$d tasks</item>
+    </plurals>
+    <string name="wiz_track_meta">%1$s • %2$s • %3$s</string>
     <string name="wiz_your_checklist">Your Personalized Checklist</string>
     <string name="yes">Yes</string>
 </resources>
