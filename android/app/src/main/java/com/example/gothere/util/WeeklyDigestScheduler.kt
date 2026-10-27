@@ -72,10 +72,10 @@ class WeeklyDigestReceiver : BroadcastReceiver() {
 
                 val notification = NotificationCompat.Builder(context, "task_reminders")
                     .setSmallIcon(R.drawable.ic_stat_name)
-                    .setContentTitle("GoThere Weekly Check-in")
-                    .setContentText("How's your relocation progress? Tap to review your checklist.")
+                    .setContentTitle(context.getString(R.string.digest_title))
+                    .setContentText(context.getString(R.string.digest_text))
                     .setStyle(NotificationCompat.BigTextStyle()
-                        .bigText("Start your week right! Check your relocation checklist and knock out a few tasks. Every step counts toward your move."))
+                        .bigText(context.getString(R.string.digest_big)))
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setContentIntent(pendingIntent)
                     .setAutoCancel(true)

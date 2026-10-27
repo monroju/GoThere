@@ -1,5 +1,7 @@
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -55,10 +57,10 @@ fun RealJourneyScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Real Journey") },
+                title = { Text(stringResource(R.string.rj_title)) },
                 navigationIcon = {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Close")
+                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close))
                     }
                 }
             )
@@ -79,7 +81,7 @@ fun RealJourneyScreen(
                 item { EligibilityCard(journey.eligibilitySummary) }
                 item { FeeCard(journey.feeSummary) }
                 item {
-                    SectionHeader("Phase-by-phase walkthrough", Icons.Outlined.ListAlt)
+                    SectionHeader(stringResource(R.string.rj_phase_walk), Icons.Outlined.ListAlt)
                 }
                 items(journey.phases.size, key = { idx -> journey.phases[idx].id }) { idx ->
                     val phase = journey.phases[idx]
@@ -152,7 +154,7 @@ private fun DisclaimerBanner(text: String) {
 private fun EligibilityCard(items: List<String>) {
     ElevatedCard {
         Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            SectionHeader("Eligibility snapshot", Icons.Outlined.CheckCircle)
+            SectionHeader(stringResource(R.string.rj_eligibility), Icons.Outlined.CheckCircle)
             items.forEach { item ->
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Top) {
                     Text("•", color = MaterialTheme.colorScheme.primary)
@@ -167,7 +169,7 @@ private fun EligibilityCard(items: List<String>) {
 private fun FeeCard(summary: String) {
     ElevatedCard {
         Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            SectionHeader("Fees & payment structure", Icons.Outlined.Euro)
+            SectionHeader(stringResource(R.string.rj_fees), Icons.Outlined.Euro)
             Text(text = summary, style = MaterialTheme.typography.bodyMedium)
         }
     }
@@ -207,7 +209,7 @@ private fun PhaseCard(phase: JourneyPhase, expanded: Boolean, onToggle: () -> Un
                     Text(text = phase.summary, style = MaterialTheme.typography.bodyMedium)
 
                     if (phase.documents.isNotEmpty()) {
-                        SubSection("Documents") {
+                        SubSection(stringResource(R.string.rj_documents)) {
                             phase.documents.forEach { doc ->
                                 IconRow(icon = Icons.Outlined.Description, text = doc)
                             }
@@ -215,7 +217,7 @@ private fun PhaseCard(phase: JourneyPhase, expanded: Boolean, onToggle: () -> Un
                     }
 
                     if (phase.lawyerPatterns.isNotEmpty()) {
-                        SubSection("What the lawyer typically says") {
+                        SubSection(stringResource(R.string.rj_lawyer_says)) {
                             phase.lawyerPatterns.forEach { p ->
                                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                                     Text(
@@ -235,7 +237,7 @@ private fun PhaseCard(phase: JourneyPhase, expanded: Boolean, onToggle: () -> Un
                     }
 
                     if (phase.gotchas.isNotEmpty()) {
-                        SubSection("Gotchas") {
+                        SubSection(stringResource(R.string.rj_gotchas)) {
                             phase.gotchas.forEach { g ->
                                 IconRow(icon = Icons.Outlined.Warning, text = g, tint = MaterialTheme.colorScheme.tertiary)
                             }
@@ -251,7 +253,7 @@ private fun PhaseCard(phase: JourneyPhase, expanded: Boolean, onToggle: () -> Un
 private fun CrossGotchasCard(journey: RealJourney) {
     ElevatedCard {
         Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            SectionHeader("Cross-phase gotchas worth knowing", Icons.Outlined.LightbulbCircle)
+            SectionHeader(stringResource(R.string.rj_cross_gotchas), Icons.Outlined.LightbulbCircle)
             journey.crossPhaseGotchas.forEach { g ->
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text(text = g.title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
@@ -272,7 +274,7 @@ private fun LockedPreview(journey: RealJourney, onUnlockClick: () -> Unit) {
         ElevatedCard {
             Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = "Inside this guide",
+                    text = stringResource(R.string.rj_inside),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Bold
@@ -294,17 +296,17 @@ private fun LockedPreview(journey: RealJourney, onUnlockClick: () -> Unit) {
         ElevatedCard {
             Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(
-                    text = "What you'll get",
+                    text = stringResource(R.string.rj_what_get),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Bold
                 )
                 listOf(
-                    "Every document the lawyer requested, by phase",
-                    "Real fee ranges + payment-split structure",
-                    "Sanitized correspondence patterns (what the lawyer actually said)",
-                    "Province-specific timing expectations",
-                    "Subsanación playbook + 30-day deadline interpretation"
+                    stringResource(R.string.rj_get1),
+                    stringResource(R.string.rj_get2),
+                    stringResource(R.string.rj_get3),
+                    stringResource(R.string.rj_get4),
+                    stringResource(R.string.rj_get5)
                 ).forEach { item ->
                     IconRow(icon = Icons.Outlined.CheckCircle, text = item)
                 }
@@ -317,7 +319,7 @@ private fun LockedPreview(journey: RealJourney, onUnlockClick: () -> Unit) {
         ) {
             Icon(Icons.Default.Lock, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
-            Text("Unlock all Real Journeys with GoThere Pro", fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.rj_unlock), fontWeight = FontWeight.Bold)
         }
     }
 }

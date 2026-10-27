@@ -1,5 +1,7 @@
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -139,7 +141,7 @@ private fun DisclaimerBanner() {
             modifier = Modifier.size(16.dp)
         )
         Text(
-            "Informational only. Verify with the official source — and a licensed lawyer for legal questions.",
+            stringResource(R.string.ai_disclaimer),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -163,25 +165,25 @@ private fun EmptyStateCard(onExample: (String) -> Unit) {
             tint = MaterialTheme.colorScheme.primary
         )
         Text(
-            "Tell me about your situation.",
+            stringResource(R.string.ai_empty_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold
         )
         Text(
-            "Where do you want to go, what's your household look like, do you have any ancestry that might open doors? I'll suggest visa paths and ballpark costs from GoThere's data.",
+            stringResource(R.string.ai_empty_body),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
-            "EXAMPLES",
+            stringResource(R.string.ai_examples),
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         listOf(
-            "I'm a remote worker, couple, US$5k/mo budget, drawn to Portugal or Spain",
-            "My grandmother was born in Ireland. Am I eligible for an Irish passport?",
-            "Retiring in Mexico — which city is most affordable on $3k/mo?"
+            stringResource(R.string.ai_example_1),
+            stringResource(R.string.ai_example_2),
+            stringResource(R.string.ai_example_3)
         ).forEach { ExamplePrompt(it, onExample) }
     }
 }
@@ -377,14 +379,14 @@ private fun InputBar(
                         modifier = Modifier.size(14.dp)
                     )
                     Text(
-                        "You've used your 5 free messages. Upgrade to keep going.",
+                        stringResource(R.string.ai_limit_reached),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
                 remaining <= 2 -> Text(
-                    text = "$remaining free message${if (remaining == 1) "" else "s"} left",
+                    text = pluralRes(R.plurals.ai_messages_left, remaining, remaining),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp)
@@ -402,7 +404,7 @@ private fun InputBar(
                 value = input,
                 onValueChange = onInputChange,
                 modifier = Modifier.weight(1f),
-                placeholder = { Text("Ask anything…") },
+                placeholder = { Text(stringResource(R.string.ai_ask_hint)) },
                 maxLines = 5,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions(onSend = { if (canSend) onSend() })
@@ -411,7 +413,7 @@ private fun InputBar(
                 onClick = onSend,
                 enabled = canSend
             ) {
-                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
+                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = stringResource(R.string.send))
             }
         }
     }

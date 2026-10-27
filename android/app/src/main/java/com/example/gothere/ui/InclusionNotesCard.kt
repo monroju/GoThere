@@ -1,5 +1,7 @@
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AutoAwesome
@@ -55,7 +57,7 @@ fun InclusionNotesCard(
                 )
                 Spacer(Modifier.size(6.dp))
                 Text(
-                    "What this means for you",
+                    stringResource(R.string.incl_what_means),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary
@@ -75,7 +77,7 @@ fun InclusionNotesCard(
             singleParentNote?.let { note ->
                 Column {
                     Text(
-                        text = "Single Parent",
+                        text = stringResource(R.string.incl_single_parent),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.secondary
@@ -87,13 +89,16 @@ fun InclusionNotesCard(
     }
 }
 
-private fun personaLabel(c: PersonalConsideration): String = when (c) {
-    PersonalConsideration.LGBTQ          -> "LGBTQ+"
-    PersonalConsideration.Trans          -> "Transgender"
-    PersonalConsideration.Disabled       -> "Disabled / Accessibility"
-    PersonalConsideration.Veteran        -> "Veteran"
-    PersonalConsideration.Pregnant       -> "Pregnant / Expecting"
-    PersonalConsideration.Neurodivergent -> "Neurodivergent"
-    PersonalConsideration.Senior         -> "Senior (60+)"
-    PersonalConsideration.Poc            -> "Person of Color"
-}
+@Composable
+private fun personaLabel(c: PersonalConsideration): String = stringResource(
+    when (c) {
+        PersonalConsideration.LGBTQ          -> R.string.consideration_lgbtq
+        PersonalConsideration.Trans          -> R.string.consideration_trans
+        PersonalConsideration.Disabled       -> R.string.consideration_disabled
+        PersonalConsideration.Veteran        -> R.string.consideration_veteran
+        PersonalConsideration.Pregnant       -> R.string.consideration_pregnant
+        PersonalConsideration.Neurodivergent -> R.string.consideration_neurodivergent
+        PersonalConsideration.Senior         -> R.string.consideration_senior
+        PersonalConsideration.Poc            -> R.string.consideration_poc
+    }
+)

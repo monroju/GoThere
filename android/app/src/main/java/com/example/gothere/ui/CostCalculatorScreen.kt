@@ -1,5 +1,7 @@
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -114,20 +116,20 @@ fun CostCalculatorScreen(
             ) {
                 Column {
                     Text(
-                        text = "Cost Calculator",
+                        text = stringResource(R.string.cost_calculator),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = "Estimate your monthly expenses",
+                        text = stringResource(R.string.cost_subtitle),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 if (onDismiss != null) {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Close")
+                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close))
                     }
                 }
             }
@@ -140,10 +142,10 @@ fun CostCalculatorScreen(
                 onExpandedChange = { cityDropdownExpanded = it }
             ) {
                 OutlinedTextField(
-                    value = selectedCity?.cityName ?: "Select a city",
+                    value = selectedCity?.cityName ?: stringResource(R.string.cost_select_city),
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("City") },
+                    label = { Text(stringResource(R.string.cost_city)) },
                     leadingIcon = { Icon(Icons.Outlined.LocationCity, contentDescription = null) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = cityDropdownExpanded) },
                     modifier = Modifier
@@ -176,7 +178,7 @@ fun CostCalculatorScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Show in USD",
+                    text = stringResource(R.string.cost_show_usd),
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(Modifier.width(8.dp))
@@ -193,7 +195,7 @@ fun CostCalculatorScreen(
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = "Customize Your Lifestyle",
+                            text = stringResource(R.string.cost_customize),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -201,7 +203,7 @@ fun CostCalculatorScreen(
 
                         // Housing Type
                         Text(
-                            text = "Housing Type",
+                            text = stringResource(R.string.cost_housing),
                             style = MaterialTheme.typography.labelLarge
                         )
                         Spacer(Modifier.height(8.dp))
@@ -210,19 +212,19 @@ fun CostCalculatorScreen(
                                 selected = rentType == 0,
                                 onClick = { rentType = 0 },
                                 shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
-                                label = { Text("Studio") }
+                                label = { Text(stringResource(R.string.cost_studio)) }
                             )
                             SegmentedButton(
                                 selected = rentType == 1,
                                 onClick = { rentType = 1 },
                                 shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
-                                label = { Text("1 BR") }
+                                label = { Text(stringResource(R.string.cost_1br)) }
                             )
                             SegmentedButton(
                                 selected = rentType == 2,
                                 onClick = { rentType = 2 },
                                 shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
-                                label = { Text("2 BR") }
+                                label = { Text(stringResource(R.string.cost_2br)) }
                             )
                         }
 
@@ -232,7 +234,7 @@ fun CostCalculatorScreen(
                         OutlinedTextField(
                             value = diningOutPerWeek,
                             onValueChange = { diningOutPerWeek = it.filter { c -> c.isDigit() }.take(2) },
-                            label = { Text("Meals out per week") },
+                            label = { Text(stringResource(R.string.cost_meals_out)) },
                             leadingIcon = { Icon(Icons.Outlined.Restaurant, contentDescription = null) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.fillMaxWidth(),
@@ -250,7 +252,7 @@ fun CostCalculatorScreen(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Outlined.DirectionsBus, contentDescription = null, modifier = Modifier.size(20.dp))
                                 Spacer(Modifier.width(8.dp))
-                                Text("Public Transport")
+                                Text(stringResource(R.string.cost_public_transport))
                             }
                             Switch(checked = usePublicTransport, onCheckedChange = { usePublicTransport = it })
                         }
@@ -263,7 +265,7 @@ fun CostCalculatorScreen(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Outlined.HealthAndSafety, contentDescription = null, modifier = Modifier.size(20.dp))
                                 Spacer(Modifier.width(8.dp))
-                                Text("Private Health Insurance")
+                                Text(stringResource(R.string.cost_private_health))
                             }
                             Switch(checked = includeHealthInsurance, onCheckedChange = { includeHealthInsurance = it })
                         }
@@ -276,7 +278,7 @@ fun CostCalculatorScreen(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Outlined.FitnessCenter, contentDescription = null, modifier = Modifier.size(20.dp))
                                 Spacer(Modifier.width(8.dp))
-                                Text("Gym Membership")
+                                Text(stringResource(R.string.cost_gym_membership))
                             }
                             Switch(checked = includeGym, onCheckedChange = { includeGym = it })
                         }
@@ -328,7 +330,7 @@ fun CostCalculatorScreen(
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
-                                text = "Tips for ${selectedCity.cityName}",
+                                text = stringResource(R.string.cost_tips_for, selectedCity.cityName),
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onTertiaryContainer
@@ -347,7 +349,7 @@ fun CostCalculatorScreen(
             // Disclaimer
             item {
                 Text(
-                    text = "* Estimates based on 2024-2025 data. Actual costs may vary based on lifestyle, location within the city, and market conditions.",
+                    text = stringResource(R.string.cost_disclaimer),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
@@ -396,26 +398,26 @@ private fun CostBreakdownCard(
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Monthly Cost Breakdown",
+                text = stringResource(R.string.cost_breakdown),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(Modifier.height(16.dp))
 
-            CostLineItem(Icons.Outlined.Home, "Rent", formatAmount(rent))
-            CostLineItem(Icons.Outlined.Bolt, "Utilities", formatAmount(utilities))
-            CostLineItem(Icons.Outlined.ShoppingCart, "Groceries", formatAmount(groceries))
+            CostLineItem(Icons.Outlined.Home, stringResource(R.string.cost_rent), formatAmount(rent))
+            CostLineItem(Icons.Outlined.Bolt, stringResource(R.string.cost_utilities), formatAmount(utilities))
+            CostLineItem(Icons.Outlined.ShoppingCart, stringResource(R.string.cost_groceries), formatAmount(groceries))
             if (diningOut > 0) {
-                CostLineItem(Icons.Outlined.Restaurant, "Dining Out", formatAmount(diningOut))
+                CostLineItem(Icons.Outlined.Restaurant, stringResource(R.string.cost_dining), formatAmount(diningOut))
             }
             if (transport > 0) {
-                CostLineItem(Icons.Outlined.DirectionsBus, "Transport", formatAmount(transport))
+                CostLineItem(Icons.Outlined.DirectionsBus, stringResource(R.string.cost_transport), formatAmount(transport))
             }
             if (healthInsurance > 0) {
-                CostLineItem(Icons.Outlined.HealthAndSafety, "Health Insurance", formatAmount(healthInsurance))
+                CostLineItem(Icons.Outlined.HealthAndSafety, stringResource(R.string.cost_health), formatAmount(healthInsurance))
             }
             if (gym > 0) {
-                CostLineItem(Icons.Outlined.FitnessCenter, "Gym", formatAmount(gym))
+                CostLineItem(Icons.Outlined.FitnessCenter, stringResource(R.string.cost_gym), formatAmount(gym))
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
@@ -431,7 +433,7 @@ private fun CostBreakdownCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "TOTAL",
+                    text = stringResource(R.string.cost_total),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -447,7 +449,7 @@ private fun CostBreakdownCard(
             // Annual estimate
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "≈ ${formatAmount(total * 12)} / year",
+                text = stringResource(R.string.cost_per_year, formatAmount(total * 12)),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth(),

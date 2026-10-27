@@ -2,6 +2,8 @@
 
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -52,10 +54,10 @@ fun MoveCostCalculatorScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Cost to Move") },
+                title = { Text(stringResource(R.string.mc_title)) },
                 navigationIcon = {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -71,20 +73,20 @@ fun MoveCostCalculatorScreen(
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
-                    "What it really costs to land",
+                    stringResource(R.string.mc_header),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    "A realistic one-time budget to get there and stay afloat your first few months. Most people overestimate this wildly.",
+                    stringResource(R.string.mc_intro),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
             // Destination picker
-            Text("Destination", style = MaterialTheme.typography.labelSmall,
+            Text(stringResource(R.string.mc_destination), style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Row(
                 modifier = Modifier.horizontalScroll(rememberScrollState()),
@@ -94,7 +96,7 @@ fun MoveCostCalculatorScreen(
                     FilterChip(
                         selected = p.countryId == countryId,
                         onClick = { countryId = p.countryId },
-                        label = { Text("${p.flag} ${p.name}", fontSize = 12.sp) },
+                        label = { Text("${p.flag} ${countryDisplayName(p.countryId, p.name)}", fontSize = 12.sp) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = MaterialTheme.colorScheme.primary,
                             selectedLabelColor = MaterialTheme.colorScheme.onPrimary
@@ -105,12 +107,12 @@ fun MoveCostCalculatorScreen(
 
             // Household steppers
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Stepper("Adults", adults, 1..6, { adults = it }, Modifier.weight(1f))
-                Stepper("Children", children, 0..8, { children = it }, Modifier.weight(1f))
+                Stepper(stringResource(R.string.mc_adults), adults, 1..6, { adults = it }, Modifier.weight(1f))
+                Stepper(stringResource(R.string.mc_children), children, 0..8, { children = it }, Modifier.weight(1f))
             }
 
             // Lifestyle
-            Text("Lifestyle", style = MaterialTheme.typography.labelSmall,
+            Text(stringResource(R.string.mc_lifestyle), style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
             SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                 MoveLifestyle.entries.forEachIndexed { idx, l ->
@@ -118,7 +120,11 @@ fun MoveCostCalculatorScreen(
                         selected = l == lifestyle,
                         onClick = { lifestyle = l },
                         shape = SegmentedButtonDefaults.itemShape(idx, MoveLifestyle.entries.size)
-                    ) { Text(l.label) }
+                    ) { Text(stringResource(when (l) {
+                        com.example.gothere.data.MoveLifestyle.LEAN -> R.string.mc_lean
+                        com.example.gothere.data.MoveLifestyle.MODERATE -> R.string.mc_moderate
+                        com.example.gothere.data.MoveLifestyle.COMFORTABLE -> R.string.mc_comfortable
+                    })) }
                 }
             }
 
@@ -133,15 +139,15 @@ fun MoveCostCalculatorScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(Modifier.weight(1f)) {
-                        Text("Cash runway", style = MaterialTheme.typography.labelMedium,
+                        Text(stringResource(R.string.mc_runway), style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold)
-                        Text("Months to budget before income stabilises",
+                        Text(stringResource(R.string.mc_runway_sub),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     StepperControl(monthsRunway, 1..12) { monthsRunway = it }
                     Spacer(Modifier.width(8.dp))
-                    Text("$monthsRunway mo", fontWeight = FontWeight.Bold,
+                    Text(stringResource(R.string.mc_months_short, monthsRunway), fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary)
                 }
             }
@@ -154,30 +160,30 @@ fun MoveCostCalculatorScreen(
                     )
                 ) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Estimated landing budget", style = MaterialTheme.typography.labelMedium,
+                        Text(stringResource(R.string.mc_estimated), style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text("$${"%,d".format(estimate.total)}",
                             style = MaterialTheme.typography.headlineLarge,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary)
-                        Text("Ballpark range: $${"%,d".format(estimate.lowBand)} – $${"%,d".format(estimate.highBand)}",
+                        Text(stringResource(R.string.mc_ballpark, "%,d".format(estimate.lowBand), "%,d".format(estimate.highBand)),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                         HorizontalDivider()
-                        LineItem("✈️ Flights (${adults + children} ppl)", estimate.flights)
-                        LineItem("📄 Government fees", estimate.govtFees)
-                        LineItem("⚖️ Legal / gestor", estimate.legal)
-                        LineItem("🏠 Deposit + first month", estimate.upfrontRent)
+                        LineItem(stringResource(R.string.mc_flights, adults + children), estimate.flights)
+                        LineItem(stringResource(R.string.mc_gov_fees), estimate.govtFees)
+                        LineItem(stringResource(R.string.mc_legal), estimate.legal)
+                        LineItem(stringResource(R.string.mc_deposit), estimate.upfrontRent)
                         if (estimate.firstMonthsLiving > 0) {
-                            LineItem("🍽️ Living runway (${maxOf(0, monthsRunway - 1)} mo)", estimate.firstMonthsLiving)
+                            LineItem(stringResource(R.string.mc_living, maxOf(0, monthsRunway - 1)), estimate.firstMonthsLiving)
                         }
-                        LineItem("📦 Setup & shipping", estimate.setup)
+                        LineItem(stringResource(R.string.mc_setup), estimate.setup)
                     }
                 }
             }
 
             Text(
-                "Estimates only — actual costs vary by city, season, and visa track. Figures refreshed for 2025-2026. Not financial advice.",
+                stringResource(R.string.mc_disclaimer),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -212,10 +218,10 @@ private fun Stepper(label: String, value: Int, range: IntRange, onChange: (Int) 
 private fun StepperControl(value: Int, range: IntRange, onChange: (Int) -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         IconButton(onClick = { if (value > range.first) onChange(value - 1) }, modifier = Modifier.size(32.dp)) {
-            Icon(Icons.Outlined.Remove, contentDescription = "Decrease")
+            Icon(Icons.Outlined.Remove, contentDescription = stringResource(R.string.decrease))
         }
         IconButton(onClick = { if (value < range.last) onChange(value + 1) }, modifier = Modifier.size(32.dp)) {
-            Icon(Icons.Outlined.Add, contentDescription = "Increase")
+            Icon(Icons.Outlined.Add, contentDescription = stringResource(R.string.increase))
         }
     }
 }

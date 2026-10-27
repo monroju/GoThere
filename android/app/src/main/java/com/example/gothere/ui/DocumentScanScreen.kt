@@ -1,5 +1,7 @@
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -120,13 +122,13 @@ fun DocumentScanScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     CircularProgressIndicator()
-                    Text("Reading your document…", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.scan_reading), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
             current != null -> {
                 DocumentResultCard(current)
                 OutlinedButton(onClick = { vm.reset() }, modifier = Modifier.fillMaxWidth()) {
-                    Text("Scan another document")
+                    Text(stringResource(R.string.scan_another))
                 }
             }
             else -> {
@@ -137,7 +139,7 @@ fun DocumentScanScreen(
                 ) {
                     Icon(Icons.Default.CameraAlt, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text("Scan with camera")
+                    Text(stringResource(R.string.scan_camera))
                 }
                 OutlinedButton(
                     onClick = { startPhoto() },
@@ -145,7 +147,7 @@ fun DocumentScanScreen(
                 ) {
                     Icon(Icons.Default.PhotoLibrary, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text("Choose a photo")
+                    Text(stringResource(R.string.scan_choose_photo))
                 }
                 if (error != null) {
                     Text(error!!, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
@@ -156,15 +158,15 @@ fun DocumentScanScreen(
         if (!vm.hasAllAccess()) {
             val remaining = (DocumentScanViewModel.MAX_FREE_SCANS - scanCount).coerceAtLeast(0)
             Text(
-                if (remaining > 0) "$remaining free scan${if (remaining == 1) "" else "s"} left"
-                else "Free scans used — upgrade for unlimited",
+                if (remaining > 0) pluralRes(R.plurals.scan_left, remaining, remaining)
+                else stringResource(R.string.scan_used),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
         Text(
-            "GoThere explains documents to help you understand them. It is not legal, tax, or immigration advice. Always verify with the office that sent it, or a qualified professional, before acting.",
+            stringResource(R.string.scan_disclaimer),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
@@ -182,10 +184,10 @@ private fun Intro() {
             modifier = Modifier.size(48.dp)
         )
         Spacer(Modifier.height(10.dp))
-        Text("Got a letter you can't read?", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.scan_intro_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(6.dp))
         Text(
-            "Photograph any official letter or form — from immigration, tax, your landlord, the bank, or the health service. We explain it in plain English and flag any deadline, even if it's in another language.",
+            stringResource(R.string.scan_intro_body),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
@@ -199,23 +201,23 @@ private fun DocumentResultCard(a: DocumentAnalysis) {
     Column(verticalArrangement = Arrangement.spacedBy(14.dp), modifier = Modifier.fillMaxWidth()) {
         when {
             a.unreadable -> StateMessage(
-                "Couldn't read this clearly",
-                "Try again with good light, the document flat, and the camera straight on. Make sure the whole page is in frame."
+                stringResource(R.string.scan_unreadable),
+                stringResource(R.string.scan_unreadable_hint)
             )
             !a.isDocument -> StateMessage(
-                "That doesn't look like an official document",
-                "Point the camera at a letter or form you received — from immigration, tax, your landlord, the bank, or the health service."
+                stringResource(R.string.scan_not_doc),
+                stringResource(R.string.scan_not_doc_hint)
             )
             else -> {
                 // Header
                 Row(verticalAlignment = Alignment.Top) {
                     Column(Modifier.weight(1f)) {
-                        Text(a.docType ?: "Document", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text(a.docType ?: stringResource(R.string.scan_document), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                         a.sender?.takeIf { it.isNotEmpty() }?.let {
                             Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         a.originalLanguage?.takeIf { it.isNotEmpty() }?.let {
-                            Text("Original language: $it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(stringResource(R.string.scan_original_lang, it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                     a.confidence?.let { ConfidenceBadge(it) }
@@ -223,13 +225,13 @@ private fun DocumentResultCard(a: DocumentAnalysis) {
 
                 // Deadlines first
                 if (a.deadlines.isEmpty()) {
-                    Text("No deadline stated in this document.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.scan_no_deadline), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 } else {
                     a.deadlines.forEach { DeadlineCard(it.dateAsWritten, it.action, it.sourceQuote) }
                 }
 
-                a.summary?.takeIf { it.isNotEmpty() }?.let { TintedSection("What this says", it) }
-                a.nextStep?.takeIf { it.isNotEmpty() }?.let { TintedSection("Your next step", it) }
+                a.summary?.takeIf { it.isNotEmpty() }?.let { TintedSection(stringResource(R.string.scan_what_says), it) }
+                a.nextStep?.takeIf { it.isNotEmpty() }?.let { TintedSection(stringResource(R.string.scan_next_step), it) }
             }
         }
     }
@@ -243,7 +245,12 @@ private fun ConfidenceBadge(confidence: String) {
         else -> Color(0xFFF59E0B)
     }
     Text(
-        confidence.replaceFirstChar { it.uppercase() },
+        when (confidence) {
+            "high" -> stringResource(R.string.confidence_high)
+            "medium" -> stringResource(R.string.confidence_medium)
+            "low" -> stringResource(R.string.confidence_low)
+            else -> confidence.replaceFirstChar { it.uppercase() }
+        },
         style = MaterialTheme.typography.labelSmall,
         color = color,
         fontWeight = FontWeight.Bold,
@@ -267,7 +274,7 @@ private fun DeadlineCard(dateAsWritten: String, action: String, sourceQuote: Str
         Text("⏰ $dateAsWritten", style = MaterialTheme.typography.titleSmall, color = orange, fontWeight = FontWeight.Bold)
         if (action.isNotEmpty()) Text(action, style = MaterialTheme.typography.bodyMedium)
         if (sourceQuote.isNotEmpty()) {
-            Text("From the document:", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.scan_from_doc), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
                 "“$sourceQuote”",
                 style = MaterialTheme.typography.bodySmall,

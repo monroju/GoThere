@@ -2,6 +2,8 @@
 
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,10 +29,10 @@ fun RelocationTimelineScreen(onDismiss: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("My Move Timeline") },
+                title = { Text(stringResource(R.string.tl_title)) },
                 navigationIcon = {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -41,25 +43,25 @@ fun RelocationTimelineScreen(onDismiss: () -> Unit) {
                 .verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("Your move, month by month", style = MaterialTheme.typography.titleMedium,
+            Text(stringResource(R.string.tl_header), style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-            Text("Tell us when you want to be gone — we'll build the plan backwards from your departure.",
+            Text(stringResource(R.string.tl_intro),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             Surface(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.06f),
                 shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("I want to be gone in", style = MaterialTheme.typography.bodyMedium)
+                        Text(stringResource(R.string.tl_gone_in), style = MaterialTheme.typography.bodyMedium)
                         Spacer(Modifier.weight(1f))
-                        Text("${totalMonths.toInt()} month${if (totalMonths.toInt() == 1) "" else "s"}",
+                        Text(pluralRes(R.plurals.tl_months, totalMonths.toInt(), totalMonths.toInt()),
                             style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary)
                     }
                     Slider(value = totalMonths, onValueChange = { totalMonths = it },
                         valueRange = 1f..18f, steps = 16)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Moving with children", style = MaterialTheme.typography.bodyMedium)
+                        Text(stringResource(R.string.tl_with_children), style = MaterialTheme.typography.bodyMedium)
                         Spacer(Modifier.weight(1f))
                         Switch(checked = hasKids, onCheckedChange = { hasKids = it })
                     }
@@ -90,7 +92,7 @@ fun RelocationTimelineScreen(onDismiss: () -> Unit) {
                     }
                 }
             }
-            Text("A guide, not a guarantee — visa processing times vary and can dominate your timeline. Start the visa step as early as possible.",
+            Text(stringResource(R.string.tl_disclaimer),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(16.dp))
         }

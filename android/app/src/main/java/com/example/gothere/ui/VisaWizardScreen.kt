@@ -2,6 +2,8 @@
 
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -65,17 +67,18 @@ fun VisaWizardScreen(
         com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.WIZARD_STARTED, mapOf("country_id" to countryId))
     }
 
-    val countryName = when (countryId) {
-        "spain" -> "Spain"
-        "portugal" -> "Portugal"
-        "mexico" -> "Mexico"
-        else -> "Spain"
-    }
+    val countryName = stringResource(
+        when (countryId) {
+            "portugal" -> R.string.country_portugal
+            "mexico" -> R.string.country_mexico
+            else -> R.string.country_spain
+        }
+    )
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Visa Wizard") },
+                title = { Text(stringResource(R.string.tool_visa_wizard)) },
                 navigationIcon = {
                     IconButton(onClick = {
                         if (currentStep > 0 && !saveComplete) {
@@ -84,7 +87,7 @@ fun VisaWizardScreen(
                             navController.popBackStack()
                         }
                     }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -107,7 +110,7 @@ fun VisaWizardScreen(
                     color = MaterialTheme.colorScheme.primary,
                 )
                 Text(
-                    text = "Step $currentStep of ${total - 1}",
+                    text = stringResource(R.string.wiz_step_of, currentStep, total - 1),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 16.dp)
@@ -175,13 +178,13 @@ private fun TrackSelectionScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            "Choose Your Visa Path",
+            stringResource(R.string.wiz_choose_path),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
         Text(
-            "Select the visa type you're pursuing in $countryName. We'll create a personalized step-by-step checklist.",
+            stringResource(R.string.wiz_choose_body, countryName),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -210,12 +213,12 @@ private fun TrackSelectionScreen(
                 Spacer(Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "Compare Visa Types",
+                        stringResource(R.string.wiz_compare),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        "Side-by-side eligibility, cost & citizenship paths",
+                        stringResource(R.string.wiz_compare_sub),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -238,7 +241,7 @@ private fun TrackSelectionScreen(
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "${track.shortName} \u2022 ${track.steps.size} steps \u2022 ${track.taskRules.size} tasks",
+                        stringResource(R.string.wiz_track_meta, track.shortName, track.steps.size, track.taskRules.size),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -301,12 +304,12 @@ private fun StepScreen(
             OutlinedButton(
                 onClick = onBack,
                 modifier = Modifier.weight(1f)
-            ) { Text("Back") }
+            ) { Text(stringResource(R.string.back)) }
 
             Button(
                 onClick = onNext,
                 modifier = Modifier.weight(1f)
-            ) { Text(if (isLastStep) "Generate Checklist" else "Next") }
+            ) { Text(stringResource(if (isLastStep) R.string.wiz_generate else R.string.next)) }
         }
     }
 }
@@ -387,7 +390,7 @@ private fun BooleanQuestion(
         FilterChip(
             selected = selected == true,
             onClick = { onSelect(true) },
-            label = { Text("Yes", modifier = Modifier.padding(vertical = 4.dp)) },
+            label = { Text(stringResource(R.string.yes), modifier = Modifier.padding(vertical = 4.dp)) },
             colors = FilterChipDefaults.filterChipColors(
                 selectedContainerColor = MaterialTheme.colorScheme.primary,
                 selectedLabelColor = MaterialTheme.colorScheme.onPrimary
@@ -396,7 +399,7 @@ private fun BooleanQuestion(
         FilterChip(
             selected = selected == false,
             onClick = { onSelect(false) },
-            label = { Text("No", modifier = Modifier.padding(vertical = 4.dp)) },
+            label = { Text(stringResource(R.string.no), modifier = Modifier.padding(vertical = 4.dp)) },
             colors = FilterChipDefaults.filterChipColors(
                 selectedContainerColor = MaterialTheme.colorScheme.primary,
                 selectedLabelColor = MaterialTheme.colorScheme.onPrimary
@@ -468,14 +471,14 @@ private fun SummaryScreen(
                 )
                 Spacer(Modifier.height(16.dp))
                 Text(
-                    "${tasks.size} tasks added to your checklist!",
+                    stringResource(R.string.wiz_tasks_added, tasks.size),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Your personalized visa checklist is ready. Tasks with due dates have been scheduled based on your target move date.",
+                    stringResource(R.string.wiz_ready),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -483,18 +486,18 @@ private fun SummaryScreen(
                 Button(
                     onClick = onDone,
                     modifier = Modifier.fillMaxWidth()
-                ) { Text("Go to Tasks") }
+                ) { Text(stringResource(R.string.wiz_go_tasks)) }
             }
         } else {
             // Preview state
             Text(
-                "Your Personalized Checklist",
+                stringResource(R.string.wiz_your_checklist),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
             Text(
-                "${tasks.size} tasks tailored to your situation. Review and add them to your Tasks.",
+                stringResource(R.string.wiz_tailored, tasks.size),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -538,7 +541,7 @@ private fun SummaryScreen(
                                 )
                                 task.dueAt?.let { millis ->
                                     Text(
-                                        "Due: ${dateFormat.format(Date(millis))}",
+                                        stringResource(R.string.wiz_due, dateFormat.format(Date(millis))),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -563,7 +566,7 @@ private fun SummaryScreen(
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text("Add ${tasks.size} Tasks to My Checklist")
+                    Text(stringResource(R.string.wiz_add_n, tasks.size))
                 }
             }
 

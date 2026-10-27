@@ -1,6 +1,8 @@
 // app/src/main/java/com/example/gothere/ui/DocumentsScreen.kt
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import com.example.gothere.ui.theme.raisedSurface
 import com.example.gothere.ui.theme.RaisedButton
 import android.content.Intent
@@ -54,12 +56,12 @@ fun DocumentsScreen() {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                "Your Documents",
+                stringResource(R.string.docs_title),
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = { vm.refresh() }) {
-                Icon(Icons.Outlined.Refresh, contentDescription = "Refresh")
+                Icon(Icons.Outlined.Refresh, contentDescription = stringResource(R.string.refresh))
             }
             RaisedButton(
                 onClick = { picker.launch(arrayOf("application/pdf", "image/*")) },
@@ -72,9 +74,9 @@ fun DocumentsScreen() {
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text("Uploading…")
+                    Text(stringResource(R.string.docs_uploading))
                 } else {
-                    Text("Upload")
+                    Text(stringResource(R.string.docs_upload))
                 }
             }
         }
@@ -99,7 +101,7 @@ fun DocumentsScreen() {
                 )
                 Spacer(Modifier.width(12.dp))
                 Text(
-                    text = "Keep passports, certificates, correspondence and PDFs for your move in one place.",
+                    text = stringResource(R.string.docs_intro),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -114,9 +116,9 @@ fun DocumentsScreen() {
                     Icon(Icons.Outlined.FolderOpen, contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(48.dp))
                     Spacer(Modifier.height(12.dp))
-                    Text("No documents yet", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.docs_empty), style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(4.dp))
-                    Text("Tap Upload to add your first PDF or photo.",
+                    Text(stringResource(R.string.docs_empty_hint),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
@@ -145,7 +147,7 @@ fun DocumentsScreen() {
                         Column(Modifier.weight(1f)) {
                             Text(item.name, style = MaterialTheme.typography.bodyLarge)
                             Text(
-                                "Tap to view",
+                                stringResource(R.string.docs_tap_to_view),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.primary
                             )

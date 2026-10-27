@@ -2,6 +2,8 @@
 
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,10 +31,10 @@ fun HealthcareCompareScreen(initialCountryId: String?, onDismiss: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Healthcare Costs") },
+                title = { Text(stringResource(R.string.hc_title)) },
                 navigationIcon = {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -43,27 +45,27 @@ fun HealthcareCompareScreen(initialCountryId: String?, onDismiss: () -> Unit) {
                 .verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("What healthcare really costs", style = MaterialTheme.typography.titleMedium,
+            Text(stringResource(R.string.hc_header), style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-            Text("Typical private premiums vs the US — plus what the public system covers once you're a resident.",
+            Text(stringResource(R.string.hc_intro),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-            ToolCountryPicker(HealthcareCostData.profiles.map { it.countryId to "${it.flag} ${it.name}" }, countryId) { countryId = it }
+            ToolCountryPicker(HealthcareCostData.profiles.map { it.countryId to "${it.flag} ${countryDisplayName(it.countryId, it.name)}" }, countryId) { countryId = it }
 
             profile?.let { p ->
                 Card(colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Text("Private insurance — monthly", style = MaterialTheme.typography.labelMedium,
+                        Text(stringResource(R.string.hc_private_monthly), style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        compareRow("${p.flag} Single", p.privateMonthlySingleUSD,
+                        compareRow(stringResource(R.string.hc_single, p.flag), p.privateMonthlySingleUSD,
                             "🇺🇸 US marketplace", HealthcareCostData.usSingleMarketplaceMonthlyUSD)
                         HorizontalDivider()
-                        compareRow("${p.flag} Family of 4", p.privateMonthlyFamilyUSD,
+                        compareRow(stringResource(R.string.hc_family4, p.flag), p.privateMonthlyFamilyUSD,
                             "🇺🇸 US family (total)", HealthcareCostData.usFamilyMonthlyTotalUSD)
                         val savings = (HealthcareCostData.usFamilyMonthlyTotalUSD - p.privateMonthlyFamilyUSD) * 12
                         if (savings > 0) {
-                            Text("≈ $${"%,d".format(savings)}/yr less than a US family plan",
+                            Text(stringResource(R.string.hc_savings, "%,d".format(savings)),
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
                         }
@@ -78,9 +80,9 @@ fun HealthcareCompareScreen(initialCountryId: String?, onDismiss: () -> Unit) {
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
-                ToolSection("ℹ️ Note", p.note)
+                ToolSection(stringResource(R.string.hc_note), p.note)
             }
-            Text("Estimates only — premiums vary by age, health, and plan. US figures from 2024 KFF/marketplace averages. Not insurance advice.",
+            Text(stringResource(R.string.hc_disclaimer),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(16.dp))
         }

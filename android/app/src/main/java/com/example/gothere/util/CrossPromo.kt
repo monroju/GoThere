@@ -11,11 +11,11 @@ enum class PromoApp(
     val key: String,
     val packageId: String,
     val title: String,
-    val subtitle: String,
+    @androidx.annotation.StringRes val subtitle: Int,
     @DrawableRes val iconRes: Int,
 ) {
-    LOCALISTA("localista", "com.localista.spain", "Localista", "Spain news, alerts and trámites in English", R.drawable.promo_localista),
-    PASSDGT("passdgt", "app.passdgt.twa", "PassDGT", "Practice the Spanish DGT theory test in English. Free, offline.", R.drawable.promo_passdgt),
+    LOCALISTA("localista", "com.localista.spain", "Localista", R.string.promo_localista_sub, R.drawable.promo_localista),
+    PASSDGT("passdgt", "app.passdgt.twa", "PassDGT", R.string.promo_passdgt_sub, R.drawable.promo_passdgt),
 }
 
 /**

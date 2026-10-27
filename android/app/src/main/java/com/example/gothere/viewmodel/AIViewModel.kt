@@ -1,5 +1,6 @@
 package com.example.gothere.viewmodel
 
+import com.example.gothere.R
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
@@ -80,7 +81,7 @@ class AIViewModel(app: Application) : AndroidViewModel(app) {
         if (trimmed.isEmpty() || _isWaiting.value) return
         if (isPaywallGated) {
             capture("free_limit_reached", mapOf("limit" to "ai"))
-            _lastError.value = "You've used all free messages. Upgrade to keep going."
+            _lastError.value = getApplication<Application>().getString(R.string.ai_err_limit)
             return
         }
         _lastError.value = null
@@ -101,14 +102,14 @@ class AIViewModel(app: Application) : AndroidViewModel(app) {
                     client.send(_messages.value, tools)
                 } catch (e: AIClient.AIException) {
                     _lastError.value = if (e.statusCode == 429) {
-                        "You've reached today's limit for the assistant. Try again tomorrow."
+                        getApplication<Application>().getString(R.string.ai_err_daily)
                     } else {
-                        "Couldn't reach the assistant (HTTP ${e.statusCode})."
+                        getApplication<Application>().getString(R.string.ai_err_http, e.statusCode)
                     }
                     capture("ai_error_returned", mapOf("error" to "http_${e.statusCode}"))
                     return
                 } catch (e: Exception) {
-                    _lastError.value = "Connection problem: ${e.message ?: "unknown"}"
+                    _lastError.value = getApplication<Application>().getString(R.string.ai_err_conn, e.message ?: "unknown")
                     capture("ai_error_returned", mapOf("error" to (e.message ?: "unknown")))
                     return
                 }
@@ -125,7 +126,7 @@ class AIViewModel(app: Application) : AndroidViewModel(app) {
             // Exceeded the safety limit — surface a soft message.
             _messages.value = _messages.value + AIMessage(
                 role = AIRole.Assistant,
-                content = listOf(AIContentBlock.Text("I'm tripping over my own tools. Try rephrasing your question and I'll start over."))
+                content = listOf(AIContentBlock.Text(getApplication<Application>().getString(R.string.ai_tool_loop)))
             )
         } finally {
             _isWaiting.value = false

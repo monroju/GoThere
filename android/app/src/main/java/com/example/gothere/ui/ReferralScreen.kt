@@ -1,5 +1,7 @@
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,6 +44,7 @@ fun ReferralDialog(
     purchaseManager: PurchaseManager
 ) {
     val context = LocalContext.current
+    val loadErrorMsg = stringResource(R.string.ref_load_error)
     val clipboard = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
     val repo = remember { ReferralRepository() }
@@ -63,7 +66,7 @@ fun ReferralDialog(
             try {
                 info = repo.fetchCode()
             } catch (e: Exception) {
-                loadError = "Couldn't load your code. Check your connection and try again."
+                loadError = loadErrorMsg
             }
             isLoading = false
         }
@@ -89,7 +92,7 @@ fun ReferralDialog(
             ) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Close",
+                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
@@ -97,7 +100,7 @@ fun ReferralDialog(
                 Text("🎁", fontSize = 56.sp)
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    "Give a month, get a month",
+                    stringResource(R.string.ref_title),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
@@ -105,7 +108,7 @@ fun ReferralDialog(
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Share your code. When a friend redeems it, you both get 30 days of All-Access — every country, every visa path — free.",
+                    stringResource(R.string.ref_body),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -114,7 +117,7 @@ fun ReferralDialog(
 
                 if (!signedIn) {
                     Text(
-                        "Create a free account to invite friends and redeem codes. Referral months are tied to your account.",
+                        stringResource(R.string.ref_signed_out),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
@@ -138,26 +141,25 @@ fun ReferralDialog(
                                 OutlinedButton(
                                     onClick = { clipboard.setText(AnnotatedString(current.code)) },
                                     modifier = Modifier.weight(1f)
-                                ) { Text("Copy") }
+                                ) { Text(stringResource(R.string.copy)) }
                                 Button(
                                     onClick = {
-                                        val msg = "I'm using GoThere to plan my move abroad — it's genuinely useful. " +
-                                            "Use my code ${current.code} and we both get a free month of All-Access: ${current.shareUrl}"
+                                        val msg = context.getString(R.string.ref_share_msg, current.code, current.shareUrl)
                                         val send = Intent(Intent.ACTION_SEND).apply {
                                             type = "text/plain"
                                             putExtra(Intent.EXTRA_TEXT, msg)
                                         }
-                                        context.startActivity(Intent.createChooser(send, "Invite a friend"))
+                                        context.startActivity(Intent.createChooser(send, context.getString(R.string.ref_invite_friend)))
                                     },
                                     modifier = Modifier.weight(1f)
-                                ) { Text("Share") }
+                                ) { Text(stringResource(R.string.share)) }
                             }
                         }
                         loadError != null -> {
                             Text(loadError!!, style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center)
-                            TextButton(onClick = { loadCode() }) { Text("Try again") }
+                            TextButton(onClick = { loadCode() }) { Text(stringResource(R.string.try_again)) }
                         }
                     }
 
@@ -167,7 +169,7 @@ fun ReferralDialog(
 
                     // Redeem
                     Text(
-                        "Got a code from a friend?",
+                        stringResource(R.string.ref_got_code),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -181,7 +183,7 @@ fun ReferralDialog(
                                 tint = MaterialTheme.colorScheme.primary)
                             Spacer(Modifier.width(8.dp))
                             Text(
-                                redeemMessage ?: "You're in — enjoy your free month!",
+                                redeemMessage ?: stringResource(R.string.ref_enjoy),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
@@ -190,7 +192,7 @@ fun ReferralDialog(
                         OutlinedTextField(
                             value = enteredCode,
                             onValueChange = { enteredCode = it.uppercase() },
-                            label = { Text("Enter code") },
+                            label = { Text(stringResource(R.string.ref_enter_code)) },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
                             modifier = Modifier.fillMaxWidth()
@@ -211,9 +213,9 @@ fun ReferralDialog(
                                         purchaseManager.applyPromoGrant(result.premiumUntilSeconds)
                                         redeemSucceeded = true
                                         com.example.gothere.util.Analytics.log(com.example.gothere.util.Analytics.REFERRAL_REDEEMED, mapOf("reward_days" to result.rewardDays))
-                                        redeemMessage = "You're in — ${result.rewardDays} days of All-Access unlocked."
+                                        redeemMessage = context.getString(R.string.ref_redeemed_days, result.rewardDays)
                                     } catch (e: Exception) {
-                                        redeemMessage = e.message ?: "Couldn't redeem that code. Please try again."
+                                        redeemMessage = e.message ?: context.getString(R.string.ref_redeem_failed)
                                     }
                                     isRedeeming = false
                                 }
@@ -228,7 +230,7 @@ fun ReferralDialog(
                                     strokeWidth = 2.dp
                                 )
                             } else {
-                                Text("Redeem")
+                                Text(stringResource(R.string.ref_redeem))
                             }
                         }
                     }

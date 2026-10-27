@@ -1,9 +1,13 @@
 package com.example.gothere.ui
 
+import com.example.gothere.R
+import androidx.compose.ui.res.stringResource
 import com.example.gothere.ui.theme.RaisedButton
 import android.content.Intent
 import android.net.Uri
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.Image
+import androidx.core.os.LocaleListCompat
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -62,7 +66,7 @@ fun SettingsScreen(
     appearance: String,
     onAppearanceChange: (String) -> Unit,
     hasAllAccess: Boolean,
-    accessReason: String?,
+    accessReason: Int?,
     unlockedCount: Int,
     totalCountries: Int,
     onSeePlans: () -> Unit,
@@ -77,6 +81,7 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
     var restoreNote by remember { mutableStateOf<String?>(null) }
+    val restoreStartedMsg = stringResource(R.string.settings_restore_note)
 
     Column(
         modifier = Modifier
@@ -85,35 +90,35 @@ fun SettingsScreen(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text("Settings", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.settings), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
 
         // Plan
-        SectionTitle("Your plan")
+        SectionTitle(stringResource(R.string.settings_your_plan))
         if (hasAllAccess) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Outlined.Verified, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.width(8.dp))
-                Text("All Access: every country unlocked", color = MaterialTheme.colorScheme.primary)
+                Text(stringResource(R.string.settings_all_access), color = MaterialTheme.colorScheme.primary)
             }
             accessReason?.let {
-                Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         } else {
-            Text("Free plan", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.settings_free_plan), style = MaterialTheme.typography.titleMedium)
             Text(
-                "$unlockedCount of $totalCountries countries unlocked",
+                stringResource(R.string.settings_unlocked_count, unlockedCount, totalCountries),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             RaisedButton(onClick = onSeePlans, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Outlined.Star, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
-                Text("See plans and bundles")
+                Text(stringResource(R.string.settings_see_plans))
             }
         }
-        SettingsRow("Restore Purchases", Icons.Outlined.Refresh) {
+        SettingsRow(stringResource(R.string.restore_purchases), Icons.Outlined.Refresh) {
             onRestorePurchases()
-            restoreNote = "Restore started. Anything bought with this Google account will unlock."
+            restoreNote = restoreStartedMsg
         }
         restoreNote?.let {
             Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -122,11 +127,11 @@ fun SettingsScreen(
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
         // Appearance
-        SectionTitle("Appearance")
+        SectionTitle(stringResource(R.string.settings_appearance))
         val options = listOf(
-            AppearancePrefs.SYSTEM to "System",
-            AppearancePrefs.LIGHT to "Light",
-            AppearancePrefs.DARK to "Dark"
+            AppearancePrefs.SYSTEM to stringResource(R.string.appearance_system),
+            AppearancePrefs.LIGHT to stringResource(R.string.appearance_light),
+            AppearancePrefs.DARK to stringResource(R.string.appearance_dark)
         )
         SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
             options.forEachIndexed { index, (value, label) ->
@@ -140,26 +145,33 @@ fun SettingsScreen(
 
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
+        // Language: AppCompat stores the choice and recreates the activity, and on
+        // Android 13+ it is the same setting as system Settings > Apps > Language.
+        SectionTitle(stringResource(R.string.settings_language))
+        LanguagePicker()
+
+        HorizontalDivider(Modifier.padding(vertical = 8.dp))
+
         // Tools
-        SectionTitle("Tools")
-        SettingsRow("Where to start (AI)", Icons.Outlined.AutoAwesome, onOpenAI)
-        SettingsRow("Scan a Document", Icons.Outlined.DocumentScanner, onOpenScan)
-        SettingsRow("Visa Wizard", Icons.Outlined.AutoAwesome, onOpenVisaWizard)
-        SettingsRow("Ancestry Citizenship", Icons.Outlined.AccountTree, onOpenAncestry)
+        SectionTitle(stringResource(R.string.settings_tools))
+        SettingsRow(stringResource(R.string.tool_ai), Icons.Outlined.AutoAwesome, onOpenAI)
+        SettingsRow(stringResource(R.string.tool_scan), Icons.Outlined.DocumentScanner, onOpenScan)
+        SettingsRow(stringResource(R.string.tool_visa_wizard), Icons.Outlined.AutoAwesome, onOpenVisaWizard)
+        SettingsRow(stringResource(R.string.tool_ancestry), Icons.Outlined.AccountTree, onOpenAncestry)
 
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
         // Account
-        SectionTitle("Account")
-        TextButton(onClick = onSignOut) { Text("Sign Out") }
+        SectionTitle(stringResource(R.string.settings_account))
+        TextButton(onClick = onSignOut) { Text(stringResource(R.string.sign_out)) }
         TextButton(onClick = onDeleteAccount) {
-            Text("Delete Account", color = MaterialTheme.colorScheme.error)
+            Text(stringResource(R.string.delete_account), color = MaterialTheme.colorScheme.error)
         }
 
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
         // Our other apps
-        SectionTitle("More from us")
+        SectionTitle(stringResource(R.string.settings_more_from_us))
         CrossPromoRow(PromoApp.LOCALISTA) {
             CrossPromo.open(context, PromoApp.LOCALISTA, CrossPromo.PLACEMENT_SETTINGS)
         }
@@ -172,15 +184,46 @@ fun SettingsScreen(
         // About
         TextButton(onClick = {
             context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://getgothere.app/privacy.html")))
-        }) { Text("Privacy Policy") }
+        }) { Text(stringResource(R.string.privacy_policy)) }
         TextButton(onClick = {
             context.startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:gabriel@getgothere.app")))
-        }) { Text("Contact Support") }
+        }) { Text(stringResource(R.string.contact_support)) }
         Text(
             "GoThere $appVersion",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+    }
+}
+
+/** System default / English / Español. Empty tag = follow the device language. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LanguagePicker() {
+    var current by remember {
+        mutableStateOf(AppCompatDelegate.getApplicationLocales().get(0)?.language ?: "")
+    }
+    val options = listOf(
+        "" to stringResource(R.string.language_system),
+        "en" to "English",
+        "es" to "Español"
+    )
+    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+        options.forEachIndexed { index, (tag, label) ->
+            SegmentedButton(
+                selected = current == tag,
+                onClick = {
+                    if (current != tag) {
+                        current = tag
+                        AppCompatDelegate.setApplicationLocales(
+                            if (tag.isEmpty()) LocaleListCompat.getEmptyLocaleList()
+                            else LocaleListCompat.forLanguageTags(tag)
+                        )
+                    }
+                },
+                shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size)
+            ) { Text(label, maxLines = 1) }
+        }
     }
 }
 
@@ -231,7 +274,7 @@ private fun CrossPromoRow(app: PromoApp, onClick: () -> Unit) {
         Column {
             Text(app.title, style = MaterialTheme.typography.bodyLarge)
             Text(
-                app.subtitle,
+                stringResource(app.subtitle),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

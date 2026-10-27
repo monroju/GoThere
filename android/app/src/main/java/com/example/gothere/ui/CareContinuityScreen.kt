@@ -2,6 +2,8 @@
 
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -48,16 +50,16 @@ fun CareContinuityScreen(initialCountryId: String, onDismiss: () -> Unit) {
         val profile = CareContinuityProfiles.profile(context, countryId)
         val out = mutableListOf<CareSection>()
         profile?.adhd?.let {
-            out += CareSection("adhd", "ADHD medication", Icons.Outlined.Psychology, it)
+            out += CareSection("adhd", context.getString(R.string.cc_adhd), Icons.Outlined.Psychology, it)
         }
         profile?.hrt?.let {
-            out += CareSection("hrt", "Hormone therapy (HRT)", Icons.Outlined.Medication, it)
+            out += CareSection("hrt", context.getString(R.string.cc_hrt), Icons.Outlined.Medication, it)
         }
         profile?.insulin?.let {
-            out += CareSection("insulin", "Insulin & diabetes care", Icons.Outlined.MonitorHeart, it)
+            out += CareSection("insulin", context.getString(R.string.cc_insulin), Icons.Outlined.MonitorHeart, it)
         }
         profile?.bringIn?.let {
-            out += CareSection("bring_in", "What you can carry in", Icons.Outlined.FlightLand, it)
+            out += CareSection("bring_in", context.getString(R.string.cc_bring_in), Icons.Outlined.FlightLand, it)
         }
         val considerations = UserConsiderationsStore.load(context).considerations
         when {
@@ -72,10 +74,10 @@ fun CareContinuityScreen(initialCountryId: String, onDismiss: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Meds & Care Abroad") },
+                title = { Text(stringResource(R.string.res_tool_meds)) },
                 navigationIcon = {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -86,12 +88,12 @@ fun CareContinuityScreen(initialCountryId: String, onDismiss: () -> Unit) {
                 .verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("Will your treatment travel with you?", style = MaterialTheme.typography.titleMedium,
+            Text(stringResource(R.string.cc_header), style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-            Text("Availability of your meds, who can prescribe them, and what you're allowed to bring through the border.",
+            Text(stringResource(R.string.cc_intro),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-            Text("Destination", style = MaterialTheme.typography.labelSmall,
+            Text(stringResource(R.string.mc_destination), style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Row(modifier = Modifier.horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -100,7 +102,7 @@ fun CareContinuityScreen(initialCountryId: String, onDismiss: () -> Unit) {
                     FilterChip(
                         selected = on,
                         onClick = { countryId = dest.countryId },
-                        label = { Text("${dest.flag} ${dest.name}", fontSize = 12.sp) },
+                        label = { Text("${dest.flag} ${countryDisplayName(dest.countryId, dest.name)}", fontSize = 12.sp) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = MaterialTheme.colorScheme.primary,
                             selectedLabelColor = MaterialTheme.colorScheme.onPrimary
@@ -110,7 +112,7 @@ fun CareContinuityScreen(initialCountryId: String, onDismiss: () -> Unit) {
             }
 
             if (sections.isEmpty()) {
-                Text("No continuity data for this country yet.",
+                Text(stringResource(R.string.cc_no_data),
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             } else {
                 sections.forEach { section ->
@@ -130,7 +132,7 @@ fun CareContinuityScreen(initialCountryId: String, onDismiss: () -> Unit) {
                     }
                 }
             }
-            Text("Sourced from INCB country regulations, national medicine agencies, and the CDC Yellow Book. Informational only — always confirm with the destination's customs authority and a clinician before travelling with medication.",
+            Text(stringResource(R.string.cc_sources),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(16.dp))
         }

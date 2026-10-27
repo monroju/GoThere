@@ -2,6 +2,8 @@
 
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -27,10 +29,10 @@ fun FamilyMoveScreen(initialCountryId: String?, onDismiss: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Moving with Kids") },
+                title = { Text(stringResource(R.string.res_tool_family_title)) },
                 navigationIcon = {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -41,12 +43,12 @@ fun FamilyMoveScreen(initialCountryId: String?, onDismiss: () -> Unit) {
                 .verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("Moving abroad with children", style = MaterialTheme.typography.titleMedium,
+            Text(stringResource(R.string.fam_header), style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-            Text("Schooling, healthcare, and visa status for your kids — the questions every relocating parent asks first.",
+            Text(stringResource(R.string.fam_intro),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-            ToolCountryPicker(FamilyMoveData.profiles.map { it.countryId to "${it.flag} ${it.name}" }, countryId) { countryId = it }
+            ToolCountryPicker(FamilyMoveData.profiles.map { it.countryId to "${it.flag} ${countryDisplayName(it.countryId, it.name)}" }, countryId) { countryId = it }
 
             profile?.let { p ->
                 ToolSection("🎒 Public schooling", p.publicSchooling)
@@ -56,8 +58,8 @@ fun FamilyMoveScreen(initialCountryId: String?, onDismiss: () -> Unit) {
                 ToolSection("🛂 Kids on your visa", p.childVisaNote)
                 ToolTipsCard("👪 ${p.name} parent tips", p.tips)
             }
-            ToolTipsCard("✅ Before you leave the US (any country)", FamilyMoveData.universalTips)
-            Text("Informational only — school fees and rules change. Confirm with each school and consulate. Not legal advice.",
+            ToolTipsCard(stringResource(R.string.fam_before_leave), FamilyMoveData.universalTips)
+            Text(stringResource(R.string.fam_disclaimer),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(16.dp))
         }

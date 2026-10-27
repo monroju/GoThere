@@ -2,6 +2,8 @@
 
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.clickable
@@ -32,10 +34,10 @@ fun InvestmentMigrationScreen(onDismiss: () -> Unit, onOpenAncestry: () -> Unit)
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Investment Routes") },
+                title = { Text(stringResource(R.string.inv_title)) },
                 navigationIcon = {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -46,9 +48,9 @@ fun InvestmentMigrationScreen(onDismiss: () -> Unit, onOpenAncestry: () -> Unit)
                 .verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("Buy your optionality", style = MaterialTheme.typography.titleMedium,
+            Text(stringResource(R.string.inv_header), style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-            Text("Residency and second-passport routes via investment — for diversification, mobility, and a real Plan B.",
+            Text(stringResource(R.string.inv_intro),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             Text("🏛️ Residency by investment (EU & LatAm)", style = MaterialTheme.typography.labelLarge,
@@ -61,11 +63,11 @@ fun InvestmentMigrationScreen(onDismiss: () -> Unit, onOpenAncestry: () -> Unit)
                             fontWeight = FontWeight.Bold)
                         Text(v.income, style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary)
-                        Text("Citizenship: ${v.pathToCitizenship} · Processing: ${v.processingTime}",
+                        Text(stringResource(R.string.inv_cit_proc, v.pathToCitizenship, v.processingTime),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                         TextButton(onClick = { open(v.officialUrl) }, contentPadding = PaddingValues(0.dp)) {
-                            Text("Official program ↗", style = MaterialTheme.typography.labelMedium)
+                            Text(stringResource(R.string.inv_official), style = MaterialTheme.typography.labelMedium)
                         }
                     }
                 }
@@ -83,9 +85,9 @@ fun InvestmentMigrationScreen(onDismiss: () -> Unit, onOpenAncestry: () -> Unit)
                     Icon(Icons.Outlined.AutoAwesome, contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary)
                     Column(Modifier.weight(1f)) {
-                        Text("Have EU or Latin heritage? Claim it for ~\$0",
+                        Text(stringResource(R.string.inv_heritage),
                             style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
-                        Text("Citizenship by descent is the free version of a second passport — check your eligibility first.",
+                        Text(stringResource(R.string.inv_heritage_sub),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
@@ -101,7 +103,7 @@ fun InvestmentMigrationScreen(onDismiss: () -> Unit, onOpenAncestry: () -> Unit)
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text("${p.flag} ${p.country}", style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-                            Text("from $${"%,d".format(p.minInvestmentUSD)}",
+                            Text(stringResource(R.string.inv_from, "%,d".format(p.minInvestmentUSD)),
                                 style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary)
                         }
@@ -110,7 +112,7 @@ fun InvestmentMigrationScreen(onDismiss: () -> Unit, onOpenAncestry: () -> Unit)
                         Text("⏱ ${p.timelineMonths} · ${p.perks}", style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                         TextButton(onClick = { open(p.officialUrl) }, contentPadding = PaddingValues(0.dp)) {
-                            Text("Official program ↗", style = MaterialTheme.typography.labelMedium)
+                            Text(stringResource(R.string.inv_official), style = MaterialTheme.typography.labelMedium)
                         }
                     }
                 }

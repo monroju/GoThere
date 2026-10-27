@@ -1,5 +1,7 @@
 package com.example.gothere.ui
 
+import com.example.gothere.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import com.example.gothere.ui.theme.raisedSurface
 import com.example.gothere.ui.theme.pressScale
@@ -198,20 +200,20 @@ fun ResourcesScreen(
     }
     
     // Country name for display
-    val countryName = when (countryId) {
-        "spain" -> "Spain 🇪🇸"
-        "portugal" -> "Portugal 🇵🇹"
-        "mexico" -> "Mexico 🇲🇽"
-        "canada" -> "Canada 🇨🇦"
-        "ireland" -> "Ireland 🇮🇪"
-        "italy" -> "Italy 🇮🇹"
-        "germany" -> "Germany 🇩🇪"
-        "poland" -> "Poland 🇵🇱"
-        "argentina" -> "Argentina 🇦🇷"
-        "hungary" -> "Hungary 🇭🇺"
-        "uk_ancestry" -> "UK (Ancestry) 🇬🇧"
-        else -> "Spain 🇪🇸"
+    val countryFlag = when (countryId) {
+        "portugal" -> "🇵🇹"
+        "mexico" -> "🇲🇽"
+        "canada" -> "🇨🇦"
+        "ireland" -> "🇮🇪"
+        "italy" -> "🇮🇹"
+        "germany" -> "🇩🇪"
+        "poland" -> "🇵🇱"
+        "argentina" -> "🇦🇷"
+        "hungary" -> "🇭🇺"
+        "uk_ancestry" -> "🇬🇧"
+        else -> "🇪🇸"
     }
+    val countryName = stringResource(countryNameRes(countryId)) + " " + countryFlag
 
     // Hardcoded web resources
     val webResourceCategories = remember(countryId) { getResourcesForCountry(countryId) }
@@ -232,10 +234,10 @@ fun ResourcesScreen(
 
     // Map Firebase folder names to display names
     val folderDisplayNames = mapOf(
-        "Arrival" to "Arrival Guides",
-        "Resources" to "Downloadable Resources",
-        "Templates" to "Document Templates",
-        "VisaForms" to "Visa & Immigration Forms"
+        "Arrival" to stringResource(R.string.res_folder_arrival),
+        "Resources" to stringResource(R.string.res_folder_resources),
+        "Templates" to stringResource(R.string.res_folder_templates),
+        "VisaForms" to stringResource(R.string.res_folder_visaforms)
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -254,14 +256,14 @@ fun ResourcesScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "$countryName Resources",
+                        text = stringResource(R.string.res_title, countryName),
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     IconButton(onClick = { vm.refresh() }) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
-                            contentDescription = "Refresh",
+                            contentDescription = stringResource(R.string.refresh),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -270,49 +272,49 @@ fun ResourcesScreen(
 
             // Tier-targeting tool CTAs — all free, non-paywalled hooks. StartHere first.
             item {
-                ToolCta(Icons.Outlined.Explore, "Where do I start?",
-                    "Answer one question — we'll point you to the right tool",
+                ToolCta(Icons.Outlined.Explore, stringResource(R.string.res_tool_start),
+                    stringResource(R.string.res_tool_start_sub),
                     highlight = true) { activeTool = ResourceTool.StartHere }
             }
             item {
-                ToolCta(Icons.Outlined.Paid, "Can I afford to move?",
-                    "Estimate your real cost to land in $countryName") { activeTool = ResourceTool.CostCalc }
+                ToolCta(Icons.Outlined.Paid, stringResource(R.string.res_tool_cost),
+                    stringResource(R.string.res_tool_cost_sub, countryName)) { activeTool = ResourceTool.CostCalc }
             }
             item {
-                ToolCta(Icons.Outlined.FamilyRestroom, "Moving with kids",
-                    "Schooling, healthcare & visas for your children in $countryName") { activeTool = ResourceTool.Family }
+                ToolCta(Icons.Outlined.FamilyRestroom, stringResource(R.string.res_tool_family),
+                    stringResource(R.string.res_tool_family_sub, countryName)) { activeTool = ResourceTool.Family }
             }
             item {
-                ToolCta(Icons.Outlined.Computer, "Bring your job abroad",
-                    "Employer-letter templates + the tax-residency traps to avoid") { activeTool = ResourceTool.RemoteWork }
+                ToolCta(Icons.Outlined.Computer, stringResource(R.string.res_tool_remote),
+                    stringResource(R.string.res_tool_remote_sub)) { activeTool = ResourceTool.RemoteWork }
             }
             item {
-                ToolCta(Icons.Outlined.LocalHospital, "Healthcare costs vs the US",
-                    "See $countryName premiums and public coverage next to US prices") { activeTool = ResourceTool.Healthcare }
+                ToolCta(Icons.Outlined.LocalHospital, stringResource(R.string.res_tool_health),
+                    stringResource(R.string.res_tool_health_sub, countryName)) { activeTool = ResourceTool.Healthcare }
             }
             item {
-                ToolCta(Icons.Outlined.CalendarMonth, "Build my move timeline",
-                    "\"Gone in N months\" → a personalized month-by-month plan") { activeTool = ResourceTool.Timeline }
+                ToolCta(Icons.Outlined.CalendarMonth, stringResource(R.string.res_tool_timeline),
+                    stringResource(R.string.res_tool_timeline_sub)) { activeTool = ResourceTool.Timeline }
             }
             item {
-                ToolCta(Icons.Outlined.TrendingUp, "Golden visas & second passports",
-                    "Residency & citizenship by investment — incl. Caribbean CBI") { activeTool = ResourceTool.Investment }
+                ToolCta(Icons.Outlined.TrendingUp, stringResource(R.string.res_tool_invest),
+                    stringResource(R.string.res_tool_invest_sub)) { activeTool = ResourceTool.Investment }
             }
             item {
-                ToolCta(Icons.Outlined.Favorite, "Rights & Safety",
-                    "Compare destinations on LGBTQ+, disability, reproductive & senior protections") { activeTool = ResourceTool.RightsSafety }
+                ToolCta(Icons.Outlined.Favorite, stringResource(R.string.res_tool_rights),
+                    stringResource(R.string.res_tool_rights_sub)) { activeTool = ResourceTool.RightsSafety }
             }
             item {
-                ToolCta(Icons.Outlined.Medication, "Meds & Care Abroad",
-                    "ADHD meds, HRT, insulin — availability and what you can carry in") { activeTool = ResourceTool.CareContinuity }
+                ToolCta(Icons.Outlined.Medication, stringResource(R.string.res_tool_meds),
+                    stringResource(R.string.res_tool_meds_sub)) { activeTool = ResourceTool.CareContinuity }
             }
             item {
-                ToolCta(Icons.Outlined.Notifications, "Policy Watch",
-                    "US policy changes that affect your move — with alerts") { activeTool = ResourceTool.PolicyWatch }
+                ToolCta(Icons.Outlined.Notifications, stringResource(R.string.res_tool_policy),
+                    stringResource(R.string.res_tool_policy_sub)) { activeTool = ResourceTool.PolicyWatch }
             }
             item {
-                ToolCta(Icons.Outlined.Star, "GoThere Concierge (soon)",
-                    "White-glove relocation: vetted lawyers, done-with-you prep") { activeTool = ResourceTool.Concierge }
+                ToolCta(Icons.Outlined.Star, stringResource(R.string.res_tool_concierge),
+                    stringResource(R.string.res_tool_concierge_sub)) { activeTool = ResourceTool.Concierge }
             }
 
             // Error message
@@ -371,7 +373,7 @@ fun ResourcesScreen(
                     if (forYouCats.isNotEmpty()) {
                         item {
                             Text(
-                                text = "For You",
+                                text = stringResource(R.string.res_for_you),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.primary,
@@ -395,7 +397,7 @@ fun ResourcesScreen(
             if (isUnlocked) {
                 item {
                     Text(
-                        text = "Quick Links",
+                        text = stringResource(R.string.res_quick_links),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.secondary,
@@ -419,7 +421,7 @@ fun ResourcesScreen(
                 item {
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     Text(
-                        text = "Downloadable Documents",
+                        text = stringResource(R.string.res_downloadable),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.secondary,
@@ -497,12 +499,12 @@ fun ResourcesScreen(
                             )
                             Spacer(Modifier.height(8.dp))
                             Text(
-                                text = "No downloadable documents yet",
+                                text = stringResource(R.string.res_no_downloads),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = "Check back later for PDF guides and forms",
+                                text = stringResource(R.string.res_check_back),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -564,7 +566,7 @@ private fun CrossPromoCard(app: PromoApp, onClick: () -> Unit) {
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = app.subtitle,
+                    text = stringResource(app.subtitle),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2,
@@ -573,7 +575,7 @@ private fun CrossPromoCard(app: PromoApp, onClick: () -> Unit) {
             }
             Icon(
                 imageVector = Icons.Outlined.ChevronRight,
-                contentDescription = "Open",
+                contentDescription = stringResource(R.string.open),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(18.dp)
             )
@@ -616,12 +618,12 @@ private fun LockedCountryCard(
                 tint = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "$displayName is locked",
+                text = stringResource(R.string.res_locked, displayName),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = "Unlock the $displayName Pack to access immigration portals, housing sites, banking, healthcare, and expat communities — plus downloadable PDF guides.",
+                text = stringResource(R.string.res_locked_body, displayName),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -630,7 +632,7 @@ private fun LockedCountryCard(
                 onClick = onUnlockClick,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Unlock $displayName")
+                Text(stringResource(R.string.paywall_unlock_country, displayName))
             }
         }
     }
@@ -688,7 +690,7 @@ private fun StorageDocumentsCard(
                 Spacer(Modifier.width(8.dp))
                 Icon(
                     imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                    contentDescription = if (isExpanded) "Collapse" else "Expand",
+                    contentDescription = stringResource(if (isExpanded) R.string.collapse else R.string.expand),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -749,7 +751,7 @@ private fun DocumentRow(
         )
 
         TextButton(onClick = onClick) {
-            Text("View")
+            Text(stringResource(R.string.view))
         }
     }
 }
@@ -792,7 +794,7 @@ private fun ResourceCategoryCard(
                 )
                 Icon(
                     imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                    contentDescription = if (isExpanded) "Collapse" else "Expand",
+                    contentDescription = stringResource(if (isExpanded) R.string.collapse else R.string.expand),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -859,7 +861,7 @@ private fun ResourceRow(
 
         Icon(
             imageVector = Icons.Outlined.OpenInNew,
-            contentDescription = "Open link",
+            contentDescription = stringResource(R.string.open_link),
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(18.dp)
         )

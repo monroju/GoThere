@@ -1,5 +1,7 @@
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +18,6 @@ fun FormsScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Forms coming soon", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.forms_soon), style = MaterialTheme.typography.titleMedium)
     }
 }

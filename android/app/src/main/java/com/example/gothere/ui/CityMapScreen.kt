@@ -2,6 +2,8 @@
 
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -75,7 +77,7 @@ fun CityMapScreen(
                 title = { Text(cityName) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -88,7 +90,7 @@ fun CityMapScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text("No map data available for $cityName")
+                Text(stringResource(R.string.map_no_data, cityName))
             }
             return@Scaffold
         }
@@ -150,7 +152,7 @@ fun CityMapScreen(
                                     activeCategories + cat.id
                                 }
                             },
-                            label = { Text("${cat.label} ($count)", style = MaterialTheme.typography.labelSmall) },
+                            label = { Text("${poiLabel(cat)} ($count)", style = MaterialTheme.typography.labelSmall) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = Color(cat.color),
                                 selectedLabelColor = Color.White
@@ -191,7 +193,7 @@ fun CityMapScreen(
             ) {
                 val shown = cityData.pois.count { activeCategories.contains(it.category) }
                 Text(
-                    "$shown places",
+                    pluralRes(R.plurals.map_places, shown, shown),
                     style = MaterialTheme.typography.labelSmall,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                 )
@@ -229,14 +231,14 @@ private fun PoiDetailCard(
                     )
                     category?.let {
                         Text(
-                            it.label,
+                            poiLabel(it),
                             style = MaterialTheme.typography.labelSmall,
                             color = Color(it.color)
                         )
                     }
                 }
                 IconButton(onClick = onDismiss, modifier = Modifier.size(32.dp)) {
-                    Icon(Icons.Outlined.Close, contentDescription = "Close", modifier = Modifier.size(18.dp))
+                    Icon(Icons.Outlined.Close, contentDescription = stringResource(R.string.close), modifier = Modifier.size(18.dp))
                 }
             }
 
@@ -268,14 +270,14 @@ private fun PoiDetailCard(
                     OutlinedButton(onClick = { onCall(poi.phone) }) {
                         Icon(Icons.Outlined.Phone, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(Modifier.width(4.dp))
-                        Text("Call", style = MaterialTheme.typography.labelSmall)
+                        Text(stringResource(R.string.map_call), style = MaterialTheme.typography.labelSmall)
                     }
                 }
                 if (poi.website.isNotBlank()) {
                     OutlinedButton(onClick = { onWeb(poi.website) }) {
                         Icon(Icons.Outlined.Language, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(Modifier.width(4.dp))
-                        Text("Website", style = MaterialTheme.typography.labelSmall)
+                        Text(stringResource(R.string.map_website), style = MaterialTheme.typography.labelSmall)
                     }
                 }
             }
@@ -379,3 +381,18 @@ private fun getCityDisplayName(cityId: String): String = when (cityId) {
     "leon" -> "Leon"
     else -> cityId.replaceFirstChar { it.uppercase() }
 }
+
+/** Display label for a POI category; PoiCategory.label stays the English source. */
+@Composable
+private fun poiLabel(c: com.example.gothere.model.PoiCategory): String = stringResource(
+    when (c) {
+        com.example.gothere.model.PoiCategory.BANK -> R.string.poi_bank
+        com.example.gothere.model.PoiCategory.HOSPITAL -> R.string.poi_hospital
+        com.example.gothere.model.PoiCategory.CLINIC -> R.string.poi_clinic
+        com.example.gothere.model.PoiCategory.GOVERNMENT_IMMIGRATION -> R.string.poi_government_immigration
+        com.example.gothere.model.PoiCategory.GOVERNMENT_TAX -> R.string.poi_government_tax
+        com.example.gothere.model.PoiCategory.COWORKING -> R.string.poi_coworking
+        com.example.gothere.model.PoiCategory.SUPERMARKET -> R.string.poi_supermarket
+        com.example.gothere.model.PoiCategory.INTERNATIONAL_SCHOOL -> R.string.poi_international_school
+    }
+)

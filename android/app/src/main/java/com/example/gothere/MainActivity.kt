@@ -1,8 +1,9 @@
 package com.example.gothere
 
+import androidx.compose.ui.res.stringResource
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.example.gothere.ui.theme.GoTabBar
 import com.example.gothere.ui.theme.GoTabItem
 import androidx.activity.SystemBarStyle
@@ -82,6 +83,7 @@ import com.example.gothere.auth.AuthRepository
 import com.example.gothere.billing.PurchaseManager
 import com.example.gothere.ui.AIAssistantScreen
 import com.example.gothere.ui.CalendarScreen
+import com.example.gothere.ui.countryNameRes
 import com.example.gothere.ui.AncestryCheckerScreen
 import com.example.gothere.ui.DecisionTreeScreen
 import com.example.gothere.ui.DocumentScanScreen
@@ -103,21 +105,6 @@ import com.posthog.android.PostHogAndroid
 import com.posthog.android.PostHogAndroidConfig
 
 // Simple helper functions for country data
-private fun getCountryName(id: String): String = when (id) {
-    "spain" -> "Spain"
-    "portugal" -> "Portugal"
-    "mexico" -> "Mexico"
-    "canada" -> "Canada"
-    "ireland" -> "Ireland"
-    "italy" -> "Italy"
-    "germany" -> "Germany"
-    "poland" -> "Poland"
-    "argentina" -> "Argentina"
-    "hungary" -> "Hungary"
-    "uk_ancestry" -> "UK (Ancestry)"
-    else -> "Spain"
-}
-
 private fun getCountryFlag(id: String): String = when (id) {
     "spain" -> "🇪🇸"
     "portugal" -> "🇵🇹"
@@ -155,22 +142,22 @@ sealed class Route(val route: String) {
 
 data class BottomTab(
     val route: Route,
-    val label: String,
+    @androidx.annotation.StringRes val label: Int,
     val icon: androidx.compose.ui.graphics.vector.ImageVector,
     val selectedIcon: androidx.compose.ui.graphics.vector.ImageVector = icon,
     // Five tabs leave ~80dp per label; anything longer wraps to two lines.
-    val shortLabel: String = label
+    @androidx.annotation.StringRes val shortLabel: Int = label
 )
 
 private val BottomTabs = listOf(
-    BottomTab(Route.Tasks, "Tasks", Icons.AutoMirrored.Outlined.ListAlt, Icons.AutoMirrored.Filled.ListAlt),
-    BottomTab(Route.Calendar, "Calendar", Icons.Outlined.CalendarMonth, Icons.Filled.CalendarMonth),
-    BottomTab(Route.Documents, "Documents", Icons.Outlined.Folder, Icons.Filled.Folder),
-    BottomTab(Route.Resources, "Resources", Icons.Outlined.Description, Icons.Filled.Description),
-    BottomTab(Route.DecisionTree, "Decision Tree", Icons.Outlined.AccountTree, Icons.Filled.AccountTree, shortLabel = "Decide"),
+    BottomTab(Route.Tasks, R.string.tab_tasks, Icons.AutoMirrored.Outlined.ListAlt, Icons.AutoMirrored.Filled.ListAlt),
+    BottomTab(Route.Calendar, R.string.tab_calendar, Icons.Outlined.CalendarMonth, Icons.Filled.CalendarMonth),
+    BottomTab(Route.Documents, R.string.tab_documents, Icons.Outlined.Folder, Icons.Filled.Folder),
+    BottomTab(Route.Resources, R.string.tab_resources, Icons.Outlined.Description, Icons.Filled.Description),
+    BottomTab(Route.DecisionTree, R.string.tab_decision_tree, Icons.Outlined.AccountTree, Icons.Filled.AccountTree, shortLabel = R.string.tab_decide),
 )
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var purchaseManager: PurchaseManager
 
@@ -344,7 +331,7 @@ private fun MainAppContent(
     appearance: String,
     onAppearanceChange: (String) -> Unit,
     hasAllAccess: Boolean,
-    accessReason: String?,
+    accessReason: Int?,
     onRestorePurchases: () -> Unit,
     selectedCountryId: String,
     purchasedCountries: Set<String>,
@@ -357,13 +344,15 @@ private fun MainAppContent(
     var showDeleteConfirm by remember { mutableStateOf(false) }
     var deleteError by remember { mutableStateOf<String?>(null) }
 
+    val reauthMsg = stringResource(R.string.reauth_body)
+
     // Delete Account confirmation dialog
     if (showDeleteConfirm) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirm = false },
-            title = { Text("Delete Account") },
+            title = { Text(stringResource(R.string.delete_account)) },
             text = {
-                Text("This will permanently delete your account and all your data (tasks, events, documents). This action cannot be undone.")
+                Text(stringResource(R.string.delete_account_body))
             },
             confirmButton = {
                 TextButton(
@@ -389,7 +378,7 @@ private fun MainAppContent(
                                             userDoc.delete().addOnCompleteListener {
                                                 user.delete().addOnCompleteListener { task ->
                                                     if (!task.isSuccessful) {
-                                                        deleteError = "Please sign out, sign back in, and try again."
+                                                        deleteError = reauthMsg
                                                     }
                                                 }
                                             }
@@ -400,7 +389,7 @@ private fun MainAppContent(
                                             userDoc.delete().addOnCompleteListener {
                                                 user.delete().addOnCompleteListener { task ->
                                                     if (!task.isSuccessful) {
-                                                        deleteError = "Please sign out, sign back in, and try again."
+                                                        deleteError = reauthMsg
                                                     }
                                                 }
                                             }
@@ -413,12 +402,12 @@ private fun MainAppContent(
                         contentColor = MaterialTheme.colorScheme.error
                     )
                 ) {
-                    Text("Delete Forever")
+                    Text(stringResource(R.string.delete_forever))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirm = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -428,19 +417,19 @@ private fun MainAppContent(
     if (deleteError != null) {
         AlertDialog(
             onDismissRequest = { deleteError = null },
-            title = { Text("Re-authentication Required") },
+            title = { Text(stringResource(R.string.reauth_required)) },
             text = { Text(deleteError!!) },
             confirmButton = {
                 TextButton(onClick = {
                     deleteError = null
                     AuthRepository().signOut()
                 }) {
-                    Text("Sign Out")
+                    Text(stringResource(R.string.sign_out))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { deleteError = null }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -453,7 +442,7 @@ private fun MainAppContent(
                     Row(
                         modifier = Modifier
                             .clickable(
-                                onClickLabel = "Select country"
+                                onClickLabel = stringResource(R.string.select_country)
                             ) { showCountryDropdown = true }
                             .padding(start = 8.dp, end = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -464,14 +453,14 @@ private fun MainAppContent(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = getCountryName(selectedCountryId),
+                            text = stringResource(countryNameRes(selectedCountryId)),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Icon(
                             imageVector = Icons.Filled.ArrowDropDown,
-                            contentDescription = "Select country",
+                            contentDescription = stringResource(R.string.select_country),
                             tint = MaterialTheme.colorScheme.onSurface
                         )
 
@@ -491,7 +480,7 @@ private fun MainAppContent(
                                             )
                                             Spacer(modifier = Modifier.width(8.dp))
                                             Text(
-                                                text = getCountryName(countryId),
+                                                text = stringResource(countryNameRes(countryId)),
                                                 fontWeight = if (countryId == selectedCountryId)
                                                     FontWeight.Bold else FontWeight.Normal,
                                                 color = if (isUnlocked) 
@@ -504,7 +493,7 @@ private fun MainAppContent(
                                                 Spacer(modifier = Modifier.width(8.dp))
                                                 Icon(
                                                     imageVector = Icons.Default.Lock,
-                                                    contentDescription = "Locked",
+                                                    contentDescription = stringResource(R.string.locked),
                                                     modifier = Modifier.size(16.dp),
                                                     tint = MaterialTheme.colorScheme.primary
                                                 )
@@ -520,7 +509,7 @@ private fun MainAppContent(
                             if (!hasAllAccess) {
                                 androidx.compose.material3.HorizontalDivider()
                                 DropdownMenuItem(
-                                    text = { Text("Unlock all countries", fontWeight = FontWeight.SemiBold) },
+                                    text = { Text(stringResource(R.string.unlock_all_countries), fontWeight = FontWeight.SemiBold) },
                                     leadingIcon = {
                                         Icon(Icons.Outlined.Star, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                                     },
@@ -546,7 +535,7 @@ private fun MainAppContent(
                         }) {
                             Icon(Icons.Outlined.Star, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Upgrade", fontWeight = FontWeight.SemiBold)
+                            Text(stringResource(R.string.upgrade), fontWeight = FontWeight.SemiBold)
                         }
                     }
                     IconButton(onClick = {
@@ -554,7 +543,7 @@ private fun MainAppContent(
                     }) {
                         Icon(
                             imageVector = Icons.Outlined.Settings,
-                            contentDescription = "Settings"
+                            contentDescription = stringResource(R.string.settings)
                         )
                     }
                 }
@@ -564,8 +553,8 @@ private fun MainAppContent(
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
 
-            val tabItems = remember {
-                BottomTabs.map { GoTabItem(it.label, it.shortLabel, it.icon, it.selectedIcon) }
+            val tabItems = BottomTabs.map {
+                GoTabItem(stringResource(it.label), stringResource(it.shortLabel), it.icon, it.selectedIcon)
             }
             GoTabBar(
                 items = tabItems,

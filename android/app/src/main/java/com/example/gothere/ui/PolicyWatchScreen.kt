@@ -2,6 +2,8 @@
 
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -27,10 +29,10 @@ fun PolicyWatchScreen(onDismiss: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Policy Watch") },
+                title = { Text(stringResource(R.string.res_tool_policy)) },
                 navigationIcon = {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -41,9 +43,9 @@ fun PolicyWatchScreen(onDismiss: () -> Unit) {
                 .verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("US policy, decoded for leaving", style = MaterialTheme.typography.titleMedium,
+            Text(stringResource(R.string.pw_header), style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-            Text("The standing rules that shape every US move — and what to do about each. We'll ping you when something material changes.",
+            Text(stringResource(R.string.pw_intro),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             if (alertsRequested) {
@@ -51,7 +53,7 @@ fun PolicyWatchScreen(onDismiss: () -> Unit) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Icon(Icons.Outlined.NotificationsActive, contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary)
-                    Text("Alerts on — we'll notify you of major changes.",
+                    Text(stringResource(R.string.pw_alerts_on),
                         style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary)
                 }
@@ -62,7 +64,7 @@ fun PolicyWatchScreen(onDismiss: () -> Unit) {
                 }, modifier = Modifier.fillMaxWidth().height(50.dp)) {
                     Icon(Icons.Outlined.Notifications, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text("Turn on policy alerts", fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(R.string.pw_turn_on), fontWeight = FontWeight.SemiBold)
                 }
             }
 
@@ -73,12 +75,12 @@ fun PolicyWatchScreen(onDismiss: () -> Unit) {
                         Text(item.headline, style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold)
                         Column {
-                            Text("Who it affects", style = MaterialTheme.typography.labelSmall,
+                            Text(stringResource(R.string.pw_who), style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(item.whoAffected, style = MaterialTheme.typography.bodySmall)
                         }
                         Column {
-                            Text("Your fastest route", style = MaterialTheme.typography.labelSmall,
+                            Text(stringResource(R.string.pw_route), style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                             Text(item.fastestRoute, style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant)

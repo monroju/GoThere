@@ -2,6 +2,8 @@
 
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -29,19 +31,19 @@ fun ConciergeScreen(onDismiss: () -> Unit) {
     var submitting by remember { mutableStateOf(false) }
 
     val benefits = listOf(
-        "Vetted advisor matching" to "Hand-picked immigration lawyers, tax advisors, and relocation agents in your target country — pre-screened, not a directory dump.",
-        "Done-with-you visa prep" to "We help assemble and sanity-check your application packet against the consulate's exact checklist.",
-        "Priority support" to "Direct line for time-sensitive questions during your move window.",
-        "Settling-in concierge" to "Warm intros for housing, banking, and schools — the things that take locals to unlock."
+        stringResource(R.string.con_f1) to stringResource(R.string.con_f1_sub),
+        stringResource(R.string.con_f2) to stringResource(R.string.con_f2_sub),
+        stringResource(R.string.con_f3) to stringResource(R.string.con_f3_sub),
+        stringResource(R.string.con_f4) to stringResource(R.string.con_f4_sub)
     )
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("GoThere Concierge") },
+                title = { Text(stringResource(R.string.con_title)) },
                 navigationIcon = {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -56,13 +58,13 @@ fun ConciergeScreen(onDismiss: () -> Unit) {
                 Text("Concierge", style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 Surface(color = MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.small) {
-                    Text(if (isLiveTier) "PREMIUM" else "COMING SOON",
+                    Text(stringResource(if (isLiveTier) R.string.con_premium else R.string.con_soon),
                         style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
                 }
             }
-            Text("White-glove relocation support for people who'd rather pay to get it right than spend months figuring it out alone.",
+            Text(stringResource(R.string.con_intro),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             benefits.forEach { (title, detail) ->
@@ -80,7 +82,7 @@ fun ConciergeScreen(onDismiss: () -> Unit) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Icon(Icons.Outlined.CheckCircle, contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary)
-                    Text("You're on the list — we'll be in touch.",
+                    Text(stringResource(R.string.con_on_list),
                         style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary)
                 }
@@ -103,14 +105,14 @@ fun ConciergeScreen(onDismiss: () -> Unit) {
                 }, enabled = !submitting, modifier = Modifier.fillMaxWidth().height(50.dp)) {
                     if (submitting) { CircularProgressIndicator(modifier = Modifier.size(18.dp),
                         color = MaterialTheme.colorScheme.onPrimary); Spacer(Modifier.width(8.dp)) }
-                    Text(if (isLiveTier) "Talk to a concierge" else "Join the waitlist",
+                    Text(stringResource(if (isLiveTier) R.string.con_talk else R.string.con_join),
                         fontWeight = FontWeight.SemiBold)
                 }
-                Text("No charge to express interest. We'll only reach out when it launches.",
+                Text(stringResource(R.string.con_no_charge),
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
 
-            Text("Concierge connects you with independent, licensed professionals. GoThere is not a law firm and does not provide legal or tax advice.",
+            Text(stringResource(R.string.con_disclaimer),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(16.dp))
         }

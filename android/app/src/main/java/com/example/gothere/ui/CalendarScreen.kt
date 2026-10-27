@@ -2,6 +2,8 @@
 
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import com.example.gothere.ui.theme.RaisedFab
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -67,7 +69,7 @@ fun CalendarScreen(vm: CalendarViewModel = viewModel()) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Calendar", style = MaterialTheme.typography.headlineSmall) },
+                title = { Text(stringResource(R.string.tab_calendar), style = MaterialTheme.typography.headlineSmall) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = androidx.compose.ui.graphics.Color.Transparent),
                 actions = {
                     SegmentedButtons(
@@ -79,7 +81,7 @@ fun CalendarScreen(vm: CalendarViewModel = viewModel()) {
         },
         floatingActionButton = {
             RaisedFab(onClick = { showAddDialog = true }) {
-                Icon(Icons.Default.Add, contentDescription = "Add Appointment")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.cal_add_appt))
             }
         }
     ) { inner ->
@@ -120,7 +122,7 @@ fun CalendarScreen(vm: CalendarViewModel = viewModel()) {
                                 CalendarMode.WEEK -> currentWeekStart = currentWeekStart.minusWeeks(1)
                             }
                         },
-                        content = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Previous") },
+                        content = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = stringResource(R.string.previous)) },
                     )
                     FilledTonalIconButton(
                         onClick = {
@@ -129,7 +131,7 @@ fun CalendarScreen(vm: CalendarViewModel = viewModel()) {
                                 CalendarMode.WEEK -> currentWeekStart = currentWeekStart.plusWeeks(1)
                             }
                         },
-                        content = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Next") },
+                        content = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = stringResource(R.string.next)) },
                     )
                 }
             }
@@ -157,13 +159,13 @@ fun CalendarScreen(vm: CalendarViewModel = viewModel()) {
 
             // List for the selected day
             Text(
-                text = "Schedule for ${selectedDate}",
+                text = stringResource(R.string.cal_schedule_for, selectedDate.toString()),
                 style = MaterialTheme.typography.titleSmall
             )
 
             val dayEvents = eventsByDate[selectedDate.toEpochDay()] ?: emptyList()
             if (dayEvents.isEmpty()) {
-                Text("No events for this date.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.cal_no_events), color = MaterialTheme.colorScheme.onSurfaceVariant)
             } else {
                 // Use Column instead of LazyColumn to avoid nested scrolling issues
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -178,7 +180,7 @@ fun CalendarScreen(vm: CalendarViewModel = viewModel()) {
                             ) {
                                 Text(event.title, modifier = Modifier.weight(1f))
                                 IconButton(onClick = { vm.delete(context, event.id) }) {
-                                    Icon(Icons.Outlined.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)
+                                    Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.delete), tint = MaterialTheme.colorScheme.error)
                                 }
                             }
                         }
@@ -194,14 +196,14 @@ fun CalendarScreen(vm: CalendarViewModel = viewModel()) {
     if (showAddDialog) {
         AlertDialog(
             onDismissRequest = { showAddDialog = false },
-            title = { Text("Add Appointment / Note") },
+            title = { Text(stringResource(R.string.cal_add_title)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Date: $selectedDate", style = MaterialTheme.typography.bodySmall)
+                    Text(stringResource(R.string.cal_date, selectedDate.toString()), style = MaterialTheme.typography.bodySmall)
                     OutlinedTextField(
                         value = newEventTitle,
                         onValueChange = { newEventTitle = it },
-                        label = { Text("Appointment or Note details") },
+                        label = { Text(stringResource(R.string.cal_details)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
@@ -217,10 +219,10 @@ fun CalendarScreen(vm: CalendarViewModel = viewModel()) {
                             showAddDialog = false
                         }
                     }
-                ) { Text("Save") }
+                ) { Text(stringResource(R.string.save)) }
             },
             dismissButton = {
-                TextButton(onClick = { showAddDialog = false }) { Text("Cancel") }
+                TextButton(onClick = { showAddDialog = false }) { Text(stringResource(R.string.cancel)) }
             }
         )
     }
@@ -231,8 +233,9 @@ private fun SegmentedButtons(
     mode: CalendarMode,
     onModeChange: (CalendarMode) -> Unit
 ) {
-    val options = listOf("Month" to CalendarMode.MONTH, "Week" to CalendarMode.WEEK)
-    SingleChoiceSegmentedButtonRow {
+    val options = listOf(stringResource(R.string.cal_month) to CalendarMode.MONTH, stringResource(R.string.cal_week) to CalendarMode.WEEK)
+    // End padding keeps the longer Spanish labels ("Semana") off the screen edge.
+    SingleChoiceSegmentedButtonRow(Modifier.padding(end = 12.dp)) {
         options.forEachIndexed { index, (label, value) ->
             SegmentedButton(
                 selected = mode == value,

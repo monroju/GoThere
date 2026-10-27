@@ -2,6 +2,8 @@
 
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -33,10 +35,10 @@ fun RemoteWorkScreen(onDismiss: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Bring Your Job") },
+                title = { Text(stringResource(R.string.rw_title)) },
                 navigationIcon = {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -47,12 +49,12 @@ fun RemoteWorkScreen(onDismiss: () -> Unit) {
                 .verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("Take your remote job with you", style = MaterialTheme.typography.titleMedium,
+            Text(stringResource(R.string.rw_header), style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-            Text("The two things remote workers get wrong: proving employment to a consulate, and tax residency. Here's both.",
+            Text(stringResource(R.string.rw_intro),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-            Text("📄 Letter templates", style = MaterialTheme.typography.labelLarge,
+            Text(stringResource(R.string.rw_templates), style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold)
             RemoteWorkKit.templates.forEach { t ->
                 Card(colors = CardDefaults.cardColors(
@@ -73,13 +75,13 @@ fun RemoteWorkScreen(onDismiss: () -> Unit) {
                             Icon(Icons.Outlined.ContentCopy, contentDescription = null,
                                 modifier = Modifier.size(16.dp))
                             Spacer(Modifier.width(6.dp))
-                            Text(if (copiedId == t.id) "Copied!" else "Copy template")
+                            Text(stringResource(if (copiedId == t.id) R.string.rw_copied else R.string.rw_copy_template))
                         }
                     }
                 }
             }
 
-            Text("⚠️ Tax-residency warnings", style = MaterialTheme.typography.labelLarge,
+            Text(stringResource(R.string.rw_tax_warnings), style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold)
             RemoteWorkKit.taxWarnings.forEach { w ->
                 Surface(color = Color(0xFFFF9800).copy(alpha = 0.10f),

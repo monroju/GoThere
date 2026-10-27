@@ -1,5 +1,6 @@
 package com.example.gothere.ui.theme
 
+import androidx.compose.ui.res.stringResource
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.Image
@@ -51,6 +52,14 @@ fun AuthScreen(
 
     val tealColor = Color(0xFF15B8A6)
     val privacyPolicyUrl = "https://gothere-app.web.app/gothere_privacy_policy.html"
+    val checkInboxMsg = stringResource(R.string.auth_check_inbox)
+    val validEmailMsg = stringResource(R.string.auth_valid_email)
+    val resetFailedMsg = stringResource(R.string.auth_reset_failed)
+    val enterBothMsg = stringResource(R.string.auth_enter_both)
+    val pwShortMsg = stringResource(R.string.auth_pw_short)
+    val authFailedMsg = stringResource(R.string.auth_failed)
+    val agreePrefix = stringResource(R.string.auth_agree_prefix)
+    val privacyLabel = stringResource(R.string.privacy_policy)
 
     Box(
         modifier = Modifier
@@ -61,15 +70,15 @@ fun AuthScreen(
         if (showForgotPassword) {
             AlertDialog(
                 onDismissRequest = { showForgotPassword = false; forgotMessage = null },
-                title = { Text("Reset Password") },
+                title = { Text(stringResource(R.string.auth_reset_password)) },
                 text = {
                     Column {
-                        Text("Enter your email and we'll send a password reset link.")
+                        Text(stringResource(R.string.auth_reset_body))
                         Spacer(modifier = Modifier.height(12.dp))
                         OutlinedTextField(
                             value = forgotEmail,
                             onValueChange = { forgotEmail = it },
-                            label = { Text("Email") },
+                            label = { Text(stringResource(R.string.email)) },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(8.dp)
@@ -79,7 +88,7 @@ fun AuthScreen(
                             Text(
                                 text = forgotMessage!!,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = if (forgotMessage!!.startsWith("Check")) tealColor else MaterialTheme.colorScheme.error
+                                color = if (forgotMessage == checkInboxMsg) tealColor else MaterialTheme.colorScheme.error
                             )
                         }
                     }
@@ -87,21 +96,21 @@ fun AuthScreen(
                 confirmButton = {
                     TextButton(onClick = {
                         if (forgotEmail.isBlank() || !forgotEmail.contains("@")) {
-                            forgotMessage = "Please enter a valid email."
+                            forgotMessage = validEmailMsg
                             return@TextButton
                         }
                         FirebaseAuth.getInstance().sendPasswordResetEmail(forgotEmail.trim())
                             .addOnCompleteListener { task ->
                                 forgotMessage = if (task.isSuccessful) {
-                                    "Check your inbox for a reset link."
+                                    checkInboxMsg
                                 } else {
-                                    task.exception?.localizedMessage ?: "Failed to send reset email."
+                                    task.exception?.localizedMessage ?: resetFailedMsg
                                 }
                             }
-                    }) { Text("Send") }
+                    }) { Text(stringResource(R.string.send)) }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showForgotPassword = false; forgotMessage = null }) { Text("Cancel") }
+                    TextButton(onClick = { showForgotPassword = false; forgotMessage = null }) { Text(stringResource(R.string.cancel)) }
                 }
             )
         }
@@ -117,7 +126,7 @@ fun AuthScreen(
             // Making the logo circular as requested
             Image(
                 painter = painterResource(id = R.drawable.ic_logo_full),
-                contentDescription = "GoThere Logo",
+                contentDescription = stringResource(R.string.logo_desc),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(240.dp)
@@ -130,7 +139,7 @@ fun AuthScreen(
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email") },
+                label = { Text(stringResource(R.string.email)) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -147,7 +156,7 @@ fun AuthScreen(
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Password") },
+                label = { Text(stringResource(R.string.password)) },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp),
@@ -174,11 +183,11 @@ fun AuthScreen(
             Button(
                 onClick = {
                     if (email.isBlank() || password.isBlank()) {
-                        errorMessage = "Please enter both email and password."
+                        errorMessage = enterBothMsg
                         return@Button
                     }
                     if (password.length < 6) {
-                        errorMessage = "Password must be at least 6 characters."
+                        errorMessage = pwShortMsg
                         return@Button
                     }
                     errorMessage = null
@@ -194,11 +203,11 @@ fun AuthScreen(
                         task.addOnCompleteListener { result ->
                             isLoading = false
                             if (result.isSuccessful) onAuthSuccess()
-                            else errorMessage = result.exception?.localizedMessage ?: "Authentication failed."
+                            else errorMessage = result.exception?.localizedMessage ?: authFailedMsg
                         }
                     } catch (e: Exception) {
                         isLoading = false
-                        errorMessage = e.localizedMessage ?: "Authentication failed."
+                        errorMessage = e.localizedMessage ?: authFailedMsg
                     }
                 },
                 modifier = Modifier
@@ -215,7 +224,7 @@ fun AuthScreen(
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text(if (isLogin) "Log In" else "Sign Up", fontSize = 16.sp)
+                    Text(stringResource(if (isLogin) R.string.log_in else R.string.sign_up), fontSize = 16.sp)
                 }
             }
 
@@ -224,7 +233,7 @@ fun AuthScreen(
             // Toggle between Login and Sign Up
             TextButton(onClick = { isLogin = !isLogin }) {
                 Text(
-                    text = if (isLogin) "Don't have an account? Sign Up" else "Already have an account? Log In",
+                    text = stringResource(if (isLogin) R.string.auth_no_account else R.string.auth_have_account),
                     color = tealColor,
                     fontSize = 14.sp
                 )
@@ -237,7 +246,7 @@ fun AuthScreen(
                     showForgotPassword = true
                 }) {
                     Text(
-                        text = "Forgot Password?",
+                        text = stringResource(R.string.auth_forgot),
                         color = tealColor.copy(alpha = 0.8f),
                         fontSize = 13.sp
                     )
@@ -248,10 +257,10 @@ fun AuthScreen(
 
             // Privacy Policy link
             val annotatedText = buildAnnotatedString {
-                append("By continuing, you agree to our ")
+                append(agreePrefix)
                 pushStringAnnotation(tag = "URL", annotation = privacyPolicyUrl)
                 withStyle(SpanStyle(color = tealColor, textDecoration = TextDecoration.Underline)) {
-                    append("Privacy Policy")
+                    append(privacyLabel)
                 }
                 pop()
             }
@@ -278,7 +287,7 @@ fun AuthScreen(
         ) {
             Icon(
                 imageVector = if (isDark) Icons.Outlined.LightMode else Icons.Outlined.DarkMode,
-                contentDescription = "Toggle theme",
+                contentDescription = stringResource(R.string.toggle_theme),
                 tint = if (isDark) Color.White else Color.Black
             )
         }

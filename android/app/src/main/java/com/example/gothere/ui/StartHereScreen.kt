@@ -2,6 +2,8 @@
 
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -35,10 +37,10 @@ fun StartHereScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Where do I start?") },
+                title = { Text(stringResource(R.string.res_tool_start)) },
                 navigationIcon = {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -49,25 +51,25 @@ fun StartHereScreen(
                 .verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Text("Where do I start?", style = MaterialTheme.typography.titleMedium,
+            Text(stringResource(R.string.res_tool_start), style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-            Text("Pick what fits your situation — we'll take you straight to the right tool.",
+            Text(stringResource(R.string.start_pick),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-            route("Money's tight — is this even possible?",
-                "See the real cost to move + the cheapest visa paths.", onCostCalc)
-            route("I'm moving with kids",
-                "Schooling, healthcare & child visas, country by country.", onFamily)
-            route("I work remotely",
-                "Employer-letter templates + the tax traps to avoid.", onRemote)
-            route("I might have EU or Latin heritage",
-                "You could already be a citizen — check your eligibility.", onAncestry)
-            route("I want a Plan B / second passport",
-                "Golden visas & citizenship by investment.", onInvestment)
-            route("I'm worried about rights or safety",
-                "Compare destinations on the protections that matter to you.", onRights)
-            route("Just show me my options",
-                "Compare every visa side by side.", onCompare)
+            route(stringResource(R.string.start_money),
+                stringResource(R.string.start_money_sub), onCostCalc)
+            route(stringResource(R.string.start_kids),
+                stringResource(R.string.start_kids_sub), onFamily)
+            route(stringResource(R.string.start_remote),
+                stringResource(R.string.start_remote_sub), onRemote)
+            route(stringResource(R.string.start_heritage),
+                stringResource(R.string.start_heritage_sub), onAncestry)
+            route(stringResource(R.string.start_planb),
+                stringResource(R.string.start_planb_sub), onInvestment)
+            route(stringResource(R.string.start_rights),
+                stringResource(R.string.start_rights_sub), onRights)
+            route(stringResource(R.string.start_options),
+                stringResource(R.string.start_options_sub), onCompare)
             Spacer(Modifier.height(16.dp))
         }
     }

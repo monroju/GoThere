@@ -1,5 +1,7 @@
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import com.example.gothere.ui.theme.raisedSurface
 import com.example.gothere.ui.theme.RaisedButton
 import com.example.gothere.ui.theme.RaisedFab
@@ -226,32 +228,26 @@ fun TasksScreen(
         } else null
     }
 
-    val countryName = when (countryId) {
-        "spain" -> "Spain"; "portugal" -> "Portugal"; "mexico" -> "Mexico"
-        "canada" -> "Canada"; "ireland" -> "Ireland"
-        "italy" -> "Italy"; "germany" -> "Germany"; "poland" -> "Poland"
-        "argentina" -> "Argentina"; "hungary" -> "Hungary"; "uk_ancestry" -> "UK (Ancestry)"
-        else -> "Spain"
-    }
+    val countryName = stringResource(countryNameRes(countryId))
 
     // Celebration dialog
     if (celebratePhase != null) {
         AlertDialog(
             onDismissRequest = { celebratePhase = null },
-            title = { Text("Phase Complete!", fontWeight = FontWeight.Bold) },
+            title = { Text(stringResource(R.string.tasks_phase_complete), fontWeight = FontWeight.Bold) },
             text = {
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                     Text("\uD83C\uDF89", fontSize = 48.sp)
                     Spacer(Modifier.height(8.dp))
-                    Text("You've completed all tasks in:", style = MaterialTheme.typography.bodyMedium)
+                    Text(stringResource(R.string.tasks_completed_all_in), style = MaterialTheme.typography.bodyMedium)
                     Spacer(Modifier.height(4.dp))
-                    Text(celebratePhase!!, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                    Text(localizedPhaseTitle(celebratePhase!!), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.height(8.dp))
-                    Text("Keep going — you're making great progress!", style = MaterialTheme.typography.bodySmall)
+                    Text(stringResource(R.string.tasks_keep_going), style = MaterialTheme.typography.bodySmall)
                 }
             },
             confirmButton = {
-                TextButton(onClick = { celebratePhase = null }) { Text("Awesome!") }
+                TextButton(onClick = { celebratePhase = null }) { Text(stringResource(R.string.tasks_awesome)) }
             }
         )
     }
@@ -260,19 +256,19 @@ fun TasksScreen(
     if (showImportSeed) {
         AlertDialog(
             onDismissRequest = { showImportSeed = false },
-            title = { Text("Re-import Seed Tasks") },
-            text = { Text("Add missing seed tasks for $countryName.") },
+            title = { Text(stringResource(R.string.tasks_reimport)) },
+            text = { Text(stringResource(R.string.tasks_reimport_body, countryName)) },
             confirmButton = {
                 TextButton(onClick = {
                     showImportSeed = false
                     scope.launch {
                         TaskRepository().importCountrySeedFromAssets(context, countryId)
-                            .onSuccess { (a, s) -> snack.showSnackbar("Added $a, skipped $s") }
-                            .onFailure { snack.showSnackbar("Import failed") }
+                            .onSuccess { (a, s) -> snack.showSnackbar(context.getString(R.string.tasks_added_skipped, a, s)) }
+                            .onFailure { snack.showSnackbar(context.getString(R.string.tasks_import_failed)) }
                     }
-                }) { Text("Import") }
+                }) { Text(stringResource(R.string.import_)) }
             },
-            dismissButton = { TextButton(onClick = { showImportSeed = false }) { Text("Cancel") } }
+            dismissButton = { TextButton(onClick = { showImportSeed = false }) { Text(stringResource(R.string.cancel)) } }
         )
     }
 
@@ -289,13 +285,13 @@ fun TasksScreen(
                         }
                     }
                     datePickerTask = null
-                }) { Text("Set Date") }
+                }) { Text(stringResource(R.string.set_date)) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     datePickerTask?.let { vm.setDue(it, null) }
                     datePickerTask = null
-                }) { Text("Clear") }
+                }) { Text(stringResource(R.string.clear)) }
             }
         ) { DatePicker(state = dateState) }
     }
@@ -304,12 +300,12 @@ fun TasksScreen(
     if (notesTask != null) {
         AlertDialog(
             onDismissRequest = { notesTask = null },
-            title = { Text("Notes") },
+            title = { Text(stringResource(R.string.notes)) },
             text = {
                 OutlinedTextField(
                     value = notesText,
                     onValueChange = { notesText = it },
-                    placeholder = { Text("Add personal notes...") },
+                    placeholder = { Text(stringResource(R.string.tasks_notes_hint)) },
                     modifier = Modifier.fillMaxWidth().height(120.dp),
                     maxLines = 5
                 )
@@ -318,9 +314,9 @@ fun TasksScreen(
                 TextButton(onClick = {
                     notesTask?.let { vm.setNotes(it, notesText.ifBlank { null }) }
                     notesTask = null
-                }) { Text("Save") }
+                }) { Text(stringResource(R.string.save)) }
             },
-            dismissButton = { TextButton(onClick = { notesTask = null }) { Text("Cancel") } }
+            dismissButton = { TextButton(onClick = { notesTask = null }) { Text(stringResource(R.string.cancel)) } }
         )
     }
 
@@ -334,16 +330,16 @@ fun TasksScreen(
                 modifier = Modifier.padding(horizontal = 24.dp).padding(bottom = 32.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("New Task", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.tasks_new_task), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 OutlinedTextField(value = newTaskTitle, onValueChange = { newTaskTitle = it },
-                    label = { Text("Task title") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-                Text("Phase", style = MaterialTheme.typography.labelLarge)
+                    label = { Text(stringResource(R.string.tasks_task_title)) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                Text(stringResource(R.string.tasks_phase), style = MaterialTheme.typography.labelLarge)
                 val phases = listOf("Phase 1: Research & Planning", "Phase 2: Documentation",
                     "Phase 3: Application", "Phase 4: Arrival & Setup", "Phase 5: Residency Follow-up")
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     phases.forEach { phase ->
                         FilterChip(selected = newTaskCategory == phase, onClick = { newTaskCategory = phase },
-                            label = { Text(phase) }, colors = FilterChipDefaults.filterChipColors(
+                            label = { Text(localizedPhaseTitle(phase)) }, colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.primary,
                                 selectedLabelColor = MaterialTheme.colorScheme.onPrimary))
                     }
@@ -355,7 +351,7 @@ fun TasksScreen(
                             newTaskTitle = ""; showAddTask = false
                         }
                     }
-                }, modifier = Modifier.fillMaxWidth(), enabled = newTaskTitle.isNotBlank()) { Text("Add Task") }
+                }, modifier = Modifier.fillMaxWidth(), enabled = newTaskTitle.isNotBlank()) { Text(stringResource(R.string.tasks_add_task)) }
             }
         }
     }
@@ -364,7 +360,7 @@ fun TasksScreen(
         snackbarHost = { SnackbarHost(hostState = snack) },
         floatingActionButton = {
             RaisedFab(onClick = { showAddTask = true }) {
-                Icon(Icons.Default.Add, contentDescription = "Add task")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.tasks_add_task_desc))
             }
         }
     ) { scaffoldPadding ->
@@ -372,31 +368,31 @@ fun TasksScreen(
             // Header
             Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically) {
-                Text("Relocation Checklist", style = MaterialTheme.typography.headlineSmall,
+                Text(stringResource(R.string.tasks_checklist), style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f))
                 IconButton(onClick = { showSearch = !showSearch }) {
-                    Icon(Icons.Outlined.Search, contentDescription = "Search") }
+                    Icon(Icons.Outlined.Search, contentDescription = stringResource(R.string.search)) }
                 if (filteredItems.isNotEmpty()) {
                     IconButton(onClick = {
                         val text = buildString {
-                            appendLine("GoThere - $countryName Relocation Checklist\n")
+                            appendLine(context.getString(R.string.tasks_share_header, countryName) + "\n")
                             sections.forEach { s ->
                                 appendLine(s.phase ?: "Other Tasks")
                                 s.tasks.forEach { t ->
                                     appendLine("  ${if (t.completed) "\u2705" else "\u2B1C"} ${t.title}")
                                 }; appendLine()
                             }
-                            appendLine("Progress: $completedTasks/$totalTasks completed")
+                            appendLine(context.getString(R.string.tasks_share_progress, completedTasks, totalTasks))
                         }
                         context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
                             type = "text/plain"; putExtra(Intent.EXTRA_TEXT, text)
-                        }, "Share checklist"))
-                    }) { Icon(Icons.Outlined.Share, contentDescription = "Share") }
+                        }, context.getString(R.string.tasks_share_checklist)))
+                    }) { Icon(Icons.Outlined.Share, contentDescription = stringResource(R.string.share)) }
                 }
                 IconButton(onClick = { showOverflowMenu = true }) {
-                    Icon(Icons.Outlined.MoreVert, contentDescription = "More") }
+                    Icon(Icons.Outlined.MoreVert, contentDescription = stringResource(R.string.more)) }
                 DropdownMenu(expanded = showOverflowMenu, onDismissRequest = { showOverflowMenu = false }) {
-                    DropdownMenuItem(text = { Text("Re-import Seed Tasks") }, onClick = {
+                    DropdownMenuItem(text = { Text(stringResource(R.string.tasks_reimport)) }, onClick = {
                         showOverflowMenu = false; showImportSeed = true })
                 }
             }
@@ -404,7 +400,7 @@ fun TasksScreen(
             // Search bar
             AnimatedVisibility(visible = showSearch) {
                 OutlinedTextField(value = searchQuery, onValueChange = { searchQuery = it },
-                    placeholder = { Text("Search tasks") },
+                    placeholder = { Text(stringResource(R.string.tasks_search_hint)) },
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp), singleLine = true)
             }
 
@@ -412,7 +408,7 @@ fun TasksScreen(
             Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilterChip(selected = !showCompleted, onClick = { showCompleted = !showCompleted },
-                    label = { Text(if (showCompleted) "Hide Done" else "Show Done") },
+                    label = { Text(stringResource(if (showCompleted) R.string.tasks_hide_done else R.string.tasks_show_done)) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primary,
                         selectedLabelColor = MaterialTheme.colorScheme.onPrimary))
@@ -445,17 +441,17 @@ fun TasksScreen(
                                     }
                                     Spacer(Modifier.width(16.dp))
                                     Column {
-                                        Text("$completedTasks of $totalTasks tasks completed",
+                                        Text(stringResource(R.string.tasks_progress, completedTasks, totalTasks),
                                             style = MaterialTheme.typography.titleSmall,
                                             fontWeight = FontWeight.SemiBold,
                                             color = MaterialTheme.colorScheme.onPrimaryContainer)
                                         val remaining = totalTasks - completedTasks
                                         if (remaining > 0) {
-                                            Text("$remaining tasks remaining",
+                                            Text(pluralRes(R.plurals.tasks_remaining, remaining, remaining),
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f))
                                         } else {
-                                            Text("All tasks complete!",
+                                            Text(stringResource(R.string.tasks_all_done),
                                                 style = MaterialTheme.typography.bodySmall,
                                                 fontWeight = FontWeight.Bold,
                                                 color = MaterialTheme.colorScheme.primary)
@@ -481,11 +477,11 @@ fun TasksScreen(
                                 Text("\u2708\uFE0F", fontSize = 28.sp)
                                 Spacer(Modifier.width(12.dp))
                                 Column {
-                                    Text("$moveCountdown days until your move",
+                                    Text(pluralRes(R.plurals.tasks_days_until_move, moveCountdown, moveCountdown),
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onTertiaryContainer)
-                                    Text("Stay on track with your checklist!",
+                                    Text(stringResource(R.string.tasks_stay_on_track),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f))
                                 }
@@ -505,7 +501,7 @@ fun TasksScreen(
                                     modifier = Modifier.size(20.dp).padding(top = 2.dp))
                                 Spacer(Modifier.width(8.dp))
                                 Column(Modifier.weight(1f)) {
-                                    Text("Tip of the Day", style = MaterialTheme.typography.labelSmall,
+                                    Text(stringResource(R.string.tasks_tip_of_day), style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                                     Text(todaysTip.tip, style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -524,15 +520,15 @@ fun TasksScreen(
                         Card(modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
                             Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("No tasks for $countryName yet", style = MaterialTheme.typography.titleMedium,
+                                Text(stringResource(R.string.tasks_empty, countryName), style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.onSecondaryContainer)
                                 Spacer(Modifier.height(8.dp))
                                 RaisedButton(onClick = {
                                     scope.launch {
                                         TaskRepository().importCountrySeedFromAssets(context, countryId)
-                                            .onSuccess { (a, _) -> snack.showSnackbar("Added $a tasks") }
+                                            .onSuccess { (a, _) -> snack.showSnackbar(context.resources.getQuantityString(R.plurals.tasks_added_n, a, a)) }
                                     }
-                                }) { Text("Import $countryName Tasks") }
+                                }) { Text(stringResource(R.string.tasks_import_country, countryName)) }
                             }
                         }
                     }
@@ -541,7 +537,7 @@ fun TasksScreen(
                 // --- Task list ---
                 sections.forEach { section ->
                     item(key = "header_${countryId}_${section.phase}") {
-                        PhaseHeader(section.phase ?: "Other Tasks")
+                        PhaseHeader(section.phase ?: stringResource(R.string.phase_other_tasks))
                     }
                     items(items = section.tasks,
                         key = { it.id ?: "${countryId}_${it.category}|${it.title}" }
@@ -601,13 +597,13 @@ private fun TaskRow(
 
                 // Date picker button
                 IconButton(onClick = onSetDate, modifier = Modifier.size(32.dp)) {
-                    Icon(Icons.Outlined.CalendarMonth, contentDescription = "Set due date",
+                    Icon(Icons.Outlined.CalendarMonth, contentDescription = stringResource(R.string.tasks_set_due),
                         modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
 
                 // Notes button
                 IconButton(onClick = onEditNotes, modifier = Modifier.size(32.dp)) {
-                    Icon(Icons.Outlined.Edit, contentDescription = "Add notes",
+                    Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.tasks_add_notes),
                         modifier = Modifier.size(18.dp),
                         tint = if (task.notes.isNullOrBlank()) MaterialTheme.colorScheme.onSurfaceVariant
                         else MaterialTheme.colorScheme.primary)
@@ -616,7 +612,7 @@ private fun TaskRow(
                 if (hasDetails) {
                     IconButton(onClick = { isExpanded = !isExpanded }, modifier = Modifier.size(32.dp)) {
                         Icon(if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                            contentDescription = if (isExpanded) "Collapse" else "Expand",
+                            contentDescription = stringResource(if (isExpanded) R.string.collapse else R.string.expand),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
@@ -690,10 +686,10 @@ private fun PhaseHeader(title: String) {
         Spacer(Modifier.width(12.dp))
         Column {
             if (overline.isNotEmpty()) {
-                Text(overline.uppercase(), style = MaterialTheme.typography.labelMedium,
+                Text(localizedPhaseOverline(overline).uppercase(), style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary)
             }
-            Text(heading, style = MaterialTheme.typography.titleLarge,
+            Text(localizedPhaseName(heading), style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface)
         }
     }

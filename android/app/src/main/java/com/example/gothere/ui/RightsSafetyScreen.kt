@@ -2,6 +2,8 @@
 
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -22,16 +24,19 @@ import com.example.gothere.decision.PersonalConsideration
 import com.example.gothere.repository.CountrySafetyProfiles
 import com.example.gothere.repository.UserConsiderationsStore
 
-private fun PersonalConsideration.label(): String = when (this) {
-    PersonalConsideration.LGBTQ -> "LGBTQ+"
-    PersonalConsideration.Trans -> "Transgender"
-    PersonalConsideration.Disabled -> "Disabled / Accessibility"
-    PersonalConsideration.Veteran -> "Veteran"
-    PersonalConsideration.Pregnant -> "Pregnant / Expecting"
-    PersonalConsideration.Neurodivergent -> "Neurodivergent"
-    PersonalConsideration.Senior -> "Senior (60+)"
-    PersonalConsideration.Poc -> "Person of Color"
-}
+@androidx.compose.runtime.Composable
+private fun PersonalConsideration.label(): String = androidx.compose.ui.res.stringResource(
+    when (this) {
+        PersonalConsideration.LGBTQ -> R.string.consideration_lgbtq
+        PersonalConsideration.Trans -> R.string.consideration_trans
+        PersonalConsideration.Disabled -> R.string.consideration_disabled
+        PersonalConsideration.Veteran -> R.string.consideration_veteran
+        PersonalConsideration.Pregnant -> R.string.consideration_pregnant
+        PersonalConsideration.Neurodivergent -> R.string.consideration_neurodivergent
+        PersonalConsideration.Senior -> R.string.consideration_senior
+        PersonalConsideration.Poc -> R.string.consideration_poc
+    }
+)
 
 private val DISPLAY_ORDER = listOf(
     PersonalConsideration.LGBTQ, PersonalConsideration.Trans, PersonalConsideration.Disabled,
@@ -61,10 +66,10 @@ fun RightsSafetyScreen(onDismiss: () -> Unit, onOpenCare: (() -> Unit)? = null) 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Rights & Safety") },
+                title = { Text(stringResource(R.string.res_tool_rights)) },
                 navigationIcon = {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -75,12 +80,12 @@ fun RightsSafetyScreen(onDismiss: () -> Unit, onOpenCare: (() -> Unit)? = null) 
                 .verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("Weight your move on what matters", style = MaterialTheme.typography.titleMedium,
+            Text(stringResource(R.string.rs_header), style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-            Text("Compare destinations on the protections most relevant to you and your family — not just cost and visas.",
+            Text(stringResource(R.string.rs_intro),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-            Text("This applies to me / my family", style = MaterialTheme.typography.labelSmall,
+            Text(stringResource(R.string.rs_applies), style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Row(modifier = Modifier.horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -99,7 +104,7 @@ fun RightsSafetyScreen(onDismiss: () -> Unit, onOpenCare: (() -> Unit)? = null) 
             }
 
             if (selected.isEmpty()) {
-                Text("Pick at least one consideration to compare destinations.",
+                Text(stringResource(R.string.rs_pick_one),
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             } else {
                 DISPLAY_ORDER.filter { it in selected }.forEach { c ->
@@ -114,7 +119,7 @@ fun RightsSafetyScreen(onDismiss: () -> Unit, onOpenCare: (() -> Unit)? = null) 
                                     Card(colors = CardDefaults.cardColors(
                                         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))) {
                                         Column(Modifier.padding(10.dp)) {
-                                            Text("${dest.flag} ${dest.name}",
+                                            Text("${dest.flag} ${countryDisplayName(dest.countryId, dest.name)}",
                                                 style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
                                             Text(note, style = MaterialTheme.typography.bodySmall,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -135,15 +140,15 @@ fun RightsSafetyScreen(onDismiss: () -> Unit, onOpenCare: (() -> Unit)? = null) 
                     )
                 ) {
                     Column(Modifier.padding(14.dp)) {
-                        Text("Your meds & care abroad", style = MaterialTheme.typography.titleSmall,
+                        Text(stringResource(R.string.rs_meds), style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold)
-                        Text("ADHD meds, HRT, insulin — what's available and what you can carry in",
+                        Text(stringResource(R.string.rs_meds_sub),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
-            Text("Sourced from ILGA-Europe, EU directives, OECD, and SSA data. Informational only — laws change; verify current protections before deciding.",
+            Text(stringResource(R.string.rs_sources),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(16.dp))
         }

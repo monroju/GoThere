@@ -1,5 +1,7 @@
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -38,19 +40,14 @@ fun PaywallDialog(
 
     val productDetails by purchaseManager.productDetails.collectAsState()
     
-    val countryName = when (countryId) {
-        "portugal" -> "Portugal"
-        "mexico" -> "Mexico"
-        "ireland" -> "Ireland"
-        "italy" -> "Italy"
-        "germany" -> "Germany"
-        "poland" -> "Poland"
-        "argentina" -> "Argentina"
-        "hungary" -> "Hungary"
-        "uk_ancestry" -> "UK (Ancestry)"
-        "all" -> "All Countries"
-        else -> "Country"
-    }
+    val countryName = stringResource(
+        when (countryId) {
+            "portugal", "mexico", "ireland", "italy", "germany", "poland",
+            "argentina", "hungary", "uk_ancestry" -> countryNameRes(countryId)
+            "all" -> R.string.paywall_all_countries
+            else -> R.string.paywall_country
+        }
+    )
 
     val countryFlag = when (countryId) {
         "portugal" -> "🇵🇹"
@@ -97,9 +94,9 @@ fun PaywallDialog(
         else -> 0
     }
     val regionBundleLabel = when (regionBundleProductId) {
-        PurchaseManager.PRODUCT_EUROPE_BUNDLE -> "Europe Bundle"
-        PurchaseManager.PRODUCT_AMERICAS_BUNDLE -> "Americas Bundle"
-        else -> "Region Bundle"
+        PurchaseManager.PRODUCT_EUROPE_BUNDLE -> stringResource(R.string.paywall_europe_bundle)
+        PurchaseManager.PRODUCT_AMERICAS_BUNDLE -> stringResource(R.string.paywall_americas_bundle)
+        else -> stringResource(R.string.paywall_region_bundle)
     }
     val regionBundleAvailable = regionBundleProductId != null && productDetails.containsKey(regionBundleProductId)
     val regionBundlePrice = regionBundleProductId?.let { purchaseManager.getFormattedPrice(it) } ?: ""
@@ -109,7 +106,7 @@ fun PaywallDialog(
         productDetails.containsKey(PurchaseManager.PRODUCT_ALL_ACCESS_MONTHLY) -> PurchaseManager.PRODUCT_ALL_ACCESS_MONTHLY
         else -> null
     }
-    val subPriceSuffix = if (preferredSubProductId == PurchaseManager.PRODUCT_ALL_ACCESS_ANNUAL) "/yr" else "/mo"
+    val subPriceSuffix = stringResource(if (preferredSubProductId == PurchaseManager.PRODUCT_ALL_ACCESS_ANNUAL) R.string.paywall_per_year else R.string.paywall_per_month)
     val subPrice = preferredSubProductId?.let { purchaseManager.getFormattedPrice(it) } ?: ""
 
     // 02-metrics.md: paywall_viewed with source + products, paywall_dismissed when closed without buying.
@@ -163,7 +160,7 @@ fun PaywallDialog(
                     IconButton(onClick = onDismiss) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Close",
+                            contentDescription = stringResource(R.string.close),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -178,7 +175,7 @@ fun PaywallDialog(
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 Text(
-                    text = "Unlock $countryName",
+                    text = stringResource(R.string.paywall_unlock_country, countryName),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -187,7 +184,7 @@ fun PaywallDialog(
                 Spacer(modifier = Modifier.height(8.dp))
                 
                 Text(
-                    text = "Get the complete $countryName relocation toolkit",
+                    text = stringResource(R.string.paywall_subtitle, countryName),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -217,7 +214,7 @@ fun PaywallDialog(
                         )
                     ) {
                         Text(
-                            text = "$singlePrice — Unlock $countryName",
+                            text = stringResource(R.string.paywall_single_cta, singlePrice, countryName),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -241,7 +238,7 @@ fun PaywallDialog(
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Text(
-                            text = "$regionBundlePrice — $regionBundleLabel · $regionBundleCount countries",
+                            text = stringResource(R.string.paywall_region_cta, regionBundlePrice, regionBundleLabel, regionBundleCount),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.primary
@@ -286,13 +283,13 @@ fun PaywallDialog(
                         Spacer(modifier = Modifier.width(8.dp))
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
-                                text = "$bundlePrice — Lifetime All-Access",
+                                text = stringResource(R.string.paywall_lifetime_cta, bundlePrice),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.primary
                             )
                             Text(
-                                text = "Pay once · every country, current and future",
+                                text = stringResource(R.string.paywall_lifetime_sub),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.tertiary
                             )
@@ -316,14 +313,13 @@ fun PaywallDialog(
                             .height(48.dp)
                     ) {
                         Text(
-                            text = "Or subscribe — $subPrice$subPriceSuffix",
+                            text = stringResource(R.string.paywall_subscribe_cta, subPrice, subPriceSuffix),
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
                     Text(
-                        text = "Renews automatically at $subPrice$subPriceSuffix until cancelled. " +
-                            "Cancel anytime in Google Play › Payments & subscriptions.",
+                        text = stringResource(R.string.paywall_renews, subPrice, subPriceSuffix),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
@@ -337,7 +333,7 @@ fun PaywallDialog(
                 Spacer(modifier = Modifier.height(4.dp))
                 TextButton(onClick = { showReferral = true }) {
                     Text(
-                        text = "🎁  Prefer free? Invite a friend",
+                        text = stringResource(R.string.paywall_invite),
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -346,7 +342,7 @@ fun PaywallDialog(
                 // Maybe later link
                 TextButton(onClick = onDismiss) {
                     Text(
-                        text = "Maybe Later",
+                        text = stringResource(R.string.maybe_later),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -365,11 +361,11 @@ fun PaywallDialog(
 @Composable
 private fun FeaturesList(countryName: String) {
     val features = listOf(
-        "20+ visa & documentation tasks",
-        "Decision tree for 15+ cities",
-        "Neighborhood guides & tips",
-        "Country-specific resources",
-        "Pay once or subscribe — your call"
+        stringResource(R.string.paywall_feat_tasks),
+        stringResource(R.string.paywall_feat_tree),
+        stringResource(R.string.paywall_feat_guides),
+        stringResource(R.string.paywall_feat_resources),
+        stringResource(R.string.paywall_feat_pay)
     )
     
     Column(
@@ -410,18 +406,13 @@ fun PaywallBanner(
     onUnlockClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val countryName = when (countryId) {
-        "portugal" -> "Portugal"
-        "mexico" -> "Mexico"
-        "ireland" -> "Ireland"
-        "italy" -> "Italy"
-        "germany" -> "Germany"
-        "poland" -> "Poland"
-        "argentina" -> "Argentina"
-        "hungary" -> "Hungary"
-        "uk_ancestry" -> "UK (Ancestry)"
-        else -> "Country"
-    }
+    val countryName = stringResource(
+        when (countryId) {
+            "portugal", "mexico", "ireland", "italy", "germany", "poland",
+            "argentina", "hungary", "uk_ancestry" -> countryNameRes(countryId)
+            else -> R.string.paywall_country
+        }
+    )
 
     val countryFlag = when (countryId) {
         "portugal" -> "🇵🇹"
@@ -458,13 +449,13 @@ fun PaywallBanner(
             
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Unlock $countryName",
+                    text = stringResource(R.string.paywall_unlock_country, countryName),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Text(
-                    text = "Get full access to $countryName tasks & guides",
+                    text = stringResource(R.string.paywall_banner_sub, countryName),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                 )
@@ -477,7 +468,7 @@ fun PaywallBanner(
                     containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
-                Text("Unlock")
+                Text(stringResource(R.string.unlock))
             }
         }
     }

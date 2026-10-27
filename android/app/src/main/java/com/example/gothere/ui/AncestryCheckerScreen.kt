@@ -1,5 +1,7 @@
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -37,7 +39,7 @@ fun AncestryCheckerScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Ancestry Citizenship") },
+                title = { Text(stringResource(R.string.tool_ancestry)) },
                 navigationIcon = {
                     IconButton(onClick = {
                         if (selectedPath != null) {
@@ -45,7 +47,7 @@ fun AncestryCheckerScreen(onBack: () -> Unit) {
                             ruleAnswers.clear()
                         } else onBack()
                     }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -74,12 +76,12 @@ fun AncestryCheckerScreen(onBack: () -> Unit) {
 private fun Header() {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
-            "You might already be a citizen.",
+            stringResource(R.string.anc_header),
             style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.primary
         )
         Text(
-            "Six EU countries pass citizenship down to grandchildren or further. No income test, no residency requirement, no language test (mostly). The hardest part is the paperwork.",
+            stringResource(R.string.anc_intro),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -91,7 +93,7 @@ private fun Header() {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                "A second passport for the cost of paperwork. What investors pay \$200k+ for via citizenship-by-investment, you may inherit — full EU mobility, a tax-residency option, and a real Plan B.",
+                stringResource(R.string.anc_planb),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(12.dp)
             )
@@ -102,7 +104,7 @@ private fun Header() {
 @Composable
 private fun CountryPicker(catalog: AncestryCatalog, onPick: (AncestryPath) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text("Pick the ancestor's country", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.anc_pick_country), style = MaterialTheme.typography.titleMedium)
         catalog.paths.forEach { p ->
             Surface(
                 shape = RoundedCornerShape(12.dp),
@@ -151,12 +153,12 @@ private fun Detail(
         Text(path.summary, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            StatCard("Cost", "$${path.estCostLowUSD}–$${path.estCostHighUSD}", Modifier.weight(1f))
-            StatCard("Timeline", "${path.estTimelineLowMonths}–${path.estTimelineHighMonths} mo", Modifier.weight(1f))
-            StatCard("Income test", if (path.incomeRequired) "Yes" else "None", Modifier.weight(1f))
+            StatCard(stringResource(R.string.anc_cost), "$${path.estCostLowUSD}–$${path.estCostHighUSD}", Modifier.weight(1f))
+            StatCard(stringResource(R.string.anc_timeline), stringResource(R.string.anc_months_range, path.estTimelineLowMonths, path.estTimelineHighMonths), Modifier.weight(1f))
+            StatCard(stringResource(R.string.anc_income_test), stringResource(if (path.incomeRequired) R.string.yes else R.string.none), Modifier.weight(1f))
         }
 
-        Text("Do you qualify?", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.anc_qualify), style = MaterialTheme.typography.titleMedium)
         path.eligibilityRules.forEach { rule ->
             Surface(
                 shape = RoundedCornerShape(10.dp),
@@ -179,17 +181,17 @@ private fun Detail(
                         FilterChip(
                             selected = answers[rule.id] == true,
                             onClick = { onAnswer(rule.id, true) },
-                            label = { Text("Yes") }
+                            label = { Text(stringResource(R.string.yes)) }
                         )
                         FilterChip(
                             selected = answers[rule.id] == false,
                             onClick = { onAnswer(rule.id, false) },
-                            label = { Text("No") }
+                            label = { Text(stringResource(R.string.no)) }
                         )
                     }
                     if (answers[rule.id] == false && rule.openWorkaround != null) {
                         Text(
-                            "Workaround available: ${rule.openWorkaround}",
+                            stringResource(R.string.anc_workaround, rule.openWorkaround ?: ""),
                             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -209,7 +211,7 @@ private fun Detail(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Documents you'll need", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.anc_docs_needed), style = MaterialTheme.typography.titleMedium)
                 path.documents.forEach { d ->
                     Text("• $d", style = MaterialTheme.typography.bodyMedium)
                 }
@@ -222,7 +224,7 @@ private fun Detail(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("If money is tight", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.anc_money_tight), style = MaterialTheme.typography.titleMedium)
                 Text(path.lowIncomeNotes, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
@@ -242,7 +244,7 @@ private fun Detail(
                 ) {
                     Icon(Icons.Outlined.OpenInNew, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Text(
-                        "Official government source",
+                        stringResource(R.string.anc_official_source),
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -289,12 +291,12 @@ private fun Verdict(path: AncestryPath, answers: Map<String, Boolean>) {
             if (allYes) {
                 val context = LocalContext.current
                 LaunchedEffect(Unit) { ReviewHelper.onMilestone(context, ReviewMilestone.ANCESTRY_LIKELY_ELIGIBLE) }
-                Text("Likely eligible ✓", style = MaterialTheme.typography.titleMedium, color = Color(0xFF1B7F3F))
+                Text(stringResource(R.string.anc_likely), style = MaterialTheme.typography.titleMedium, color = Color(0xFF1B7F3F))
                 Text(path.outcome, style = MaterialTheme.typography.bodyMedium)
             } else {
-                Text("Direct path blocked", style = MaterialTheme.typography.titleMedium, color = Color(0xFF7A4A00))
+                Text(stringResource(R.string.anc_blocked), style = MaterialTheme.typography.titleMedium, color = Color(0xFF7A4A00))
                 Text(
-                    "One or more required rules failed. Check the workaround notes above — some failed rules have court-petition paths that still work.",
+                    stringResource(R.string.anc_failed_rules),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }

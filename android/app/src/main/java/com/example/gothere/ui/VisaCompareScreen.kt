@@ -2,6 +2,8 @@
 
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -83,12 +85,12 @@ fun VisaCompareScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (showComparison) "Side-by-Side" else "Visa Comparison") },
+                title = { Text(stringResource(if (showComparison) R.string.cmp_side_by_side else R.string.cmp_title)) },
                 navigationIcon = {
                     IconButton(onClick = {
                         if (showComparison) showComparison = false else onDismiss()
                     }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -105,7 +107,7 @@ fun VisaCompareScreen(
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(
-                            "Compare ${selectedVisas.size} Visas",
+                            stringResource(R.string.cmp_compare_n, selectedVisas.size),
                             fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -133,27 +135,27 @@ fun VisaCompareScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    "Compare Visa Types",
+                    stringResource(R.string.wiz_compare),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    "Select 2-3 visas to see eligibility, cost, and citizenship paths side-by-side.",
+                    stringResource(R.string.cmp_intro),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 FilterRow(
-                    label = "Country",
-                    items = listOf(null to "All") + countryOptions(),
+                    label = stringResource(R.string.cmp_country),
+                    items = listOf(null to stringResource(R.string.cmp_all_countries)) + countryOptions(),
                     selected = countryFilter,
                     onSelect = { countryFilter = it }
                 )
 
                 FilterRow(
-                    label = "Category",
-                    items = listOf<Pair<VisaCategory?, String>>(null to "All") +
+                    label = stringResource(R.string.cmp_category),
+                    items = listOf<Pair<VisaCategory?, String>>(null to stringResource(R.string.cmp_all_categories)) +
                         VisaCategory.entries.map { it to it.displayName },
                     selected = categoryFilter,
                     onSelect = { categoryFilter = it }
@@ -169,7 +171,7 @@ fun VisaCompareScreen(
                     FilterChip(
                         selected = noDegreeOnly,
                         onClick = { noDegreeOnly = !noDegreeOnly },
-                        label = { Text("No degree needed", fontSize = 12.sp) },
+                        label = { Text(stringResource(R.string.cmp_no_degree), fontSize = 12.sp) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = MaterialTheme.colorScheme.primary,
                             selectedLabelColor = MaterialTheme.colorScheme.onPrimary
@@ -178,7 +180,7 @@ fun VisaCompareScreen(
                     FilterChip(
                         selected = independentIncomeOnly,
                         onClick = { independentIncomeOnly = !independentIncomeOnly },
-                        label = { Text("Freelance / self income OK", fontSize = 12.sp) },
+                        label = { Text(stringResource(R.string.cmp_freelance), fontSize = 12.sp) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = MaterialTheme.colorScheme.primary,
                             selectedLabelColor = MaterialTheme.colorScheme.onPrimary
@@ -190,14 +192,14 @@ fun VisaCompareScreen(
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        "${filtered.size} visa types",
+                        pluralRes(R.plurals.cmp_visa_types, filtered.size, filtered.size),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(Modifier.weight(1f))
                     if (selectedIds.isNotEmpty()) {
                         TextButton(onClick = { selectedIds = emptySet() }) {
-                            Text("Clear (${selectedIds.size})")
+                            Text(stringResource(R.string.cmp_clear_n, selectedIds.size))
                         }
                     }
                 }
@@ -327,7 +329,7 @@ private fun VisaRow(
                 if (isSelected) {
                     Icon(
                         Icons.Outlined.Check,
-                        contentDescription = "Selected",
+                        contentDescription = stringResource(R.string.cmp_selected),
                         tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(14.dp)
                     )
@@ -344,13 +346,13 @@ private fun ComparisonTable(
     modifier: Modifier = Modifier
 ) {
     val rows = listOf(
-        "Income / Funds" to { v: VisaInfo -> v.income },
-        "Processing time" to { v: VisaInfo -> v.processingTime },
-        "Duration" to { v: VisaInfo -> v.duration },
-        "Work allowed?" to { v: VisaInfo -> v.workAllowed },
-        "Path to PR" to { v: VisaInfo -> v.pathToPR },
-        "Path to citizenship" to { v: VisaInfo -> v.pathToCitizenship },
-        "Cost estimate" to { v: VisaInfo -> v.costEstimate }
+        stringResource(R.string.cmp_row_income) to { v: VisaInfo -> v.income },
+        stringResource(R.string.cmp_row_processing) to { v: VisaInfo -> v.processingTime },
+        stringResource(R.string.cmp_row_duration) to { v: VisaInfo -> v.duration },
+        stringResource(R.string.cmp_row_work) to { v: VisaInfo -> v.workAllowed },
+        stringResource(R.string.cmp_row_pr) to { v: VisaInfo -> v.pathToPR },
+        stringResource(R.string.cmp_row_citizenship) to { v: VisaInfo -> v.pathToCitizenship },
+        stringResource(R.string.cmp_row_cost) to { v: VisaInfo -> v.costEstimate }
     )
 
     val labelColumnWidth = 130.dp
@@ -378,7 +380,7 @@ private fun ComparisonTable(
             ) {
                 TableCell(width = labelColumnWidth) {
                     Text(
-                        "Feature",
+                        stringResource(R.string.cmp_feature),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -441,7 +443,7 @@ private fun ComparisonTable(
         if (taxableVisas.isNotEmpty()) {
             taxableVisas.forEach { v -> TaxRegimeCard(v) }
             Text(
-                "Preferential tax regimes are time-sensitive and conditional — election windows are short. Confirm eligibility with a cross-border tax advisor before relying on a rate.",
+                stringResource(R.string.cmp_tax_disclaimer),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -493,13 +495,13 @@ private fun ProsConsCard(v: VisaInfo) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             Icons.Outlined.Check,
-                            contentDescription = "Pros",
+                            contentDescription = stringResource(R.string.cmp_pros),
                             tint = Color(0xFF4CAF50),
                             modifier = Modifier.size(14.dp)
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            "Pros",
+                            stringResource(R.string.cmp_pros),
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF4CAF50)
@@ -518,13 +520,13 @@ private fun ProsConsCard(v: VisaInfo) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             Icons.Outlined.Close,
-                            contentDescription = "Cons",
+                            contentDescription = stringResource(R.string.cmp_cons),
                             tint = Color(0xFFE53935),
                             modifier = Modifier.size(14.dp)
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            "Cons",
+                            stringResource(R.string.cmp_cons),
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFFE53935)
@@ -554,7 +556,7 @@ private fun TaxRegimeCard(v: VisaInfo) {
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(
-                "${v.countryFlag} ${v.shortName} — tax regimes",
+                stringResource(R.string.cmp_tax_regimes, v.countryFlag, v.shortName),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -566,7 +568,7 @@ private fun TaxRegimeCard(v: VisaInfo) {
                             fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
                         r.flatRatePercent?.let { rate ->
                             Surface(color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(6.dp)) {
-                                Text("${(rate * 100).toInt()}% flat",
+                                Text(stringResource(R.string.cmp_flat, (rate * 100).toInt()),
                                     style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onPrimary,
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp))
@@ -598,7 +600,7 @@ private fun ActionButton(v: VisaInfo, onStartWizard: (String) -> Unit) {
                 .height(48.dp),
             shape = RoundedCornerShape(10.dp)
         ) {
-            Text("Start Wizard — ${v.shortName}", fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.cmp_start_wizard, v.shortName), fontWeight = FontWeight.SemiBold)
         }
     } else {
         OutlinedButton(
@@ -616,7 +618,7 @@ private fun ActionButton(v: VisaInfo, onStartWizard: (String) -> Unit) {
         ) {
             Icon(Icons.Outlined.OpenInNew, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
-            Text("Open Official — ${v.shortName}")
+            Text(stringResource(R.string.cmp_open_official, v.shortName))
         }
     }
 }
@@ -640,7 +642,7 @@ private fun SortControl(selected: SortMode, onSelect: (SortMode) -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            "Sort",
+            stringResource(R.string.cmp_sort),
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -649,7 +651,7 @@ private fun SortControl(selected: SortMode, onSelect: (SortMode) -> Unit) {
             FilterChip(
                 selected = mode == selected,
                 onClick = { onSelect(mode) },
-                label = { Text(mode.label, fontSize = 12.sp) },
+                label = { Text(stringResource(if (mode == SortMode.LOWEST_INCOME) R.string.cmp_sort_lowest_income else R.string.cmp_sort_default), fontSize = 12.sp) },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.primary,
                     selectedLabelColor = MaterialTheme.colorScheme.onPrimary
@@ -673,14 +675,14 @@ private fun IncomeFilter(value: Float, onChange: (Float) -> Unit) {
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    "Max monthly income required",
+                    stringResource(R.string.cmp_max_income),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(Modifier.weight(1f))
                 Text(
-                    if (active) "≤ \$${value.toInt()}/mo" else "Any",
+                    if (active) stringResource(R.string.cmp_income_le, value.toInt()) else stringResource(R.string.cmp_any),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary
@@ -693,7 +695,7 @@ private fun IncomeFilter(value: Float, onChange: (Float) -> Unit) {
                 steps = ((INCOME_SLIDER_MAX - INCOME_SLIDER_MIN) / 100).toInt() - 1
             )
             Text(
-                "Visas with no income test (ancestry, work, points-based) always show.",
+                stringResource(R.string.cmp_income_note),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

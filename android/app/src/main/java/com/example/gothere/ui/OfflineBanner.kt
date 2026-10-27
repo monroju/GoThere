@@ -1,5 +1,7 @@
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
@@ -76,13 +78,13 @@ fun OfflineBanner() {
         ) {
             Icon(
                 imageVector = Icons.Outlined.CloudOff,
-                contentDescription = "No internet connection",
+                contentDescription = stringResource(R.string.offline_desc),
                 tint = MaterialTheme.colorScheme.onErrorContainer,
                 modifier = Modifier.size(18.dp),
             )
             Spacer(Modifier.width(8.dp))
             Text(
-                text = "You're offline. Changes will sync when reconnected.",
+                text = stringResource(R.string.offline_banner),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onErrorContainer,
             )

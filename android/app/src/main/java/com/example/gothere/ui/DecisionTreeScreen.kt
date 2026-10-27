@@ -2,6 +2,8 @@
 
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
+import com.example.gothere.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -70,17 +72,18 @@ fun DecisionTreeScreen(
         }
     }
 
-    val countryName = when (countryId) {
-        "portugal" -> "Portugal"
-        "mexico" -> "Mexico"
-        else -> "Spain"
-    }
+    val countryName = stringResource(
+        when (countryId) {
+            "portugal" -> R.string.country_portugal
+            "mexico" -> R.string.country_mexico
+            else -> R.string.country_spain
+        }
+    )
 
     // Language label changes by country
     val languageLabel = when (countryId) {
-        "portugal" -> "Portuguese Comfort"
-        "mexico" -> "Spanish Comfort"
-        else -> "Spanish Comfort"
+        "portugal" -> stringResource(R.string.decide_portuguese_comfort)
+        else -> stringResource(R.string.decide_spanish_comfort)
     }
 
     Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }) { padding ->
@@ -100,7 +103,7 @@ fun DecisionTreeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Best Places in $countryName",
+                    stringResource(R.string.decide_best_places, countryName),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f)
@@ -115,21 +118,21 @@ fun DecisionTreeScreen(
                 ) {
                     Icon(
                         Icons.Outlined.Calculate,
-                        contentDescription = "Cost Calculator"
+                        contentDescription = stringResource(R.string.cost_calculator)
                     )
                 }
             }
 
-            LabeledChoiceRow("Household", Household.entries.toList(), household) { household = it }
+            LabeledChoiceRow(stringResource(R.string.decide_household), Household.entries.toList(), household) { household = it }
 
             // Personal Considerations (multi-select)
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    "Personal Considerations",
+                    stringResource(R.string.decide_personal),
                     style = MaterialTheme.typography.labelLarge.copy(fontSize = 16.sp, fontWeight = FontWeight.Medium)
                 )
                 Text(
-                    "Select any that apply — affects safety, healthcare & rights scoring.",
+                    stringResource(R.string.decide_personal_hint),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -148,14 +151,14 @@ fun DecisionTreeScreen(
                             label = {
                                 Text(
                                     when (opt) {
-                                        PersonalConsideration.LGBTQ -> "LGBTQ+"
-                                        PersonalConsideration.Trans -> "Transgender"
-                                        PersonalConsideration.Disabled -> "Disabled / Accessibility"
-                                        PersonalConsideration.Veteran -> "Veteran"
-                                        PersonalConsideration.Pregnant -> "Pregnant / Expecting"
-                                        PersonalConsideration.Neurodivergent -> "Neurodivergent"
-                                        PersonalConsideration.Senior -> "Senior (60+)"
-                                        PersonalConsideration.Poc -> "Person of Color"
+                                        PersonalConsideration.LGBTQ -> stringResource(R.string.consideration_lgbtq)
+                                        PersonalConsideration.Trans -> stringResource(R.string.consideration_trans)
+                                        PersonalConsideration.Disabled -> stringResource(R.string.consideration_disabled)
+                                        PersonalConsideration.Veteran -> stringResource(R.string.consideration_veteran)
+                                        PersonalConsideration.Pregnant -> stringResource(R.string.consideration_pregnant)
+                                        PersonalConsideration.Neurodivergent -> stringResource(R.string.consideration_neurodivergent)
+                                        PersonalConsideration.Senior -> stringResource(R.string.consideration_senior)
+                                        PersonalConsideration.Poc -> stringResource(R.string.consideration_poc)
                                     },
                                     modifier = Modifier.padding(vertical = 4.dp)
                                 )
@@ -169,32 +172,32 @@ fun DecisionTreeScreen(
                 }
             }
 
-            LabeledChoiceRow("Budget", Budget.entries.toList(), budget) { budget = it }
-            LabeledChoiceRow("Preferred Climate", ClimatePref.entries.toList(), climate) { climate = it }
+            LabeledChoiceRow(stringResource(R.string.decide_budget), Budget.entries.toList(), budget) { budget = it }
+            LabeledChoiceRow(stringResource(R.string.decide_climate), ClimatePref.entries.toList(), climate) { climate = it }
 
-            LabeledSwitch("Prefer Coastal Living", wantsCoastal) { wantsCoastal = it }
-            LabeledSwitch("Prefer Big City", wantsBigCity) { wantsBigCity = it }
+            LabeledSwitch(stringResource(R.string.decide_coastal), wantsCoastal) { wantsCoastal = it }
+            LabeledSwitch(stringResource(R.string.decide_big_city), wantsBigCity) { wantsBigCity = it }
 
             LabeledChoiceRow(languageLabel, Language.entries.toList(), language) { language = it }
 
             LabeledChoiceRowNullable(
-                "Expat Density Preference (optional)",
+                stringResource(R.string.decide_expat_density),
                 Density.entries.toList(),
                 expatPref
             ) { expatPref = it }
 
-            LabeledSwitch("Own a Car", carOwner) { carOwner = it }
-            LabeledSwitch("Airport Proximity Important", airportImportant) { airportImportant = it }
+            LabeledSwitch(stringResource(R.string.decide_car), carOwner) { carOwner = it }
+            LabeledSwitch(stringResource(R.string.decide_airport), airportImportant) { airportImportant = it }
 
             LabeledChoiceRowNullable(
-                "Business Focus (optional)",
+                stringResource(R.string.decide_business),
                 BusinessFocus.entries.toList(),
                 businessFocus
             ) { businessFocus = it }
 
-            LabeledChoiceRow("Nightlife Preference", Nightlife.entries.toList(), nightlife) { nightlife = it }
+            LabeledChoiceRow(stringResource(R.string.decide_nightlife), Nightlife.entries.toList(), nightlife) { nightlife = it }
 
-            SliderWithLabel("Safety Priority", safetyPriority) { safetyPriority = it }
+            SliderWithLabel(stringResource(R.string.decide_safety), safetyPriority) { safetyPriority = it }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -223,46 +226,46 @@ fun DecisionTreeScreen(
                                 val id = ProfileRepository.saveProfile(profile)
                                 profileId = id
                                 RecommendationRepository.saveRecommendations(id, ranked)
-                                snackbarHostState.showSnackbar("Profile and recommendations saved")
+                                snackbarHostState.showSnackbar(shareContext.getString(R.string.decide_saved))
                             } catch (e: Exception) {
                                 // Firestore save failed (e.g. permissions) — results still show
-                                snackbarHostState.showSnackbar("Results ready (save failed: ${e.message?.take(50)})")
+                                snackbarHostState.showSnackbar(shareContext.getString(R.string.decide_save_failed, e.message?.take(50) ?: ""))
                             }
                         }
                     },
                     modifier = Modifier.weight(1f).height(50.dp),
                     shape = MaterialTheme.shapes.medium
-                ) { Text("Evaluate & Save") }
+                ) { Text(stringResource(R.string.decide_evaluate)) }
 
                 if (results.isNotEmpty()) {
                     OutlinedButton(
                         onClick = {
                             val text = buildString {
-                                appendLine("GoThere - Top $countryName Recommendations:")
+                                appendLine(shareContext.getString(R.string.decide_share_header, countryName))
                                 appendLine()
                                 results.forEachIndexed { i, r ->
-                                    appendLine("${i + 1}. ${r.destination.name} — ${r.destination.region} (score ${r.score})")
+                                    appendLine(shareContext.getString(R.string.decide_share_line, i + 1, r.destination.name, r.destination.region, r.score))
                                 }
                                 appendLine()
-                                appendLine("Find your perfect relocation destination at https://getgothere.app")
+                                appendLine(shareContext.getString(R.string.decide_share_footer))
                             }
                             clipboard.setText(AnnotatedString(text))
                             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                                 type = "text/plain"
                                 putExtra(Intent.EXTRA_TEXT, text)
-                                putExtra(Intent.EXTRA_SUBJECT, "GoThere - Top $countryName Picks")
+                                putExtra(Intent.EXTRA_SUBJECT, shareContext.getString(R.string.decide_share_subject, countryName))
                             }
-                            shareContext.startActivity(Intent.createChooser(shareIntent, "Share recommendations"))
+                            shareContext.startActivity(Intent.createChooser(shareIntent, shareContext.getString(R.string.decide_share_chooser)))
                         },
                         modifier = Modifier.weight(1f).height(50.dp),
                         shape = MaterialTheme.shapes.medium
-                    ) { Text("Share Top 5") }
+                    ) { Text(stringResource(R.string.decide_share_top5)) }
                 }
             }
 
             if (results.isNotEmpty()) {
                 Text(
-                    "Top Recommendations",
+                    stringResource(R.string.decide_top_recs),
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
                     modifier = Modifier.padding(top = 16.dp)
                 )
@@ -301,7 +304,7 @@ fun DecisionTreeScreen(
                             )
                             TasksRepository.insertTasks(tasks)
                             snackbarHostState.showSnackbar(
-                                "Starter tasks created for ${top.destination.name}"
+                                shareContext.getString(R.string.decide_starter_created, top.destination.name)
                             )
                             navController.navigate("tasks") {
                                 popUpTo(navController.graph.startDestinationId) { saveState = true }
@@ -313,7 +316,7 @@ fun DecisionTreeScreen(
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Text("Create Starter Tasks for Top Pick")
+                    Text(stringResource(R.string.decide_create_starter))
                 }
             }
 
@@ -333,6 +336,39 @@ fun DecisionTreeScreen(
 }
 
 // ----- UI helpers -----
+
+/** Display label for the wizard enums. English keeps the enum name it always showed; the enum value itself is what gets saved. */
+@Composable
+private fun enumLabel(e: Enum<*>): String = when (e) {
+    Household.Singles -> stringResource(R.string.enum_household_singles)
+    Household.Couple -> stringResource(R.string.enum_household_couple)
+    Household.FamilyKids -> stringResource(R.string.enum_household_familykids)
+    Household.SingleParent -> stringResource(R.string.enum_household_singleparent)
+    Household.Retiree -> stringResource(R.string.enum_household_retiree)
+    Budget.Low -> stringResource(R.string.enum_budget_low)
+    Budget.Medium -> stringResource(R.string.enum_budget_medium)
+    Budget.High -> stringResource(R.string.enum_budget_high)
+    ClimatePref.WarmCoastal -> stringResource(R.string.enum_climatepref_warmcoastal)
+    ClimatePref.Temperate -> stringResource(R.string.enum_climatepref_temperate)
+    ClimatePref.Mountain -> stringResource(R.string.enum_climatepref_mountain)
+    ClimatePref.Continental -> stringResource(R.string.enum_climatepref_continental)
+    Language.None -> stringResource(R.string.enum_language_none)
+    Language.Basic -> stringResource(R.string.enum_language_basic)
+    Language.Intermediate -> stringResource(R.string.enum_language_intermediate)
+    BusinessFocus.Tech -> stringResource(R.string.enum_businessfocus_tech)
+    BusinessFocus.Tourism -> stringResource(R.string.enum_businessfocus_tourism)
+    BusinessFocus.Logistics -> stringResource(R.string.enum_businessfocus_logistics)
+    BusinessFocus.Agriculture -> stringResource(R.string.enum_businessfocus_agriculture)
+    BusinessFocus.RemoteWork -> stringResource(R.string.enum_businessfocus_remotework)
+    BusinessFocus.Finance -> stringResource(R.string.enum_businessfocus_finance)
+    Nightlife.Low -> stringResource(R.string.enum_nightlife_low)
+    Nightlife.Medium -> stringResource(R.string.enum_nightlife_medium)
+    Nightlife.High -> stringResource(R.string.enum_nightlife_high)
+    Density.Low -> stringResource(R.string.enum_density_low)
+    Density.Medium -> stringResource(R.string.enum_density_medium)
+    Density.High -> stringResource(R.string.enum_density_high)
+    else -> e.name
+}
 
 @Composable
 private fun <T : Enum<T>> LabeledChoiceRow(
@@ -357,7 +393,7 @@ private fun <T : Enum<T>> LabeledChoiceRow(
                     onClick = { onSelect(opt) },
                     label = {
                         Text(
-                            opt.toString(),
+                            enumLabel(opt),
                             modifier = Modifier.padding(vertical = 4.dp)
                         )
                     },
@@ -391,7 +427,7 @@ private fun <T : Enum<T>> LabeledChoiceRowNullable(
             FilterChip(
                 selected = selected == null,
                 onClick = { onSelect(null) },
-                label = { Text("No preference", modifier = Modifier.padding(vertical = 4.dp)) },
+                label = { Text(stringResource(R.string.no_preference), modifier = Modifier.padding(vertical = 4.dp)) },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.primary,
                     selectedLabelColor = MaterialTheme.colorScheme.onPrimary
@@ -401,7 +437,7 @@ private fun <T : Enum<T>> LabeledChoiceRowNullable(
                 FilterChip(
                     selected = selected == opt,
                     onClick = { onSelect(opt) },
-                    label = { Text(opt.toString(), modifier = Modifier.padding(vertical = 4.dp)) },
+                    label = { Text(enumLabel(opt), modifier = Modifier.padding(vertical = 4.dp)) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primary,
                         selectedLabelColor = MaterialTheme.colorScheme.onPrimary
@@ -501,7 +537,7 @@ private fun RecommendationCard(
                 ) {
                     Icon(
                         Icons.Outlined.Map,
-                        contentDescription = "View map for ${ranked.destination.name}",
+                        contentDescription = stringResource(R.string.decide_view_map, ranked.destination.name),
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -516,7 +552,7 @@ private fun RecommendationCard(
                 ) {
                     Icon(
                         Icons.Outlined.Calculate,
-                        contentDescription = "Calculate costs for ${ranked.destination.name}",
+                        contentDescription = stringResource(R.string.decide_calc_costs, ranked.destination.name),
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -532,23 +568,23 @@ private fun RecommendationCard(
                 )
                 SuggestionChip(
                     onClick = {},
-                    label = { Text("Cost ${ranked.destination.costLevel}/3") }
+                    label = { Text(stringResource(R.string.decide_chip_cost, ranked.destination.costLevel)) }
                 )
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 SuggestionChip(
                     onClick = {},
-                    label = { Text("Safety ${ranked.destination.safety}/5") }
+                    label = { Text(stringResource(R.string.decide_chip_safety, ranked.destination.safety)) }
                 )
                 SuggestionChip(
                     onClick = {},
-                    label = { Text("Expat ${ranked.destination.expatDensity}/5") }
+                    label = { Text(stringResource(R.string.decide_chip_expat, ranked.destination.expatDensity)) }
                 )
             }
 
             Text(
-                "Why it fits:",
+                stringResource(R.string.decide_why_fits),
                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.secondary
             )
@@ -559,7 +595,7 @@ private fun RecommendationCard(
             HorizontalDivider(Modifier.padding(vertical = 8.dp), thickness = 1.dp, color = MaterialTheme.colorScheme.outlineVariant)
 
             Text(
-                "Neighborhood tips:",
+                stringResource(R.string.decide_neighborhood_tips),
                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.secondary
             )

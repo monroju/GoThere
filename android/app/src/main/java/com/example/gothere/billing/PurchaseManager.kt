@@ -1,5 +1,6 @@
 package com.example.gothere.billing
 
+import com.example.gothere.R
 import android.app.Activity
 import android.content.Context
 import android.util.Log
@@ -637,14 +638,15 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
     }
 
     /** Plain-language reason for All Access, shown in Settings. Null when not all-access. */
-    fun accessReason(): String? {
-        if (_isLegacyPaidInstall.value) return "Early supporter: you bought GoThere before it went free"
-        if (isPromoActive()) return "Gift month from a referral"
-        if (_subscriptionStatus.value.isActive) return "All-Access subscription"
+    @androidx.annotation.StringRes
+    fun accessReason(): Int? {
+        if (_isLegacyPaidInstall.value) return com.example.gothere.R.string.access_reason_legacy
+        if (isPromoActive()) return com.example.gothere.R.string.access_reason_gift
+        if (_subscriptionStatus.value.isActive) return com.example.gothere.R.string.access_reason_sub
         val skus = _ownedSKUs.value
-        if (PRODUCT_ALL_COUNTRIES in skus) return "Lifetime: all countries"
-        if (PRODUCT_EUROPE_BUNDLE in skus && PRODUCT_AMERICAS_BUNDLE in skus) return "Europe + Americas bundles"
-        if (hasAllAccess()) return "Every country purchased"
+        if (PRODUCT_ALL_COUNTRIES in skus) return com.example.gothere.R.string.access_reason_lifetime
+        if (PRODUCT_EUROPE_BUNDLE in skus && PRODUCT_AMERICAS_BUNDLE in skus) return com.example.gothere.R.string.access_reason_bundles
+        if (hasAllAccess()) return com.example.gothere.R.string.access_reason_every
         return null
     }
 

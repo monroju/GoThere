@@ -101,6 +101,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
     implementation("androidx.activity:activity-compose:1.9.3")
+    // Per-app language (Settings > Language). setApplicationLocales needs 1.6+.
+    implementation("androidx.appcompat:appcompat:1.7.0")
 
     // MapLibre GL for city maps — 11.8+ ships 16 KB-aligned native libs
     implementation("org.maplibre.gl:android-sdk:11.13.0")

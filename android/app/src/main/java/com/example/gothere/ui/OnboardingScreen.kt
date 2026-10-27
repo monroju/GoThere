@@ -1,5 +1,6 @@
 package com.example.gothere.ui
 
+import androidx.compose.ui.res.stringResource
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
@@ -33,22 +34,22 @@ import androidx.compose.ui.unit.dp
 import com.example.gothere.R
 
 private data class OnboardingPage(
-    val title: String,
-    val description: String,
+    val title: Int,
+    val description: Int,
 )
 
 private val pages = listOf(
     OnboardingPage(
-        title = "Welcome to GoThere",
-        description = "Your relocation guide for Spain, Portugal and Mexico. We'll walk you through every step of the move.",
+        title = R.string.onb1_title,
+        description = R.string.onb1_body,
     ),
     OnboardingPage(
-        title = "Smart Decision Engine",
-        description = "Answer a few questions about your lifestyle and budget, and we'll recommend the best city for you — with cost breakdowns and neighborhood tips.",
+        title = R.string.onb2_title,
+        description = R.string.onb2_body,
     ),
     OnboardingPage(
-        title = "Track Everything",
-        description = "Checklists, calendar events, documents, visa resources — all organized by phase so nothing falls through the cracks.",
+        title = R.string.onb3_title,
+        description = R.string.onb3_body,
     ),
 )
 
@@ -84,7 +85,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
 
         Image(
             painter = painterResource(id = R.drawable.ic_logo),
-            contentDescription = "GoThere Logo",
+            contentDescription = stringResource(R.string.logo_desc),
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(120.dp)
@@ -96,7 +97,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
         AnimatedContent(targetState = currentPage, label = "onboarding") { page ->
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = pages[page].title,
+                    text = stringResource(pages[page].title),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
@@ -106,7 +107,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                 Spacer(Modifier.height(16.dp))
 
                 Text(
-                    text = pages[page].description,
+                    text = stringResource(pages[page].description),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
@@ -141,7 +142,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                     onClick = { currentPage-- },
                     modifier = Modifier.weight(1f),
                 ) {
-                    Text("Back")
+                    Text(stringResource(R.string.back))
                 }
             } else {
                 Spacer(Modifier.weight(1f))
@@ -158,7 +159,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                 },
                 modifier = Modifier.weight(1f),
             ) {
-                Text(if (currentPage < pages.lastIndex) "Next" else "Get Started")
+                Text(stringResource(if (currentPage < pages.lastIndex) R.string.next else R.string.get_started))
             }
         }
     }

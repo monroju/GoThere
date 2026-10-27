@@ -24,6 +24,7 @@
         android:label="GoThere"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:localeConfig="@xml/locales_config"
         android:theme="@style/Theme.GoThere.Splash"
         android:enableOnBackInvokedCallback="true"
         android:usesCleartextTraffic="false">
@@ -67,6 +68,16 @@
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
+        </service>
+
+        <!-- Pre-Android 13: AppCompat persists the in-app language choice itself. -->
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
         </service>
 
         <!-- FileProvider for camera capture (document scanner) -->
