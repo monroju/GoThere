@@ -181,6 +181,12 @@ fun SettingsScreen(
 
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
+        // Official sources and the not-a-government notice (Play Misleading Claims policy)
+        SectionTitle(stringResource(R.string.settings_official_sources))
+        OfficialSourcesSection()
+
+        HorizontalDivider(Modifier.padding(vertical = 8.dp))
+
         // About
         TextButton(onClick = {
             context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://getgothere.app/privacy.html")))

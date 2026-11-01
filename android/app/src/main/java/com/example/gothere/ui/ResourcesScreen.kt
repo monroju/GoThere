@@ -270,6 +270,8 @@ fun ResourcesScreen(
                 }
             }
 
+            item { OfficialSourceNotice(countryId = countryId) }
+
             // Tier-targeting tool CTAs — all free, non-paywalled hooks. StartHere first.
             item {
                 ToolCta(Icons.Outlined.Explore, stringResource(R.string.res_tool_start),

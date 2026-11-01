@@ -660,4 +660,9 @@
     <string name="wiz_track_meta">%1$s • %2$s • %3$s</string>
     <string name="wiz_your_checklist">Tu lista personalizada</string>
     <string name="yes">Sí</string>
+    <string name="gov_notice_title">GoThere no es una app del gobierno</string>
+    <string name="gov_notice_body">GoThere es una app independiente. No representa a ninguna entidad gubernamental y no está afiliada a ningún gobierno, embajada, consulado ni autoridad migratoria. La información sobre visas y ciudadanía se resume a partir de las fuentes oficiales que aparecen aquí. Confirma siempre los requisitos con la fuente oficial antes de solicitar. No es asesoría legal.</string>
+    <string name="gov_sources_for">Fuentes oficiales de %1$s</string>
+    <string name="gov_sources_us">Estados Unidos (FBI, Seguro Social, VA)</string>
+    <string name="settings_official_sources">Fuentes oficiales</string>
 </resources>

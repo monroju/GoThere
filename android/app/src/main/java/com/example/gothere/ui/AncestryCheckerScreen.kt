@@ -65,8 +65,10 @@ fun AncestryCheckerScreen(onBack: () -> Unit) {
             if (path == null) {
                 CountryPicker(catalog) { selectedPath = it; ruleAnswers.clear() }
                 Disclaimer(catalog.disclaimer)
+                OfficialSourceNotice(countryId = null)
             } else {
                 Detail(path = path, answers = ruleAnswers) { id, v -> ruleAnswers[id] = v }
+                OfficialSourceNotice(countryId = null)
             }
         }
     }

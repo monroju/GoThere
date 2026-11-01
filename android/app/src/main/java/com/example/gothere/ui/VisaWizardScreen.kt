@@ -124,6 +124,7 @@ fun VisaWizardScreen(
             ) { step ->
                 when {
                     step == 0 -> TrackSelectionScreen(
+                        countryId = countryId,
                         countryName = countryName,
                         tracks = tracks,
                         onSelect = { vm.selectTrack(it) },
@@ -165,6 +166,7 @@ fun VisaWizardScreen(
 
 @Composable
 private fun TrackSelectionScreen(
+    countryId: String,
     countryName: String,
     tracks: List<Pair<String, WizardTrack>>,
     onSelect: (String) -> Unit,
@@ -248,6 +250,8 @@ private fun TrackSelectionScreen(
                 }
             }
         }
+
+        OfficialSourceNotice(countryId = countryId)
     }
 }
 

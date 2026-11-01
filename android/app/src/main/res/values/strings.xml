@@ -661,4 +661,9 @@
     <string name="wiz_track_meta">%1$s • %2$s • %3$s</string>
     <string name="wiz_your_checklist">Your Personalized Checklist</string>
     <string name="yes">Yes</string>
+    <string name="gov_notice_title">GoThere is not a government app</string>
+    <string name="gov_notice_body">GoThere is an independent app. It does not represent any government entity and is not affiliated with any government, embassy, consulate or immigration authority. Visa and citizenship information is summarized from the official sources listed here. Always confirm requirements with the official source before you apply. Not legal advice.</string>
+    <string name="gov_sources_for">Official sources for %1$s</string>
+    <string name="gov_sources_us">United States (FBI check, Social Security, VA)</string>
+    <string name="settings_official_sources">Official sources</string>
 </resources>
