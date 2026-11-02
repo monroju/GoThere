@@ -239,6 +239,9 @@ class MainActivity : AppCompatActivity() {
                 AppearancePrefs.set(this@MainActivity, value)
             }
             var selectedCountryId by rememberSaveable { mutableStateOf("spain") }
+            LaunchedEffect(selectedCountryId) {
+                com.example.gothere.notify.FcmTopicManager.syncRuleAlertTopic(this@MainActivity, selectedCountryId)
+            }
             var onboardingDone by rememberSaveable {
                 mutableStateOf(OnboardingPrefs.isCompleted(this@MainActivity))
             }
