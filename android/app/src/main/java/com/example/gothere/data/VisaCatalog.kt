@@ -347,7 +347,7 @@ object VisaCatalog {
             "Skip — instant EU citizenship", "Immediate", "Free",
             listOf("No residency requirement", "Children eligible", "Free application"),
             listOf("Must show Hungarian ancestor + basic conversational Hungarian", "Embassy backlog 6-12mo", "Documentation rigorous"),
-            "https://allampolgarsag.gov.hu/", null),
+            "https://newyork.mfa.gov.hu/en/simplified-naturalization", null),
         VisaInfo("hu_white_card", "hungary", "🇭🇺", "Hungary", "White Card (Digital Nomad)", "White Card",
             VisaCategory.DigitalNomad,
             "€3,000/mo from foreign employer", "30-90 days", "1yr + 1yr extension", "Foreign employer only",

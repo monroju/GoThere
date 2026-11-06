@@ -1520,7 +1520,7 @@ private fun getHungaryResources(): List<ResourceCategory> = listOf(
         title = "Government & Immigration Portals",
         icon = "passport",
         resources = listOf(
-            ResourceItem("allampolgarsag", "Hungarian Citizenship Portal", "Simplified naturalization application", "https://allampolgarsag.gov.hu/", "official"),
+            ResourceItem("allampolgarsag", "Hungarian Citizenship Portal", "Simplified naturalization application", "https://newyork.mfa.gov.hu/en/simplified-naturalization", "official"),
             ResourceItem("oif-hu", "Office for Immigration (OIF)", "D-Visa, White Card, residence permits", "https://oif.gov.hu/", "official"),
             ResourceItem("nemzetikartya", "Nemzeti Kártya", "Guest Investor + White Card portal", "https://nemzetikartya.gov.hu/", "official"),
             ResourceItem("kormanyablak", "Kormányablak (Govt Office)", "One-stop government office", "https://kormanyablak.hu/en", "official"),
