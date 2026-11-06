@@ -275,12 +275,12 @@ object DestinationConfig {
                     "Proof of residence in the consular jurisdiction (utility bills, lease)"
                 ),
                 estimatedProcessingTime = "12–24 months at consulate; 18–36 months for 1948 court route",
-                officialUrl = "https://www.esteri.it/en/servizi-consolari-e-visti/italiani-all-estero/cittadinanza/"
+                officialUrl = "https://www.esteri.it/it/servizi-consolari-e-visti/italiani-all-estero/cittadinanza/"
             )
         ),
         defaultVisaTrackId = ITALY_JURE_SANGUINIS,
         seedVersion = CURRENT_SEED_VERSION,
-        officialImmigrationUrl = "https://www.esteri.it/en/servizi-consolari-e-visti/italiani-all-estero/cittadinanza/"
+        officialImmigrationUrl = "https://www.esteri.it/it/servizi-consolari-e-visti/italiani-all-estero/cittadinanza/"
     )
 
     val germany = DestinationCountry(

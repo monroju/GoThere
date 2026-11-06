@@ -1279,7 +1279,7 @@ private fun getItalyResources(): List<ResourceCategory> = listOf(
         title = "Government & Immigration Portals",
         icon = "passport",
         resources = listOf(
-            ResourceItem("esteri", "Italian MFA Citizenship", "Jure sanguinis + visa types portal", "https://www.esteri.it/en/servizi-consolari-e-visti/italiani-all-estero/cittadinanza/", "official"),
+            ResourceItem("esteri", "Italian MFA Citizenship", "Jure sanguinis + visa types portal", "https://www.esteri.it/it/servizi-consolari-e-visti/italiani-all-estero/cittadinanza/", "official"),
             ResourceItem("vistoperitalia", "Visto per l'Italia", "Italian visa portal — all national visas", "https://vistoperitalia.esteri.it/", "official"),
             ResourceItem("prenotami", "Prenot@mi", "Book consulate appointments", "https://prenotami.esteri.it/", "official"),
             ResourceItem("consulates-it", "Italian Consulates in USA", "Find your assigned consulate", "https://www.esteri.it/en/ministero/laministero/lerappresentanze/", "official")
