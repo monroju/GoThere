@@ -47,6 +47,13 @@ object Analytics {
     // Cross-promo to our other apps
     const val CROSS_PROMO_TAPPED = "cross_promo_tapped"
 
+    // Plan B (growth/PLAN_B_SPEC.md section 6). Country code, kind and state only.
+    const val PLANB_INTENT_SELECTED = "planb_intent_selected"
+    const val PLANB_PATH_TRACKED = "planb_path_tracked"
+    const val PLANB_DOC_STATE = "planb_doc_state"
+    const val PLANB_SCORE_VIEWED = "planb_score_viewed"
+    const val PLANB_PAYWALL_SHOWN = "planb_paywall_shown"
+
     private const val PREFS = "analytics_prefs"
     private const val KEY_FIRST_OPEN = "first_open_at"
     private const val KEY_ACTIVATED = "activated_v1"

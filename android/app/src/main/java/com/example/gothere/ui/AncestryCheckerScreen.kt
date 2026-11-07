@@ -30,7 +30,7 @@ import com.example.gothere.repository.AncestryRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AncestryCheckerScreen(onBack: () -> Unit) {
+fun AncestryCheckerScreen(onBack: () -> Unit, onOpenPlanB: (() -> Unit)? = null) {
     val context = LocalContext.current
     val catalog: AncestryCatalog = remember { AncestryRepository.load(context) }
     var selectedPath by remember { mutableStateOf<AncestryPath?>(null) }
@@ -67,7 +67,7 @@ fun AncestryCheckerScreen(onBack: () -> Unit) {
                 Disclaimer(catalog.disclaimer)
                 OfficialSourceNotice(countryId = null)
             } else {
-                Detail(path = path, answers = ruleAnswers) { id, v -> ruleAnswers[id] = v }
+                Detail(path = path, answers = ruleAnswers, onOpenPlanB = onOpenPlanB) { id, v -> ruleAnswers[id] = v }
                 OfficialSourceNotice(countryId = null)
             }
         }
@@ -147,6 +147,7 @@ private fun Disclaimer(text: String) {
 private fun Detail(
     path: AncestryPath,
     answers: Map<String, Boolean>,
+    onOpenPlanB: (() -> Unit)? = null,
     onAnswer: (String, Boolean) -> Unit
 ) {
     val uriHandler = LocalUriHandler.current
@@ -202,7 +203,7 @@ private fun Detail(
             }
         }
 
-        Verdict(path, answers)
+        Verdict(path, answers, onOpenPlanB)
 
         Surface(
             shape = RoundedCornerShape(12.dp),
@@ -271,7 +272,7 @@ private fun StatCard(title: String, value: String, modifier: Modifier = Modifier
 }
 
 @Composable
-private fun Verdict(path: AncestryPath, answers: Map<String, Boolean>) {
+private fun Verdict(path: AncestryPath, answers: Map<String, Boolean>, onOpenPlanB: (() -> Unit)? = null) {
     val required = path.eligibilityRules.filter { it.required }
     val answered = required.all { answers.containsKey(it.id) }
     if (!answered) return
@@ -295,6 +296,7 @@ private fun Verdict(path: AncestryPath, answers: Map<String, Boolean>) {
                 LaunchedEffect(Unit) { ReviewHelper.onMilestone(context, ReviewMilestone.ANCESTRY_LIKELY_ELIGIBLE) }
                 Text(stringResource(R.string.anc_likely), style = MaterialTheme.typography.titleMedium, color = Color(0xFF1B7F3F))
                 Text(path.outcome, style = MaterialTheme.typography.bodyMedium)
+                TrackThisPath(path, onOpenPlanB)
             } else {
                 Text(stringResource(R.string.anc_blocked), style = MaterialTheme.typography.titleMedium, color = Color(0xFF7A4A00))
                 Text(
@@ -303,5 +305,31 @@ private fun Verdict(path: AncestryPath, answers: Map<String, Boolean>) {
                 )
             }
         }
+    }
+}
+
+/** Plan B: turn a "Likely eligible" result into a tracked path (PLAN_B_SPEC 4.2). */
+@Composable
+private fun TrackThisPath(path: AncestryPath, onOpenPlanB: (() -> Unit)?) {
+    val context = LocalContext.current
+    val chain = remember(path.id) {
+        com.example.gothere.planb.DescentChainRepository.load(context)?.chainForAncestryPath(path.id)
+    } ?: return
+    val store = remember { com.example.gothere.planb.PlanBStore.get(context) }
+    val paths by store.paths.collectAsState()
+    var showDialog by remember { mutableStateOf(false) }
+    val name = countryDisplayName(path.countryId, path.countryName)
+    if (paths.any { it.pathwayId == chain.pathwayId }) {
+        TextButton(onClick = { onOpenPlanB?.invoke() }, enabled = onOpenPlanB != null) {
+            Text(stringResource(R.string.planb_tracking))
+        }
+    } else {
+        Button(onClick = { showDialog = true }, modifier = Modifier.fillMaxWidth()) {
+            Text(stringResource(R.string.planb_track))
+        }
+    }
+    if (showDialog) {
+        PlanBTrackDialog(chain = chain, countryName = name, onDismiss = { showDialog = false },
+            onTracked = { showDialog = false; onOpenPlanB?.invoke() })
     }
 }

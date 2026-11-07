@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.AccountTree
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Shield
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.gothere.BuildConfig
 import androidx.activity.compose.setContent
@@ -40,6 +41,7 @@ import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Star
@@ -74,6 +76,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -85,6 +88,8 @@ import com.example.gothere.ui.AIAssistantScreen
 import com.example.gothere.ui.CalendarScreen
 import com.example.gothere.ui.countryNameRes
 import com.example.gothere.ui.AncestryCheckerScreen
+import com.example.gothere.ui.PlanBPathDetailScreen
+import com.example.gothere.ui.PlanBScreen
 import com.example.gothere.ui.DecisionTreeScreen
 import com.example.gothere.ui.DocumentScanScreen
 import com.example.gothere.ui.DocumentsScreen
@@ -129,6 +134,10 @@ sealed class Route(val route: String) {
     data object Resources : Route("resources")
     data object DecisionTree : Route("decision_tree")
     data object Ancestry : Route("ancestry")
+    data object PlanB : Route("planb")
+    data object PlanBPath : Route("planb_path/{pathId}") {
+        fun create(pathId: String) = "planb_path/$pathId"
+    }
     data object AIAssistant : Route("ai_assistant")
     data object DocumentScan : Route("document_scan")
     data object Settings : Route("settings")
@@ -151,8 +160,10 @@ data class BottomTab(
 
 private val BottomTabs = listOf(
     BottomTab(Route.Tasks, R.string.tab_tasks, Icons.AutoMirrored.Outlined.ListAlt, Icons.AutoMirrored.Filled.ListAlt),
-    BottomTab(Route.Calendar, R.string.tab_calendar, Icons.Outlined.CalendarMonth, Icons.Filled.CalendarMonth),
-    BottomTab(Route.Documents, R.string.tab_documents, Icons.Outlined.Folder, Icons.Filled.Folder),
+    // Plan B (growth/PLAN_B_SPEC.md 4.1). Six tabs: Documents and Calendar use short labels.
+    BottomTab(Route.PlanB, R.string.tab_planb, Icons.Outlined.Shield, Icons.Filled.Shield),
+    BottomTab(Route.Calendar, R.string.tab_calendar, Icons.Outlined.CalendarMonth, Icons.Filled.CalendarMonth, shortLabel = R.string.tab_calendar_short),
+    BottomTab(Route.Documents, R.string.tab_documents, Icons.Outlined.Folder, Icons.Filled.Folder, shortLabel = R.string.tab_documents_short),
     BottomTab(Route.Resources, R.string.tab_resources, Icons.Outlined.Description, Icons.Filled.Description),
     BottomTab(Route.DecisionTree, R.string.tab_decision_tree, Icons.Outlined.AccountTree, Icons.Filled.AccountTree, shortLabel = R.string.tab_decide),
 )
@@ -618,6 +629,15 @@ private fun MainAppContent(
     }
 }
 
+/** Switch to the Plan B tab the same way the tab bar does. */
+fun NavHostController.openPlanBTab() {
+    navigate(Route.PlanB.route) {
+        popUpTo(graph.findStartDestination().id) { saveState = true }
+        launchSingleTop = true
+        restoreState = true
+    }
+}
+
 @Composable
 fun LogoImage() {
     Image(
@@ -638,9 +658,14 @@ private fun AppNavHost(
     modifier: Modifier = Modifier,
     settings: @Composable () -> Unit
 ) {
+    // "Just keeping my options open" users land on Plan B. Read once: the start must not change.
+    val context = LocalContext.current
+    val startRoute = remember {
+        if (com.example.gothere.planb.PlanBStore.get(context).isPlanBMode) Route.PlanB.route else Route.Tasks.route
+    }
     NavHost(
         navController = navController,
-        startDestination = Route.Tasks.route,
+        startDestination = startRoute,
         modifier = modifier
     ) {
         composable(Route.Tasks.route) {
@@ -648,7 +673,21 @@ private fun AppNavHost(
         }
         composable(Route.Calendar.route) { CalendarScreen() }
         composable(Route.Documents.route) { DocumentsScreen() }
-        composable(Route.Resources.route) { ResourcesScreen(countryId = selectedCountryId) }
+        composable(Route.Resources.route) {
+            ResourcesScreen(countryId = selectedCountryId, onOpenPlanB = { navController.openPlanBTab() })
+        }
+        composable(Route.PlanB.route) {
+            PlanBScreen(
+                onOpenAncestry = { navController.navigate(Route.Ancestry.route) },
+                onOpenPath = { navController.navigate(Route.PlanBPath.create(it)) }
+            )
+        }
+        composable(Route.PlanBPath.route) { backStackEntry ->
+            PlanBPathDetailScreen(
+                pathId = backStackEntry.arguments?.getString("pathId").orEmpty(),
+                onBack = { navController.popBackStack() }
+            )
+        }
         composable(Route.DecisionTree.route) {
             DecisionTreeScreen(
                 navController = navController,
@@ -657,7 +696,7 @@ private fun AppNavHost(
         }
         composable(Route.Settings.route) { settings() }
         composable(Route.Ancestry.route) {
-            AncestryCheckerScreen(onBack = { navController.popBackStack() })
+            AncestryCheckerScreen(onBack = { navController.popBackStack() }, onOpenPlanB = { navController.openPlanBTab() })
         }
         composable(Route.AIAssistant.route) {
             AIAssistantScreen(

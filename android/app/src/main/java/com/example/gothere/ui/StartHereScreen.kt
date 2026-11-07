@@ -32,7 +32,8 @@ fun StartHereScreen(
     onAncestry: () -> Unit,
     onInvestment: () -> Unit,
     onRights: () -> Unit,
-    onCompare: () -> Unit
+    onCompare: () -> Unit,
+    onOptionsOpen: (() -> Unit)? = null
 ) {
     Scaffold(
         topBar = {
@@ -56,6 +57,10 @@ fun StartHereScreen(
             Text(stringResource(R.string.start_pick),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
+            if (onOptionsOpen != null) {
+                route(stringResource(R.string.start_options_open),
+                    stringResource(R.string.start_options_open_sub), onOptionsOpen)
+            }
             route(stringResource(R.string.start_money),
                 stringResource(R.string.start_money_sub), onCostCalc)
             route(stringResource(R.string.start_kids),

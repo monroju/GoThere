@@ -28,21 +28,58 @@ object FcmTopicManager {
             }
     }
 
-    /** Keep exactly one `rules_<code>` topic, matching the selected destination.
-     *  Topics need no permission; delivery still follows POST_NOTIFICATIONS. */
+    private const val KEY_RULE_TOPICS = "rule_alert_topics"
+    private const val KEY_DESTINATION = "rule_alert_destination"
+
+    /**
+     * Rule-alert topics the user should hold. Free: one country, the first tracked Plan B
+     * path with an alert list, otherwise the selected destination. All-Access: destination
+     * plus every tracked path. Pure so it is unit tested; mirrors iOS desiredRuleTopics.
+     */
+    fun desiredRuleTopics(destinationId: String, planBCodes: List<String>, allAccess: Boolean): List<String> {
+        val available = RULE_ALERT_CODES.values.toSet()
+        val planB = planBCodes.filter { it in available }.map { "rules_$it" }
+        val destination = ruleAlertTopic(destinationId)
+        val out = when {
+            allAccess -> listOfNotNull(destination) + planB
+            planB.isNotEmpty() -> listOf(planB.first())
+            else -> listOfNotNull(destination)
+        }
+        return out.distinct()
+    }
+
+    /** Destination changed. Remembers it, then recomputes the whole topic set. */
     fun syncRuleAlertTopic(context: Context, countryId: String) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+            .putString(KEY_DESTINATION, countryId).apply()
+        syncRuleAlertTopics(context)
+    }
+
+    /** Subscribe and unsubscribe so FCM holds exactly desiredRuleTopics.
+     *  Topics need no permission; delivery still follows POST_NOTIFICATIONS. */
+    fun syncRuleAlertTopics(context: Context) {
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        val wanted = ruleAlertTopic(countryId)
-        val current = prefs.getString(KEY_RULE_TOPIC, null)
-        if (wanted == current) return
-        val messaging = FirebaseMessaging.getInstance()
-        if (current != null) {
-            messaging.unsubscribeFromTopic(current)
+        val destination = prefs.getString(KEY_DESTINATION, null) ?: "spain"
+        val wanted = desiredRuleTopics(
+            destinationId = destination,
+            planBCodes = com.example.gothere.planb.PlanBStore.get(context).alertCountryCodes,
+            allAccess = com.example.gothere.billing.PurchaseManager.getInstance(context).hasAllAccess(),
+        )
+        val current = (prefs.getStringSet(KEY_RULE_TOPICS, null) ?: emptySet()).toMutableSet()
+        // Migrate the single-topic key from 1.14.x.
+        prefs.getString(KEY_RULE_TOPIC, null)?.let {
+            current += it
             prefs.edit().remove(KEY_RULE_TOPIC).apply()
         }
-        if (wanted == null) return
-        messaging.subscribeToTopic(wanted).addOnCompleteListener { task ->
-            if (task.isSuccessful) prefs.edit().putString(KEY_RULE_TOPIC, wanted).apply()
+        val messaging = FirebaseMessaging.getInstance()
+        (current - wanted.toSet()).forEach { messaging.unsubscribeFromTopic(it) }
+        prefs.edit().putStringSet(KEY_RULE_TOPICS, current.intersect(wanted.toSet())).apply()
+        wanted.filter { it !in current }.forEach { topic ->
+            messaging.subscribeToTopic(topic).addOnCompleteListener { task ->
+                if (!task.isSuccessful) return@addOnCompleteListener
+                val held = (prefs.getStringSet(KEY_RULE_TOPICS, null) ?: emptySet()) + topic
+                prefs.edit().putStringSet(KEY_RULE_TOPICS, held).apply()
+            }
         }
     }
 }

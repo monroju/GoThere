@@ -114,6 +114,7 @@ private fun ToolCta(
 @Composable
 fun ResourcesScreen(
     countryId: String = "spain",
+    onOpenPlanB: (() -> Unit)? = null,
     vm: ResourcesViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -141,7 +142,14 @@ fun ResourcesScreen(
                 onAncestry = { activeTool = ResourceTool.Ancestry },
                 onInvestment = { activeTool = ResourceTool.Investment },
                 onRights = { activeTool = ResourceTool.RightsSafety },
-                onCompare = { activeTool = ResourceTool.Compare }
+                onCompare = { activeTool = ResourceTool.Compare },
+                onOptionsOpen = onOpenPlanB?.let { open ->
+                    {
+                        com.example.gothere.planb.PlanBStore.get(context).selectPlanBIntent("start_here")
+                        activeTool = null
+                        open()
+                    }
+                }
             ); return
         }
         ResourceTool.CostCalc -> { MoveCostCalculatorScreen(initialCountryId = countryId, onDismiss = { activeTool = null }); return }
@@ -154,7 +162,7 @@ fun ResourcesScreen(
         ResourceTool.PolicyWatch -> { PolicyWatchScreen(onDismiss = { activeTool = null }); return }
         ResourceTool.RightsSafety -> { RightsSafetyScreen(onDismiss = { activeTool = null }, onOpenCare = { activeTool = ResourceTool.CareContinuity }); return }
         ResourceTool.CareContinuity -> { CareContinuityScreen(initialCountryId = countryId, onDismiss = { activeTool = null }); return }
-        ResourceTool.Ancestry -> { AncestryCheckerScreen(onBack = { activeTool = null }); return }
+        ResourceTool.Ancestry -> { AncestryCheckerScreen(onBack = { activeTool = null }, onOpenPlanB = onOpenPlanB); return }
         ResourceTool.Compare -> { VisaCompareScreen(initialCountryId = countryId, onDismiss = { activeTool = null }, onStartWizard = { activeTool = null }); return }
         null -> {}
     }

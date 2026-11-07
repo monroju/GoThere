@@ -84,6 +84,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.gothere.Route
 import com.example.gothere.model.Task
 import com.example.gothere.repository.SeedImportStore
@@ -419,6 +420,17 @@ fun TasksScreen(
                 modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                 contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 80.dp)
             ) {
+                // --- Plan B entry for people with no move date (PLAN_B_SPEC 4.1) ---
+                if (moveCountdown == null && navController != null) {
+                    item(key = "planb") {
+                        PlanBHomeCard(onClick = { navController.navigate("planb") {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        } })
+                    }
+                }
+
                 // --- Progress Dashboard ---
                 if (totalTasks > 0) {
                     item(key = "progress") {
