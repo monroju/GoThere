@@ -629,8 +629,10 @@ private fun MainAppContent(
     }
 }
 
-/** Switch to the Plan B tab the same way the tab bar does. */
+/** Show the Plan B tab: pop back to it when it is already under us (checker opened from Plan B),
+ *  otherwise switch tabs the same way the tab bar does. */
 fun NavHostController.openPlanBTab() {
+    if (popBackStack(Route.PlanB.route, inclusive = false)) return
     navigate(Route.PlanB.route) {
         popUpTo(graph.findStartDestination().id) { saveState = true }
         launchSingleTop = true

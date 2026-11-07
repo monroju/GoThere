@@ -31,7 +31,7 @@
     <string name="anc_failed_rules">One or more required rules failed. Check the workaround notes above — some failed rules have court-petition paths that still work.</string>
     <string name="anc_header">You might already be a citizen.</string>
     <string name="anc_income_test">Income test</string>
-    <string name="anc_intro">Six EU countries pass citizenship down to grandchildren or further. No income test, no residency requirement, no language test (mostly). The hardest part is the paperwork.</string>
+    <string name="anc_intro">Five EU countries pass citizenship down to grandchildren or further. No income test, no residency requirement, no language test (mostly). The hardest part is the paperwork.</string>
     <string name="anc_likely">Likely eligible ✓</string>
     <string name="anc_money_tight">If money is tight</string>
     <string name="anc_months_range">%1$d–%2$d mo</string>
@@ -684,7 +684,7 @@
     <string name="planb_home_title">Not moving yet? Build your Plan B.</string>
     <string name="planb_home_score">Your Plan B: %1$d of 100</string>
     <string name="planb_home_sub">See if you can inherit a second citizenship and track the paperwork.</string>
-    <string name="planb_ancestor_is">Your %1$s ancestor is your:</string>
+    <string name="planb_ancestor_is">Your ancestor from %1$s is your:</string>
     <string name="planb_track">Track this path</string>
     <string name="planb_tracking">Tracking in Plan B</string>
     <string name="planb_stays_on_phone">Names and dates you add stay on this phone.</string>

@@ -30,7 +30,7 @@
     <string name="anc_failed_rules">No cumples uno o más requisitos. Revisa las alternativas de arriba: algunos requisitos tienen una vía judicial que todavía funciona.</string>
     <string name="anc_header">Quizás ya eres ciudadano.</string>
     <string name="anc_income_test">Requisito de ingresos</string>
-    <string name="anc_intro">Seis países de la UE transmiten la ciudadanía a nietos o más allá. Sin requisito de ingresos, sin residencia y, casi siempre, sin examen de idioma. Lo más difícil es el papeleo.</string>
+    <string name="anc_intro">Cinco países de la UE transmiten la ciudadanía a nietos o más allá. Sin requisito de ingresos, sin residencia y, casi siempre, sin examen de idioma. Lo más difícil es el papeleo.</string>
     <string name="anc_likely">Probablemente calificas ✓</string>
     <string name="anc_money_tight">Si el dinero no alcanza</string>
     <string name="anc_months_range">%1$d–%2$d meses</string>
