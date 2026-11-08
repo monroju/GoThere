@@ -28,7 +28,7 @@
     <string name="anc_blocked">Direct path blocked</string>
     <string name="anc_cost">Cost</string>
     <string name="anc_docs_needed">Documents you\'ll need</string>
-    <string name="anc_failed_rules">One or more required rules failed. Check the workaround notes above — some failed rules have court-petition paths that still work.</string>
+    <string name="anc_failed_rules">One or more required rules failed. Check the workaround notes above. Some failed rules have court-petition paths that still work.</string>
     <string name="anc_header">You might already be a citizen.</string>
     <string name="anc_income_test">Income test</string>
     <string name="anc_intro">Five EU countries pass citizenship down to grandchildren or further. No income test, no residency requirement, no language test (mostly). The hardest part is the paperwork.</string>
@@ -37,7 +37,7 @@
     <string name="anc_months_range">%1$d–%2$d mo</string>
     <string name="anc_official_source">Official government source</string>
     <string name="anc_pick_country">Pick the ancestor\'s country</string>
-    <string name="anc_planb">A second passport for the cost of paperwork. What investors pay $200k+ for via citizenship-by-investment, you may inherit — full EU mobility, a tax-residency option, and a real Plan B.</string>
+    <string name="anc_planb">A second passport for the cost of paperwork. What investors pay $200k+ for via citizenship-by-investment, you may inherit: full EU mobility, a tax-residency option, and a real Plan B.</string>
     <string name="anc_qualify">Do you qualify?</string>
     <string name="anc_timeline">Timeline</string>
     <string name="anc_workaround">Workaround available: %1$s</string>

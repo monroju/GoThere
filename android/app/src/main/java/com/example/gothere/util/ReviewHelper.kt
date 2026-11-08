@@ -8,13 +8,13 @@ import com.google.android.play.core.review.ReviewManagerFactory
 
 /** Moments where the user just got a useful answer. Mirrors iOS ReviewMilestone. */
 enum class ReviewMilestone(val key: String) {
-    ANCESTRY_LIKELY_ELIGIBLE("rp_ancestry_likely_eligible"),
+    PLANB_PATH_TRACKED("rp_planb_path_tracked"),
     WIZARD_COMPLETED("rp_wizard_completed"),
 }
 
 /**
  * Manages in-app review prompts using Google Play's ReviewManager API.
- * Asks right after the first positive result (eligible verdict, saved checklist),
+ * Asks right after the user acts on a useful result (tracked a Plan B path, finished the wizard),
  * at most once per 120 days. Google applies its own quota on top.
  */
 object ReviewHelper {

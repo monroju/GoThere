@@ -292,8 +292,6 @@ private fun Verdict(path: AncestryPath, answers: Map<String, Boolean>, onOpenPla
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             if (allYes) {
-                val context = LocalContext.current
-                LaunchedEffect(Unit) { ReviewHelper.onMilestone(context, ReviewMilestone.ANCESTRY_LIKELY_ELIGIBLE) }
                 Text(stringResource(R.string.anc_likely), style = MaterialTheme.typography.titleMedium, color = Color(0xFF1B7F3F))
                 Text(path.outcome, style = MaterialTheme.typography.bodyMedium)
                 TrackThisPath(path, onOpenPlanB)
@@ -330,6 +328,11 @@ private fun TrackThisPath(path: AncestryPath, onOpenPlanB: (() -> Unit)?) {
     }
     if (showDialog) {
         PlanBTrackDialog(chain = chain, countryName = name, onDismiss = { showDialog = false },
-            onTracked = { showDialog = false; onOpenPlanB?.invoke() })
+            onTracked = {
+                showDialog = false
+                onOpenPlanB?.invoke()
+                // Ask for a review after the user acts on the result, not on the verdict itself.
+                ReviewHelper.onMilestone(context, ReviewMilestone.PLANB_PATH_TRACKED)
+            })
     }
 }
