@@ -438,6 +438,7 @@
     <string name="res_locked_body">Desbloquea el paquete de %1$s para acceder a portales de migración, vivienda, bancos, salud y comunidades de expats, además de guías en PDF.</string>
     <string name="res_no_downloads">Todavía no hay documentos descargables</string>
     <string name="res_quick_links">Enlaces rápidos</string>
+    <string name="res_partner_disclosure">Algunos enlaces pueden ser de socios: GoThere puede recibir una comisión si contratas, sin coste extra para ti.</string>
     <string name="res_title">Recursos de %1$s</string>
     <string name="res_tool_concierge">GoThere Concierge (pronto)</string>
     <string name="res_tool_concierge_sub">Mudanza con acompañamiento: abogados verificados y preparación contigo</string>

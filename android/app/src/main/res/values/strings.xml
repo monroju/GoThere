@@ -439,6 +439,7 @@
     <string name="res_locked_body">Unlock the %1$s Pack to access immigration portals, housing sites, banking, healthcare, and expat communities — plus downloadable PDF guides.</string>
     <string name="res_no_downloads">No downloadable documents yet</string>
     <string name="res_quick_links">Quick Links</string>
+    <string name="res_partner_disclosure">Some links here may be partner links: GoThere may earn a commission if you sign up, at no extra cost to you.</string>
     <string name="res_title">%1$s Resources</string>
     <string name="res_tool_concierge">GoThere Concierge (soon)</string>
     <string name="res_tool_concierge_sub">White-glove relocation: vetted lawyers, done-with-you prep</string>
