@@ -141,6 +141,7 @@ sealed class Route(val route: String) {
     data object AIAssistant : Route("ai_assistant")
     data object DocumentScan : Route("document_scan")
     data object Settings : Route("settings")
+    data object GetHelp : Route("get_help")
     data object VisaWizard : Route("visa_wizard/{countryId}") {
         fun create(countryId: String) = "visa_wizard/$countryId"
     }
@@ -171,6 +172,13 @@ private val BottomTabs = listOf(
 class MainActivity : AppCompatActivity() {
 
     private lateinit var purchaseManager: PurchaseManager
+
+    override fun onResume() {
+        super.onResume()
+        // Promo codes redeemed in Play (Settings > Redeem a code) only show up in a fresh
+        // purchases query, so re-query every time the app comes back to the foreground.
+        if (::purchaseManager.isInitialized) purchaseManager.refreshPurchases()
+    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -619,6 +627,7 @@ private fun MainAppContent(
                         onOpenScan = { navController.navigate(Route.DocumentScan.route) },
                         onOpenVisaWizard = { navController.navigate(Route.VisaWizard.create(selectedCountryId)) },
                         onOpenAncestry = { navController.navigate(Route.Ancestry.route) },
+                        onOpenGetHelp = { navController.navigate(Route.GetHelp.route) },
                         onSignOut = { AuthRepository().signOut() },
                         onDeleteAccount = { showDeleteConfirm = true },
                         appVersion = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
@@ -697,6 +706,9 @@ private fun AppNavHost(
             )
         }
         composable(Route.Settings.route) { settings() }
+        composable(Route.GetHelp.route) {
+            com.example.gothere.ui.GetHelpScreen(onBack = { navController.popBackStack() })
+        }
         composable(Route.Ancestry.route) {
             AncestryCheckerScreen(onBack = { navController.popBackStack() }, onOpenPlanB = { navController.openPlanBTab() })
         }

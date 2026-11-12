@@ -728,4 +728,10 @@
     <string name="planb_rules_verified">Rules last verified %1$s</string>
     <string name="start_options_open">Just keeping my options open</string>
     <string name="start_options_open_sub">Not moving yet. Build a Plan B you can grow over time.</string>
+    <!-- Get help (growth-plan/08-get-help-spec.md) -->
+    <string name="get_help">Get help</string>
+    <string name="get_help_row">Organizations that can help</string>
+    <string name="get_help_intro">Organizations that support people moving abroad. GoThere is not affiliated with them unless stated.</string>
+    <string name="get_help_open_site">open website</string>
+    <string name="redeem_code">Redeem a code</string>
 </resources>

@@ -25,6 +25,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountTree
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.DocumentScanner
+import androidx.compose.material.icons.outlined.Redeem
+import androidx.compose.material.icons.outlined.VolunteerActivism
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.Verified
@@ -39,6 +41,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +55,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.gothere.help.HelpFeedRepository
 import com.example.gothere.util.AppearancePrefs
 import com.example.gothere.util.CrossPromo
 import com.example.gothere.util.PromoApp
@@ -75,6 +79,7 @@ fun SettingsScreen(
     onOpenScan: () -> Unit,
     onOpenVisaWizard: () -> Unit,
     onOpenAncestry: () -> Unit,
+    onOpenGetHelp: () -> Unit,
     onSignOut: () -> Unit,
     onDeleteAccount: () -> Unit,
     appVersion: String
@@ -82,6 +87,14 @@ fun SettingsScreen(
     val context = LocalContext.current
     var restoreNote by remember { mutableStateOf<String?>(null) }
     val restoreStartedMsg = stringResource(R.string.settings_restore_note)
+
+    // Get help shows only once at least one partner org is in the feed for this app.
+    val helpRepo = remember { HelpFeedRepository(context) }
+    var hasHelpOrgs by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        hasHelpOrgs = helpRepo.cached().isNotEmpty()
+        hasHelpOrgs = helpRepo.load().isNotEmpty()
+    }
 
     Column(
         modifier = Modifier
@@ -123,6 +136,12 @@ fun SettingsScreen(
         restoreNote?.let {
             Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
+        // Play promo codes. Redeemed codes unlock on return: MainActivity.onResume re-queries purchases.
+        SettingsRow(stringResource(R.string.redeem_code), Icons.Outlined.Redeem) {
+            runCatching {
+                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/redeem?code=")))
+            }
+        }
 
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
@@ -160,6 +179,12 @@ fun SettingsScreen(
         SettingsRow(stringResource(R.string.tool_ancestry), Icons.Outlined.AccountTree, onOpenAncestry)
 
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
+
+        if (hasHelpOrgs) {
+            SectionTitle(stringResource(R.string.get_help))
+            SettingsRow(stringResource(R.string.get_help_row), Icons.Outlined.VolunteerActivism, onOpenGetHelp)
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+        }
 
         // Account
         SectionTitle(stringResource(R.string.settings_account))
