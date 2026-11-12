@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,6 +26,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
@@ -32,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gothere.R
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,6 +63,7 @@ fun AuthScreen(
     val enterBothMsg = stringResource(R.string.auth_enter_both)
     val pwShortMsg = stringResource(R.string.auth_pw_short)
     val authFailedMsg = stringResource(R.string.auth_failed)
+    val accountExistsMsg = stringResource(R.string.auth_account_exists)
     val agreePrefix = stringResource(R.string.auth_agree_prefix)
     val privacyLabel = stringResource(R.string.privacy_policy)
 
@@ -129,11 +135,65 @@ fun AuthScreen(
                 contentDescription = stringResource(R.string.logo_desc),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(240.dp)
+                    .size(160.dp)
                     .clip(CircleShape)
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // One clear heading per mode, so it is obvious which of the two flows is active
+            Text(
+                text = stringResource(if (isLogin) R.string.auth_title_login else R.string.auth_title_signup),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = stringResource(if (isLogin) R.string.auth_subtitle_login else R.string.auth_subtitle_signup),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Mode switch: two tabs, the selected one filled
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(4.dp)
+            ) {
+                listOf(false to R.string.auth_tab_signup, true to R.string.log_in).forEach { (loginTab, label) ->
+                    val selected = isLogin == loginTab
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(if (selected) tealColor else Color.Transparent)
+                            .selectable(
+                                selected = selected,
+                                enabled = !isLoading,
+                                role = Role.Tab,
+                                onClick = { isLogin = loginTab; errorMessage = null }
+                            )
+                            .padding(vertical = 10.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(label),
+                            color = if (selected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+                            fontSize = 15.sp
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
 
             // Email Field
             OutlinedTextField(
@@ -168,7 +228,25 @@ fun AuthScreen(
                 singleLine = true
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            // Forgot Password sits right under the password field, login only
+            if (isLogin) {
+                TextButton(
+                    onClick = {
+                        forgotEmail = email
+                        showForgotPassword = true
+                    },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(
+                        text = stringResource(R.string.auth_forgot),
+                        color = tealColor,
+                        fontSize = 13.sp
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            } else {
+                Spacer(modifier = Modifier.height(24.dp))
+            }
 
             if (errorMessage != null) {
                 Text(
@@ -194,16 +272,34 @@ fun AuthScreen(
                     isLoading = true
                     try {
                         val auth = FirebaseAuth.getInstance()
-                        val task = if (isLogin) {
-                            auth.signInWithEmailAndPassword(email.trim(), password)
+                        val mail = email.trim()
+                        if (isLogin) {
+                            auth.signInWithEmailAndPassword(mail, password).addOnCompleteListener { result ->
+                                isLoading = false
+                                if (result.isSuccessful) onAuthSuccess()
+                                else errorMessage = result.exception?.localizedMessage ?: authFailedMsg
+                            }
                         } else {
-                            auth.createUserWithEmailAndPassword(email.trim(), password)
-                        }
-
-                        task.addOnCompleteListener { result ->
-                            isLoading = false
-                            if (result.isSuccessful) onAuthSuccess()
-                            else errorMessage = result.exception?.localizedMessage ?: authFailedMsg
+                            auth.createUserWithEmailAndPassword(mail, password).addOnCompleteListener { result ->
+                                if (result.isSuccessful) {
+                                    isLoading = false
+                                    onAuthSuccess()
+                                } else if (result.exception is FirebaseAuthUserCollisionException) {
+                                    // Email already registered: the person meant to log in.
+                                    // Try that with what they typed instead of dead-ending on an error.
+                                    auth.signInWithEmailAndPassword(mail, password).addOnCompleteListener { signIn ->
+                                        isLoading = false
+                                        if (signIn.isSuccessful) onAuthSuccess()
+                                        else {
+                                            isLogin = true
+                                            errorMessage = accountExistsMsg
+                                        }
+                                    }
+                                } else {
+                                    isLoading = false
+                                    errorMessage = result.exception?.localizedMessage ?: authFailedMsg
+                                }
+                            }
                         }
                     } catch (e: Exception) {
                         isLoading = false
@@ -224,32 +320,7 @@ fun AuthScreen(
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text(stringResource(if (isLogin) R.string.log_in else R.string.sign_up), fontSize = 16.sp)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Toggle between Login and Sign Up
-            TextButton(onClick = { isLogin = !isLogin }) {
-                Text(
-                    text = stringResource(if (isLogin) R.string.auth_no_account else R.string.auth_have_account),
-                    color = tealColor,
-                    fontSize = 14.sp
-                )
-            }
-
-            // Forgot Password (only show on login)
-            if (isLogin) {
-                TextButton(onClick = {
-                    forgotEmail = email
-                    showForgotPassword = true
-                }) {
-                    Text(
-                        text = stringResource(R.string.auth_forgot),
-                        color = tealColor.copy(alpha = 0.8f),
-                        fontSize = 13.sp
-                    )
+                    Text(stringResource(if (isLogin) R.string.log_in else R.string.auth_tab_signup), fontSize = 16.sp)
                 }
             }
 

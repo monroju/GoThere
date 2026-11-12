@@ -43,6 +43,12 @@
     <string name="appearance_dark">Oscuro</string>
     <string name="appearance_light">Claro</string>
     <string name="appearance_system">Sistema</string>
+    <string name="auth_account_exists">Este correo ya tiene una cuenta. Escribe su contraseña para iniciar sesión, o toca ¿Olvidaste tu contraseña?</string>
+    <string name="auth_subtitle_login">Usa el correo y la contraseña con los que te registraste.</string>
+    <string name="auth_subtitle_signup">¿Primera vez? Elige un correo y una contraseña.</string>
+    <string name="auth_tab_signup">Crear cuenta</string>
+    <string name="auth_title_login">Hola de nuevo</string>
+    <string name="auth_title_signup">Crea tu cuenta</string>
     <string name="auth_agree_prefix">Al continuar, aceptas nuestra </string>
     <string name="auth_check_inbox">Revisa tu bandeja de entrada: te enviamos un enlace.</string>
     <string name="auth_enter_both">Escribe tu correo y tu contraseña.</string>

@@ -44,6 +44,12 @@
     <string name="appearance_dark">Dark</string>
     <string name="appearance_light">Light</string>
     <string name="appearance_system">System</string>
+    <string name="auth_account_exists">This email already has an account. Enter its password to log in, or tap Forgot Password.</string>
+    <string name="auth_subtitle_login">Use the email and password you signed up with.</string>
+    <string name="auth_subtitle_signup">New here? Choose an email and a password.</string>
+    <string name="auth_tab_signup">Create account</string>
+    <string name="auth_title_login">Welcome back</string>
+    <string name="auth_title_signup">Create your account</string>
     <string name="auth_agree_prefix">By continuing, you agree to our </string>
     <string name="auth_check_inbox">Check your inbox for a reset link.</string>
     <string name="auth_enter_both">Please enter both email and password.</string>
