@@ -6,7 +6,6 @@ import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
@@ -21,13 +20,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
@@ -129,15 +129,28 @@ fun AuthScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Making the logo circular as requested
-            Image(
-                painter = painterResource(id = R.drawable.ic_logo_full),
-                contentDescription = stringResource(R.string.logo_desc),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(160.dp)
-                    .clip(CircleShape)
-            )
+            // Logo: vector pin mark (arrow follows the in-app theme) + live wordmark,
+            // so it stays sharp at every density.
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.semantics(mergeDescendants = true) { heading() }
+            ) {
+                Image(
+                    painter = painterResource(
+                        id = if (isDark) R.drawable.ic_gothere_mark_dark else R.drawable.ic_gothere_mark_light
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier.height(60.dp)
+                )
+                Text(
+                    text = "GoThere",
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    maxLines = 1
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
