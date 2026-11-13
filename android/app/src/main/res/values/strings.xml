@@ -28,7 +28,7 @@
     <string name="anc_blocked">Direct path blocked</string>
     <string name="anc_cost">Cost</string>
     <string name="anc_docs_needed">Documents you\'ll need</string>
-    <string name="anc_failed_rules">One or more required rules failed. Check the workaround notes above — some failed rules have court-petition paths that still work.</string>
+    <string name="anc_failed_rules">One or more required rules failed. Check the workaround notes above. Some failed rules have court-petition paths that still work.</string>
     <string name="anc_header">You might already be a citizen.</string>
     <string name="anc_income_test">Income test</string>
     <string name="anc_intro">Five EU countries pass citizenship down to grandchildren or further. No income test, no residency requirement, no language test (mostly). The hardest part is the paperwork.</string>
@@ -37,13 +37,19 @@
     <string name="anc_months_range">%1$d–%2$d mo</string>
     <string name="anc_official_source">Official government source</string>
     <string name="anc_pick_country">Pick the ancestor\'s country</string>
-    <string name="anc_planb">A second passport for the cost of paperwork. What investors pay $200k+ for via citizenship-by-investment, you may inherit — full EU mobility, a tax-residency option, and a real Plan B.</string>
+    <string name="anc_planb">A second passport for the cost of paperwork. What investors pay $200k+ for via citizenship-by-investment, you may inherit: full EU mobility, a tax-residency option, and a real Plan B.</string>
     <string name="anc_qualify">Do you qualify?</string>
     <string name="anc_timeline">Timeline</string>
     <string name="anc_workaround">Workaround available: %1$s</string>
     <string name="appearance_dark">Dark</string>
     <string name="appearance_light">Light</string>
     <string name="appearance_system">System</string>
+    <string name="auth_account_exists">This email already has an account. Enter its password to log in, or tap Forgot Password.</string>
+    <string name="auth_subtitle_login">Use the email and password you signed up with.</string>
+    <string name="auth_subtitle_signup">New here? Choose an email and a password.</string>
+    <string name="auth_tab_signup">Create account</string>
+    <string name="auth_title_login">Welcome back</string>
+    <string name="auth_title_signup">Create your account</string>
     <string name="auth_agree_prefix">By continuing, you agree to our </string>
     <string name="auth_check_inbox">Check your inbox for a reset link.</string>
     <string name="auth_enter_both">Please enter both email and password.</string>
@@ -433,6 +439,7 @@
     <string name="res_locked_body">Unlock the %1$s Pack to access immigration portals, housing sites, banking, healthcare, and expat communities — plus downloadable PDF guides.</string>
     <string name="res_no_downloads">No downloadable documents yet</string>
     <string name="res_quick_links">Quick Links</string>
+    <string name="res_partner_disclosure">Some links here may be partner links: GoThere may earn a commission if you sign up, at no extra cost to you.</string>
     <string name="res_title">%1$s Resources</string>
     <string name="res_tool_concierge">GoThere Concierge (soon)</string>
     <string name="res_tool_concierge_sub">White-glove relocation: vetted lawyers, done-with-you prep</string>

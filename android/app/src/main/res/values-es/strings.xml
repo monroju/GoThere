@@ -43,6 +43,12 @@
     <string name="appearance_dark">Oscuro</string>
     <string name="appearance_light">Claro</string>
     <string name="appearance_system">Sistema</string>
+    <string name="auth_account_exists">Este correo ya tiene una cuenta. Escribe su contraseña para iniciar sesión, o toca ¿Olvidaste tu contraseña?</string>
+    <string name="auth_subtitle_login">Usa el correo y la contraseña con los que te registraste.</string>
+    <string name="auth_subtitle_signup">¿Primera vez? Elige un correo y una contraseña.</string>
+    <string name="auth_tab_signup">Crear cuenta</string>
+    <string name="auth_title_login">Hola de nuevo</string>
+    <string name="auth_title_signup">Crea tu cuenta</string>
     <string name="auth_agree_prefix">Al continuar, aceptas nuestra </string>
     <string name="auth_check_inbox">Revisa tu bandeja de entrada: te enviamos un enlace.</string>
     <string name="auth_enter_both">Escribe tu correo y tu contraseña.</string>
@@ -432,6 +438,7 @@
     <string name="res_locked_body">Desbloquea el paquete de %1$s para acceder a portales de migración, vivienda, bancos, salud y comunidades de expats, además de guías en PDF.</string>
     <string name="res_no_downloads">Todavía no hay documentos descargables</string>
     <string name="res_quick_links">Enlaces rápidos</string>
+    <string name="res_partner_disclosure">Algunos enlaces pueden ser de socios: GoThere puede recibir una comisión si contratas, sin coste extra para ti.</string>
     <string name="res_title">Recursos de %1$s</string>
     <string name="res_tool_concierge">GoThere Concierge (pronto)</string>
     <string name="res_tool_concierge_sub">Mudanza con acompañamiento: abogados verificados y preparación contigo</string>
