@@ -373,42 +373,12 @@ private fun MainAppContent(
                     onClick = {
                         showDeleteConfirm = false
                         val user = FirebaseAuth.getInstance().currentUser
-                        val uid = user?.uid
-                        if (uid != null) {
-                            val db = FirebaseFirestore.getInstance()
-                            val userDoc = db.collection("users").document(uid)
-                            // Delete subcollections then user doc then auth account
-                            val subcollections = listOf("tasks", "events", "documents", "forms", "profiles", "recommendations")
-                            val batch = db.batch()
-                            val pending = java.util.concurrent.atomic.AtomicInteger(subcollections.size)
-                            for (sub in subcollections) {
-                                userDoc.collection(sub).get()
-                                    .addOnSuccessListener { snap ->
-                                        for (doc in snap.documents) {
-                                            doc.reference.delete()
-                                        }
-                                        if (pending.decrementAndGet() == 0) {
-                                            // All subcollections cleared, now delete user doc + auth
-                                            userDoc.delete().addOnCompleteListener {
-                                                user.delete().addOnCompleteListener { task ->
-                                                    if (!task.isSuccessful) {
-                                                        deleteError = reauthMsg
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    .addOnFailureListener {
-                                        if (pending.decrementAndGet() == 0) {
-                                            userDoc.delete().addOnCompleteListener {
-                                                user.delete().addOnCompleteListener { task ->
-                                                    if (!task.isSuccessful) {
-                                                        deleteError = reauthMsg
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
+                        // Delete the Auth account first. If Firebase needs a recent login this
+                        // fails and nothing is lost. Once the account is gone, the onUserDeleted
+                        // Cloud Function removes users/{uid} with every subcollection and Storage files.
+                        user?.delete()?.addOnCompleteListener { task ->
+                            if (!task.isSuccessful) {
+                                deleteError = reauthMsg
                             }
                         }
                     },
