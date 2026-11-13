@@ -18,7 +18,8 @@ object ProfileRepository {
             "nightlife" to profile.nightlifePreference.name,
             "expatDensityPref" to profile.expatDensityPref?.name,
             "safetyPriority" to profile.safetyPriority,
-            "considerations" to profile.considerations.map { it.name },
+            // Personal considerations (LGBTQ+, disability, veteran, ...) never leave the device.
+            // They live only in UserConsiderationsStore (local SharedPreferences).
             "timestamp" to System.currentTimeMillis()
         )
         val ref = FirebaseUtil.profilesCollection().add(data).await()
