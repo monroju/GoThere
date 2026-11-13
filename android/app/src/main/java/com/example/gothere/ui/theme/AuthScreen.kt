@@ -8,6 +8,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
@@ -29,7 +31,11 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -46,6 +52,7 @@ fun AuthScreen(
     onAuthSuccess: () -> Unit
 ) {
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isLogin by remember { mutableStateOf(false) }
@@ -66,6 +73,57 @@ fun AuthScreen(
     val accountExistsMsg = stringResource(R.string.auth_account_exists)
     val agreePrefix = stringResource(R.string.auth_agree_prefix)
     val privacyLabel = stringResource(R.string.privacy_policy)
+
+    // Shared by the button and the keyboard Done action
+    fun submit() {
+        if (isLoading) return
+        focusManager.clearFocus()
+        if (email.isBlank() || password.isBlank()) {
+            errorMessage = enterBothMsg
+            return
+        }
+        if (password.length < 6) {
+            errorMessage = pwShortMsg
+            return
+        }
+        errorMessage = null
+        isLoading = true
+        try {
+            val auth = FirebaseAuth.getInstance()
+            val mail = email.trim()
+            if (isLogin) {
+                auth.signInWithEmailAndPassword(mail, password).addOnCompleteListener { result ->
+                    isLoading = false
+                    if (result.isSuccessful) onAuthSuccess()
+                    else errorMessage = result.exception?.localizedMessage ?: authFailedMsg
+                }
+            } else {
+                auth.createUserWithEmailAndPassword(mail, password).addOnCompleteListener { result ->
+                    if (result.isSuccessful) {
+                        isLoading = false
+                        onAuthSuccess()
+                    } else if (result.exception is FirebaseAuthUserCollisionException) {
+                        // Email already registered: the person meant to log in.
+                        // Try that with what they typed instead of dead-ending on an error.
+                        auth.signInWithEmailAndPassword(mail, password).addOnCompleteListener { signIn ->
+                            isLoading = false
+                            if (signIn.isSuccessful) onAuthSuccess()
+                            else {
+                                isLogin = true
+                                errorMessage = accountExistsMsg
+                            }
+                        }
+                    } else {
+                        isLoading = false
+                        errorMessage = result.exception?.localizedMessage ?: authFailedMsg
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            isLoading = false
+            errorMessage = e.localizedMessage ?: authFailedMsg
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -124,6 +182,10 @@ fun AuthScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                // The activity is edge to edge, so adjustResize no longer shrinks the window
+                // when the keyboard opens. Pad for it here so the fields scroll above it.
+                .systemBarsPadding()
+                .imePadding()
                 .verticalScroll(rememberScrollState())
                 .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -220,7 +282,9 @@ fun AuthScreen(
                     focusedLabelColor = tealColor,
                     unfocusedBorderColor = Color.Gray
                 ),
-                singleLine = true
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -236,9 +300,11 @@ fun AuthScreen(
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = tealColor,
                     focusedLabelColor = tealColor,
-                    unfocusedBorderColor = tealColor 
+                    unfocusedBorderColor = tealColor
                 ),
-                singleLine = true
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { submit() })
             )
 
             // Forgot Password sits right under the password field, login only
@@ -272,53 +338,7 @@ fun AuthScreen(
 
             // Main Action Button (Sign Up / Login)
             Button(
-                onClick = {
-                    if (email.isBlank() || password.isBlank()) {
-                        errorMessage = enterBothMsg
-                        return@Button
-                    }
-                    if (password.length < 6) {
-                        errorMessage = pwShortMsg
-                        return@Button
-                    }
-                    errorMessage = null
-                    isLoading = true
-                    try {
-                        val auth = FirebaseAuth.getInstance()
-                        val mail = email.trim()
-                        if (isLogin) {
-                            auth.signInWithEmailAndPassword(mail, password).addOnCompleteListener { result ->
-                                isLoading = false
-                                if (result.isSuccessful) onAuthSuccess()
-                                else errorMessage = result.exception?.localizedMessage ?: authFailedMsg
-                            }
-                        } else {
-                            auth.createUserWithEmailAndPassword(mail, password).addOnCompleteListener { result ->
-                                if (result.isSuccessful) {
-                                    isLoading = false
-                                    onAuthSuccess()
-                                } else if (result.exception is FirebaseAuthUserCollisionException) {
-                                    // Email already registered: the person meant to log in.
-                                    // Try that with what they typed instead of dead-ending on an error.
-                                    auth.signInWithEmailAndPassword(mail, password).addOnCompleteListener { signIn ->
-                                        isLoading = false
-                                        if (signIn.isSuccessful) onAuthSuccess()
-                                        else {
-                                            isLogin = true
-                                            errorMessage = accountExistsMsg
-                                        }
-                                    }
-                                } else {
-                                    isLoading = false
-                                    errorMessage = result.exception?.localizedMessage ?: authFailedMsg
-                                }
-                            }
-                        }
-                    } catch (e: Exception) {
-                        isLoading = false
-                        errorMessage = e.localizedMessage ?: authFailedMsg
-                    }
-                },
+                onClick = { submit() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
