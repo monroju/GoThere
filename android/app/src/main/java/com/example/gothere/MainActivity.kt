@@ -354,6 +354,15 @@ private fun MainAppContent(
     onCountryChange: (String) -> Unit
 ) {
     val navController = rememberNavController()
+    // Compose is one Activity, so PostHog's automatic $screen is always "MainActivity".
+    // Report the route template instead (e.g. "planb_path/{pathId}", never the filled-in id).
+    androidx.compose.runtime.DisposableEffect(navController) {
+        val listener = androidx.navigation.NavController.OnDestinationChangedListener { _, destination, _ ->
+            destination.route?.let { com.example.gothere.util.Analytics.screen(it) }
+        }
+        navController.addOnDestinationChangedListener(listener)
+        onDispose { navController.removeOnDestinationChangedListener(listener) }
+    }
     var showCountryDropdown by remember { mutableStateOf(false) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
     var deleteError by remember { mutableStateOf<String?>(null) }

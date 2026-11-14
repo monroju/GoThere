@@ -61,7 +61,8 @@ object Analytics {
     const val KEY_ACQ_SOURCE = "acq_source_v1"
 
     private val activationEvents = setOf(
-        WIZARD_COMPLETED, DECISION_TREE_COMPLETED, ANCESTRY_RESULT_VIEWED, VISA_COMPARE_VIEWED
+        WIZARD_COMPLETED, DECISION_TREE_COMPLETED, ANCESTRY_RESULT_VIEWED, VISA_COMPARE_VIEWED,
+        PLANB_PATH_TRACKED
     )
 
     private lateinit var appContext: Context
@@ -84,6 +85,11 @@ object Analytics {
         runCatching { PostHog.capture(event, properties = properties.filterValues { it != null }.mapValues { it.value!! }) }
         if (event == PURCHASE_COMPLETED) lastPurchaseAt = System.currentTimeMillis()
         if (event in activationEvents) markActivated(event)
+    }
+
+    /** Screen view for a navigation route template. */
+    fun screen(route: String) {
+        runCatching { PostHog.screen(route.substringBefore('?')) }
     }
 
     /** True when a purchase completed at or after [sinceMillis] (closing the paywall then is not a dismissal). */
