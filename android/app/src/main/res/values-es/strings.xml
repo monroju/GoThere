@@ -734,4 +734,16 @@
     <string name="planb_rules_verified">Reglas verificadas por última vez el %1$s</string>
     <string name="start_options_open">Solo quiero tener opciones</string>
     <string name="start_options_open_sub">Todavía no te mudas. Arma un Plan B que puedes ir completando.</string>
+    <!-- Plan B one-time unlock offer -->
+    <string name="planb_offer_title">Tu ruta de %1$s está lista</string>
+    <string name="planb_offer_progress">%1$d de %2$d documentos listos</string>
+    <string name="planb_offer_heading">Desbloquea tu plan de %1$s</string>
+    <string name="planb_offer_b1">Cada etapa después de reunir tus papeles, con cuánto tarda cada una</string>
+    <string name="planb_offer_b2">Todas las guías, tareas y fuentes de GoThere para %1$s</string>
+    <string name="planb_offer_b3">Un solo pago. Sin suscripción.</string>
+    <string name="planb_offer_buy_price">Desbloquear %1$s por %2$s</string>
+    <string name="planb_offer_buy">Desbloquear %1$s</string>
+    <string name="planb_offer_all_access">O desbloquea todos los países con All-Access</string>
+    <string name="planb_offer_free_note">Tu lista y tu puntaje siguen gratis de todas formas.</string>
+    <string name="planb_offer_not_now">Ahora no</string>
 </resources>

@@ -51,6 +51,8 @@ object Analytics {
     // Plan B (growth/PLAN_B_SPEC.md section 6). Country code, kind and state only.
     const val PLANB_INTENT_SELECTED = "planb_intent_selected"
     const val PLANB_PATH_TRACKED = "planb_path_tracked"
+    const val PLANB_OFFER_SHOWN = "planb_offer_shown"
+    const val PLANB_OFFER_TAPPED = "planb_offer_tapped"
     const val PLANB_DOC_STATE = "planb_doc_state"
     const val PLANB_SCORE_VIEWED = "planb_score_viewed"
     const val PLANB_PAYWALL_SHOWN = "planb_paywall_shown"

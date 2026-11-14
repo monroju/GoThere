@@ -735,4 +735,16 @@
     <string name="planb_rules_verified">Rules last verified %1$s</string>
     <string name="start_options_open">Just keeping my options open</string>
     <string name="start_options_open_sub">Not moving yet. Build a Plan B you can grow over time.</string>
+    <!-- Plan B one-time unlock offer -->
+    <string name="planb_offer_title">Your %1$s path is set up</string>
+    <string name="planb_offer_progress">%1$d of %2$d documents ready</string>
+    <string name="planb_offer_heading">Unlock your %1$s plan</string>
+    <string name="planb_offer_b1">Every stage after you gather your papers, with how long each one takes</string>
+    <string name="planb_offer_b2">Every %1$s guide, task and source in GoThere</string>
+    <string name="planb_offer_b3">One purchase. No subscription.</string>
+    <string name="planb_offer_buy_price">Unlock %1$s for %2$s</string>
+    <string name="planb_offer_buy">Unlock %1$s</string>
+    <string name="planb_offer_all_access">Or unlock every country with All-Access</string>
+    <string name="planb_offer_free_note">Your checklist and readiness score stay free either way.</string>
+    <string name="planb_offer_not_now">Not now</string>
 </resources>

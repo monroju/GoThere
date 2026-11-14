@@ -316,7 +316,13 @@ private fun TrackThisPath(path: AncestryPath, onOpenPlanB: (() -> Unit)?) {
     val store = remember { com.example.gothere.planb.PlanBStore.get(context) }
     val paths by store.paths.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
+    var offerPath by remember { mutableStateOf<com.example.gothere.planb.PlanBPath?>(null) }
     val name = countryDisplayName(path.countryId, path.countryName)
+    val afterTracked = {
+        onOpenPlanB?.invoke()
+        // Ask for a review after the user acts on the result, not on the verdict itself.
+        ReviewHelper.onMilestone(context, ReviewMilestone.PLANB_PATH_TRACKED)
+    }
     if (paths.any { it.pathwayId == chain.pathwayId }) {
         TextButton(onClick = { onOpenPlanB?.invoke() }, enabled = onOpenPlanB != null) {
             Text(stringResource(R.string.planb_tracking))
@@ -330,9 +336,17 @@ private fun TrackThisPath(path: AncestryPath, onOpenPlanB: (() -> Unit)?) {
         PlanBTrackDialog(chain = chain, countryName = name, onDismiss = { showDialog = false },
             onTracked = {
                 showDialog = false
-                onOpenPlanB?.invoke()
-                // Ask for a review after the user acts on the result, not on the verdict itself.
-                ReviewHelper.onMilestone(context, ReviewMilestone.PLANB_PATH_TRACKED)
+                val tracked = store.paths.value.firstOrNull { it.pathwayId == chain.pathwayId }
+                val pm = com.example.gothere.billing.PurchaseManager.getInstance(context)
+                if (tracked != null && PlanBUnlockOffer.claim(context, tracked.id, path.countryId, pm)) {
+                    offerPath = tracked
+                } else {
+                    afterTracked()
+                }
             })
+    }
+    offerPath?.let { p ->
+        PlanBUnlockOfferDialog(path = p, countryId = path.countryId, countryName = name,
+            onDone = { offerPath = null; afterTracked() })
     }
 }
