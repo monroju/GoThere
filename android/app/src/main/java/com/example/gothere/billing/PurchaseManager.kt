@@ -694,6 +694,20 @@ class PurchaseManager private constructor(private val appContext: Context) : Pur
             }
     }
 
+    /**
+     * Silent re-query on app resume so a promo code redeemed in the Play Store unlocks
+     * without a restart. Skipped while disconnected (the pending connection queries on setup)
+     * and within 5 s of the last refresh, so rapid app switches do not each sync Firestore.
+     */
+    fun refreshPurchases() {
+        val now = System.currentTimeMillis()
+        if (!_isConnected.value || now - lastResumeRefreshAt < 5_000L) return
+        lastResumeRefreshAt = now
+        queryPurchases()
+    }
+
+    private var lastResumeRefreshAt = 0L
+
     /** [userInitiated] false for the silent restore after sign-in, which must not report purchase_restored. */
     fun restorePurchases(userInitiated: Boolean = true) {
         if (userInitiated) restoreRequested = true
