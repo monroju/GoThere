@@ -9,9 +9,16 @@ import com.android.installreferrer.api.InstallReferrerStateListener
  * Reads the Play Install Referrer once and fires `install_attributed`.
  * Store links on getgothere.app carry `referrer=utm_source=...&utm_campaign=...`;
  * Play reports untagged installs as `utm_source=google-play&utm_medium=organic`.
+ * Partner landing pages (getgothere.app/p/<slug>/) use `utm_source=<slug>&utm_medium=partner`;
+ * the raw `utm_source` is kept in prefs ([KEY_UTM_SOURCE]) and set once on the PostHog person
+ * as `install_referrer`, so partner purchases can be counted. It is a slug, not personal data.
  */
 object InstallAttribution {
     private const val KEY_DONE = "install_attributed_v1"
+    const val KEY_UTM_SOURCE = "install_utm_source_v1"
+
+    /** utm_source from the Play Install Referrer, or null when none was captured. */
+    fun storedUtmSource(): String? = runCatching { Analytics.prefs().getString(KEY_UTM_SOURCE, null) }.getOrNull()
 
     fun resolveOnce(context: Context) {
         val prefs = Analytics.prefs()
@@ -61,11 +68,12 @@ object InstallAttribution {
 
     private fun record(props: Map<String, Any?>) {
         val source = props["acq_source"] as? String ?: "unknown"
-        Analytics.prefs().edit()
-            .putString(Analytics.KEY_ACQ_SOURCE, source)
-            .putBoolean(KEY_DONE, true)
-            .apply()
+        val utmSource = (props["utm_source"] as? String)?.take(100)
+        val editor = Analytics.prefs().edit().putString(Analytics.KEY_ACQ_SOURCE, source)
+        if (utmSource != null) editor.putString(KEY_UTM_SOURCE, utmSource)
+        editor.putBoolean(KEY_DONE, true).apply()
         Analytics.setAcquisitionSource(source)
-        Analytics.log(Analytics.INSTALL_ATTRIBUTED, props + ("\$set_once" to mapOf("acq_source" to source)))
+        val setOnce = mapOf("acq_source" to source, "install_referrer" to utmSource).filterValues { it != null }
+        Analytics.log(Analytics.INSTALL_ATTRIBUTED, props + ("\$set_once" to setOnce))
     }
 }

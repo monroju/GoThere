@@ -1,5 +1,7 @@
 package com.example.gothere.ui
 
+import com.example.gothere.util.PartnerLinks
+import com.example.gothere.util.Analytics
 import com.example.gothere.R
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -171,6 +173,8 @@ fun ResourcesScreen(
     val documentsByFolder by vm.documentsByFolder.collectAsState()
     val isLoading by vm.isLoading.collectAsState()
     val error by vm.error.collectAsState()
+
+    LaunchedEffect(Unit) { PartnerLinks.refresh(context) }
 
     // Load documents when countryId changes (only when unlocked)
     LaunchedEffect(countryId, isUnlocked) {
@@ -393,10 +397,7 @@ fun ResourcesScreen(
                         items(forYouCats) { category ->
                             ResourceCategoryCard(
                                 category = category,
-                                onResourceClick = { resource ->
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(resource.url))
-                                    context.startActivity(intent)
-                                }
+                                onResourceClick = { resource -> openResource(context, resource, countryId) }
                             )
                         }
                     }
@@ -418,11 +419,18 @@ fun ResourcesScreen(
                 items(webResourceCategories) { category ->
                     ResourceCategoryCard(
                         category = category,
-                        onResourceClick = { resource ->
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(resource.url))
-                            context.startActivity(intent)
-                        }
+                        onResourceClick = { resource -> openResource(context, resource, countryId) }
                     )
+                }
+                if (webResourceCategories.any { c -> c.resources.any { PartnerLinks.partnerFor(it.url) != null } }) {
+                    item {
+                        Text(
+                            text = stringResource(R.string.res_partner_disclosure),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+                        )
+                    }
                 }
             }
 
@@ -546,6 +554,18 @@ fun ResourcesScreen(
 }
 
 /** Card linking to one of our other apps' store listing. */
+/** Opens a resource, swapping in the partner tracking link when one is live for this country. */
+private fun openResource(context: android.content.Context, resource: ResourceItem, countryId: String) {
+    val url = PartnerLinks.resolve(context, resource.url, countryId)
+    PartnerLinks.partnerFor(resource.url)?.let { partner ->
+        Analytics.log(
+            Analytics.PARTNER_LINK_TAPPED,
+            mapOf("partner" to partner, "country_id" to countryId, "is_partner" to (url != resource.url))
+        )
+    }
+    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+}
+
 @Composable
 private fun CrossPromoCard(app: PromoApp, onClick: () -> Unit) {
     ElevatedCard(
@@ -998,7 +1018,8 @@ private fun getSpainResources(): List<ResourceCategory> = listOf(
         icon = "local_hospital",
         resources = listOf(
             ResourceItem("seg-social", "Spanish Social Security", "Public healthcare registration", "https://www.seg-social.es", "official"),
-            ResourceItem("sanitas", "Sanitas", "Popular private insurance", "https://www.sanitas.es", "service")
+            ResourceItem("sanitas", "Sanitas", "Popular private insurance", "https://www.sanitas.es", "service"),
+            ResourceItem("feather", "Feather Expat Health", "English-speaking private insurance for newcomers", "https://feather-insurance.com/en-es/expat-health-insurance", "service")
         )
     ),
     ResourceCategory(
@@ -1389,7 +1410,8 @@ private fun getGermanyResources(): List<ResourceCategory> = listOf(
         icon = "local_hospital",
         resources = listOf(
             ResourceItem("tk", "TK (Techniker Krankenkasse)", "Largest public health insurer", "https://www.tk.de/en", "official"),
-            ResourceItem("aok", "AOK", "Public health insurance", "https://www.aok.de", "official")
+            ResourceItem("aok", "AOK", "Public health insurance", "https://www.aok.de", "official"),
+            ResourceItem("feather-de", "Feather Expat Health", "English-speaking expat insurance for your first years", "https://feather-insurance.com/health-insurance/expat/short-term", "service")
         )
     ),
     ResourceCategory(

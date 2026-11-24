@@ -43,6 +43,12 @@
     <string name="appearance_dark">Oscuro</string>
     <string name="appearance_light">Claro</string>
     <string name="appearance_system">Sistema</string>
+    <string name="auth_account_exists">Este correo ya tiene una cuenta. Escribe su contraseña para iniciar sesión, o toca ¿Olvidaste tu contraseña?</string>
+    <string name="auth_subtitle_login">Usa el correo y la contraseña con los que te registraste.</string>
+    <string name="auth_subtitle_signup">¿Primera vez? Elige un correo y una contraseña.</string>
+    <string name="auth_tab_signup">Crear cuenta</string>
+    <string name="auth_title_login">Hola de nuevo</string>
+    <string name="auth_title_signup">Crea tu cuenta</string>
     <string name="auth_agree_prefix">Al continuar, aceptas nuestra </string>
     <string name="auth_check_inbox">Revisa tu bandeja de entrada: te enviamos un enlace.</string>
     <string name="auth_enter_both">Escribe tu correo y tu contraseña.</string>
@@ -338,7 +344,7 @@
     <string name="notes">Notas</string>
     <string name="offline_banner">Estás sin conexión. Los cambios se sincronizarán al reconectar.</string>
     <string name="offline_desc">Sin conexión a internet</string>
-    <string name="onb1_body">Tu guía para mudarte a España, Portugal y México. Te acompañamos en cada paso de la mudanza.</string>
+    <string name="onb1_body">Tu guía para mudarte a 11 países, desde visas hasta ciudadanía por ascendencia. Te acompañamos en cada paso de la mudanza.</string>
     <string name="onb1_title">Bienvenido a GoThere</string>
     <string name="onb2_body">Responde unas preguntas sobre tu estilo de vida y presupuesto, y te recomendamos la mejor ciudad para ti, con desglose de costos y consejos de barrios.</string>
     <string name="onb2_title">Motor de decisión inteligente</string>
@@ -432,6 +438,7 @@
     <string name="res_locked_body">Desbloquea el paquete de %1$s para acceder a portales de migración, vivienda, bancos, salud y comunidades de expats, además de guías en PDF.</string>
     <string name="res_no_downloads">Todavía no hay documentos descargables</string>
     <string name="res_quick_links">Enlaces rápidos</string>
+    <string name="res_partner_disclosure">Algunos enlaces pueden ser de socios: GoThere puede recibir una comisión si contratas, sin coste extra para ti.</string>
     <string name="res_title">Recursos de %1$s</string>
     <string name="res_tool_concierge">GoThere Concierge (pronto)</string>
     <string name="res_tool_concierge_sub">Mudanza con acompañamiento: abogados verificados y preparación contigo</string>
@@ -727,4 +734,10 @@
     <string name="planb_rules_verified">Reglas verificadas por última vez el %1$s</string>
     <string name="start_options_open">Solo quiero tener opciones</string>
     <string name="start_options_open_sub">Todavía no te mudas. Arma un Plan B que puedes ir completando.</string>
+    <!-- Get help (growth-plan/08-get-help-spec.md) -->
+    <string name="get_help">Ayuda</string>
+    <string name="get_help_row">Organizaciones que pueden ayudar</string>
+    <string name="get_help_intro">Organizaciones que apoyan a quienes se mudan al extranjero. GoThere no está afiliada a ellas salvo que se indique.</string>
+    <string name="get_help_open_site">abrir sitio web</string>
+    <string name="redeem_code">Canjear un código</string>
 </resources>

@@ -46,6 +46,7 @@ object Analytics {
 
     // Cross-promo to our other apps
     const val CROSS_PROMO_TAPPED = "cross_promo_tapped"
+    const val PARTNER_LINK_TAPPED = "partner_link_tapped" // partner, country_id, is_partner (same as iOS)
 
     // Plan B (growth/PLAN_B_SPEC.md section 6). Country code, kind and state only.
     const val PLANB_INTENT_SELECTED = "planb_intent_selected"
