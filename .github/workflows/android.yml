@@ -33,6 +33,11 @@ jobs:
           fi
           echo "$GOOGLE_SERVICES_JSON" | base64 -d > app/google-services.json
 
+      # gradle.properties pins org.gradle.java.home to the Windows Android Studio JBR
+      # for local builds; drop it so CI uses the setup-java JDK.
+      - name: Use CI JDK
+        run: sed -i '/^org.gradle.java.home/d' gradle.properties
+
       - name: Unit tests
         run: ./gradlew --no-daemon :app:testDebugUnitTest
 
