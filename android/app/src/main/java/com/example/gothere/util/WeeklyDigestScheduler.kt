@@ -64,6 +64,8 @@ class WeeklyDigestReceiver : BroadcastReceiver() {
                 val mainIntent = Intent(context, MainActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     putExtra("navigate_to", "tasks")
+                    putExtra(com.example.gothere.notify.NotificationOpen.EXTRA_TYPE, com.example.gothere.notify.NotificationOpen.TYPE_WEEKLY_DIGEST)
+                    putExtra(com.example.gothere.notify.NotificationOpen.EXTRA_ID, "weekly_digest")
                 }
                 val pendingIntent = PendingIntent.getActivity(
                     context, 0, mainIntent,

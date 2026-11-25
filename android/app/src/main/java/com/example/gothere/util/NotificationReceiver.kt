@@ -8,6 +8,7 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.example.gothere.MainActivity
 import com.example.gothere.R
+import com.example.gothere.notify.NotificationOpen
 
 class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -17,6 +18,11 @@ class NotificationReceiver : BroadcastReceiver() {
 
         val mainIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(
+                NotificationOpen.EXTRA_TYPE,
+                if (id.startsWith("task_")) NotificationOpen.TYPE_TASK_REMINDER else NotificationOpen.TYPE_CALENDAR_EVENT
+            )
+            putExtra(NotificationOpen.EXTRA_ID, id)
         }
 
         val pendingIntent = PendingIntent.getActivity(

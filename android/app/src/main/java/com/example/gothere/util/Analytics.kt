@@ -43,6 +43,7 @@ object Analytics {
     const val REFERRAL_REDEEMED = "referral_redeemed"
     const val DOCUMENT_SCAN_COMPLETED = "document_scan_completed"
     const val CONCIERGE_WAITLIST_JOINED = "concierge_waitlist_joined"
+    const val NOTIFICATION_OPENED = "notification_opened" // type, source (local/push), id, topic, platform (same as iOS)
 
     // Cross-promo to our other apps
     const val CROSS_PROMO_TAPPED = "cross_promo_tapped"
