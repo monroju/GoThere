@@ -87,7 +87,7 @@ object DecisionEngine {
                     }
                     PersonalConsideration.Disabled -> {
                         when (countryId) {
-                            "germany", "spain", "portugal", "ireland", "italy", "poland", "hungary" -> { score += 8; reasons += "EU Disability Card recognised" }
+                            "germany", "spain", "portugal", "ireland", "italy", "poland", "hungary" -> { score += 8; reasons += "EU Disability Card from June 2028" }
                             "canada", "uk_ancestry" -> { score += 7; reasons += "Strong accessibility law" }
                             "mexico", "argentina" -> { score += 2 }
                         }

@@ -988,7 +988,7 @@ private fun getSpainResources(): List<ResourceCategory> = listOf(
         icon = "passport",
         resources = listOf(
             ResourceItem("spain-consulate", "Spanish Consulates in USA", "Find your assigned consulate", "https://www.exteriores.gob.es/en/EmbajadasConsulados/Paginas/index.aspx", "official"),
-            ResourceItem("spain-nie", "NIE/TIE Application Guide", "Foreigner identification numbers", "https://www.inclusion.gob.es/web/migraciones/w/extranjeria", "official"),
+            ResourceItem("spain-nie", "NIE/TIE Application Guide", "Foreigner identification numbers", "https://www.exteriores.gob.es/Consulados/sanfrancisco/en/ServiciosConsulares/Paginas/Consular/NIE.aspx", "official"),
             ResourceItem("spain-migr", "Spanish Immigration Portal", "Official Inclusión y Migraciones", "https://www.inclusion.gob.es/web/migraciones", "official")
         )
     ),
@@ -1149,8 +1149,8 @@ private fun getMexicoResources(): List<ResourceCategory> = listOf(
         title = "Healthcare",
         icon = "local_hospital",
         resources = listOf(
-            ResourceItem("imss", "IMSS (Public Health)", "Mexican Social Security", "http://www.imss.gob.mx", "official"),
-            ResourceItem("imss-vol", "IMSS Voluntario", "Voluntary enrollment for expats", "http://www.imss.gob.mx/tramites/imss02025a", "official"),
+            ResourceItem("imss", "IMSS (Public Health)", "Mexican Social Security", "https://www.imss.gob.mx", "official"),
+            ResourceItem("imss-vol", "IMSS Voluntario", "Voluntary enrollment for expats", "https://www.imss.gob.mx/tramites/imss02025a", "official"),
             ResourceItem("gnp", "GNP Seguros", "Private health insurance", "https://www.gnp.com.mx", "service")
         )
     ),
@@ -1311,7 +1311,7 @@ private fun getItalyResources(): List<ResourceCategory> = listOf(
             ResourceItem("esteri", "Italian MFA Citizenship", "Jure sanguinis + visa types portal", "https://www.esteri.it/it/servizi-consolari-e-visti/italiani-all-estero/cittadinanza/", "official"),
             ResourceItem("vistoperitalia", "Visto per l'Italia", "Italian visa portal — all national visas", "https://vistoperitalia.esteri.it/", "official"),
             ResourceItem("prenotami", "Prenot@mi", "Book consulate appointments", "https://prenotami.esteri.it/", "official"),
-            ResourceItem("consulates-it", "Italian Consulates in USA", "Find your assigned consulate", "https://www.esteri.it/en/ministero/laministero/lerappresentanze/", "official")
+            ResourceItem("consulates-it", "Italian Consulates in USA", "Find your assigned consulate", "https://ambwashingtondc.esteri.it/en/chi-siamo/la-rete-consolare", "official")
         )
     ),
     ResourceCategory(
@@ -1319,7 +1319,7 @@ private fun getItalyResources(): List<ResourceCategory> = listOf(
         title = "Codice Fiscale & Anagrafe",
         icon = "badge",
         resources = listOf(
-            ResourceItem("codice-fiscale", "Agenzia delle Entrate (Codice Fiscale)", "Italian tax code", "https://www.agenziaentrate.gov.it/portale/codice-fiscale-tessera-sanitaria", "official"),
+            ResourceItem("codice-fiscale", "Agenzia delle Entrate (Codice Fiscale)", "Italian tax code", "https://www.agenziaentrate.gov.it/portale/web/english/nse/individuals/tax-identification-number-for-foreign-citizens", "official"),
             ResourceItem("anagrafe", "Anagrafe Nazionale", "National residents registry", "https://www.anagrafenazionale.interno.it/", "official")
         )
     ),
@@ -1490,9 +1490,9 @@ private fun getArgentinaResources(): List<ResourceCategory> = listOf(
         title = "Government & Immigration Portals",
         icon = "passport",
         resources = listOf(
-            ResourceItem("cancilleria", "Argentine MFA Citizenship", "Citizenship by option (Ley 346) portal", "https://www.cancilleria.gob.ar/en/services/argentinians-abroad/argentine-citizenship", "official"),
+            ResourceItem("cancilleria", "Argentine MFA Citizenship", "Citizenship by option (Ley 346) portal", "https://www.cancilleria.gob.ar/es/servicios/nacionalidad-argentina/opcion-de-nacionalidad-argentina-para-hijos-de-argentinos-nativos", "official"),
             ResourceItem("ar-migraciones", "Argentine Migrations Portal", "Residence permits — Rentista, Pensionado, Investor", "https://www.argentina.gob.ar/migraciones", "official"),
-            ResourceItem("consulates-ar", "Argentine Consulates in USA", "Find your assigned consulate", "https://www.cancilleria.gob.ar/en/foreign-policy/embassies-and-consulates", "official"),
+            ResourceItem("consulates-ar", "Argentine Consulates in USA", "Find your assigned consulate", "https://www.cancilleria.gob.ar/es/representaciones", "official"),
             ResourceItem("renaper", "RENAPER", "National Persons Registry (DNI)", "https://www.argentina.gob.ar/interior/renaper", "official")
         )
     ),
@@ -1501,7 +1501,7 @@ private fun getArgentinaResources(): List<ResourceCategory> = listOf(
         title = "DNI & Tax",
         icon = "badge",
         resources = listOf(
-            ResourceItem("dni", "DNI Application", "Argentine national ID card", "https://www.argentina.gob.ar/interior/renaper/dni", "official"),
+            ResourceItem("dni", "DNI Application", "Argentine national ID card", "https://www.argentina.gob.ar/interior/dni", "official"),
             ResourceItem("afip", "AFIP", "Tax authority (CUIT/CUIL)", "https://www.afip.gob.ar/", "official")
         )
     ),
@@ -1552,7 +1552,6 @@ private fun getHungaryResources(): List<ResourceCategory> = listOf(
         resources = listOf(
             ResourceItem("allampolgarsag", "Hungarian Citizenship Portal", "Simplified naturalization application", "https://newyork.mfa.gov.hu/en/simplified-naturalization", "official"),
             ResourceItem("oif-hu", "Hungary MFA Consular Info", "Visas for Hungary, how to apply", "https://konzinfo.mfa.gov.hu/en", "official"),
-            ResourceItem("nemzetikartya", "Nemzeti Kártya", "Guest Investor + White Card portal", "https://nemzetikartya.gov.hu/", "official"),
             ResourceItem("kormanyablak", "Kormányablak (Govt Office)", "One-stop government office", "https://kormanyablak.hu/en", "official"),
             ResourceItem("embassy-hu", "Hungarian Embassy USA", "Washington DC consulate", "https://washington.mfa.gov.hu/eng", "official")
         )
@@ -1572,7 +1571,7 @@ private fun getHungaryResources(): List<ResourceCategory> = listOf(
         title = "ID Cards & Tax",
         icon = "badge",
         resources = listOf(
-            ResourceItem("nyilvantarto", "Nyilvántartó", "ID card and address registry", "https://nyilvantarto.hu/", "official"),
+            ResourceItem("magyarorszag", "Magyarorszag.hu", "Government e-services portal (ID card, address card)", "https://magyarorszag.hu/", "official"),
             ResourceItem("nav-hu", "NAV (Tax Authority)", "Hungarian taxation", "https://www.nav.gov.hu/", "official")
         )
     ),
@@ -1631,7 +1630,7 @@ private fun getUkAncestryResources(): List<ResourceCategory> = listOf(
         resources = listOf(
             ResourceItem("gro", "GRO (England & Wales)", "Order birth/marriage certificates", "https://www.gro.gov.uk/gro/content/certificates/", "official"),
             ResourceItem("scotlandspeople", "ScotlandsPeople", "Scottish family records", "https://www.scotlandspeople.gov.uk/", "official"),
-            ResourceItem("groni", "GRONI (Northern Ireland)", "Order NI certificates", "https://www.nidirect.gov.uk/articles/general-register-office", "official"),
+            ResourceItem("groni", "GRONI (Northern Ireland)", "Order NI certificates", "https://www.nidirect.gov.uk/contacts/general-register-office-northern-ireland", "official"),
             ResourceItem("tb-test", "TB Test Country List", "Required pre-visa health check", "https://www.gov.uk/tb-test-visa", "official")
         )
     ),

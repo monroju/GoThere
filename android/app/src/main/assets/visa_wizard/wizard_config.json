@@ -372,7 +372,7 @@
           "links": [
             {
               "label": "Visa Forms",
-              "url": "https://www.exteriores.gob.es/Consulados/"
+              "url": "https://www.exteriores.gob.es/en/EmbajadasConsulados/Paginas/index.aspx"
             }
           ],
           "conditions": {},
@@ -428,7 +428,7 @@
           "links": [
             {
               "label": "Extranjería Info",
-              "url": "https://www.inclusion.gob.es/web/migraciones/w/extranjeria"
+              "url": "https://www.exteriores.gob.es/Consulados/sanfrancisco/en/ServiciosConsulares/Paginas/Consular/NIE.aspx"
             }
           ],
           "conditions": {},
@@ -1825,7 +1825,7 @@
           "links": [
             {
               "label": "IMSS Voluntario",
-              "url": "http://www.imss.gob.mx/tramites/imss02025a"
+              "url": "https://www.imss.gob.mx/tramites/imss02025a"
             }
           ],
           "conditions": {},
@@ -2102,7 +2102,7 @@
           "links": [
             {
               "label": "IMSS",
-              "url": "http://www.imss.gob.mx/tramites/imss02025a"
+              "url": "https://www.imss.gob.mx/tramites/imss02025a"
             }
           ],
           "conditions": {},
@@ -2367,7 +2367,7 @@
           "links": [
             {
               "label": "Italian consulates in the US",
-              "url": "https://www.esteri.it/en/ministero/laministero/lerappresentanze/"
+              "url": "https://ambwashingtondc.esteri.it/en/chi-siamo/la-rete-consolare"
             }
           ],
           "conditions": {
@@ -2563,7 +2563,7 @@
           "links": [
             {
               "label": "AIRE registration",
-              "url": "https://www.esteri.it/en/servizi-consolari-e-visti/italiani-all-estero/aire/"
+              "url": "https://ambwashingtondc.esteri.it/en/servizi-consolari-e-visti/servizi-per-il-cittadino-italiano/anagrafe-degli-italiani-residenti-allestero-aire"
             }
           ],
           "conditions": {},
@@ -2757,7 +2757,7 @@
           "links": [
             {
               "label": "GRO Ireland",
-              "url": "https://www.gov.ie/en/service/civil-registration-service/"
+              "url": "https://www.gov.ie/en/department-of-social-protection/services/birth-death-marriage-and-other-certificates"
             },
             {
               "label": "Irish Genealogy (free historical scans)",
@@ -3260,7 +3260,7 @@
           "links": [
             {
               "label": "German missions in the US",
-              "url": "https://www.germany.info/us-en/service/passport"
+              "url": "https://www.germany.info/us-en/embassy-consulates"
             }
           ],
           "conditions": {},

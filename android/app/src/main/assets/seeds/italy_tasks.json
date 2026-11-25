@@ -33,7 +33,7 @@
     "visaTrackId": "it_jure_sanguinis",
     "order": 4,
     "links": [
-      { "label": "Italian consulates in the US", "url": "https://www.esteri.it/en/ministero/laministero/lerappresentanze/" }
+      { "label": "Italian consulates in the US", "url": "https://ambwashingtondc.esteri.it/en/chi-siamo/la-rete-consolare" }
     ]
   },
   {
@@ -139,7 +139,7 @@
     "visaTrackId": "it_jure_sanguinis",
     "order": 2,
     "links": [
-      { "label": "AIRE registration", "url": "https://www.esteri.it/en/servizi-consolari-e-visti/italiani-all-estero/aire/" }
+      { "label": "AIRE registration", "url": "https://ambwashingtondc.esteri.it/en/servizi-consolari-e-visti/servizi-per-il-cittadino-italiano/anagrafe-degli-italiani-residenti-allestero-aire" }
     ]
   },
   {
