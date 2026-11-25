@@ -86,7 +86,7 @@ object DestinationConfig {
                     "No intention to work in Spain"
                 ),
                 estimatedProcessingTime = "2-3 months",
-                officialUrl = "https://www.exteriores.gob.es/Consulados/"
+                officialUrl = "https://www.exteriores.gob.es/en/EmbajadasConsulados/Paginas/index.aspx"
             ),
             VisaTrack(
                 id = SPAIN_DIGITAL_NOMAD,
@@ -101,12 +101,12 @@ object DestinationConfig {
                     "Clean criminal record"
                 ),
                 estimatedProcessingTime = "2-4 months",
-                officialUrl = "https://www.exteriores.gob.es/Consulados/"
+                officialUrl = "https://www.exteriores.gob.es/en/EmbajadasConsulados/Paginas/index.aspx"
             )
         ),
         defaultVisaTrackId = SPAIN_NON_LUCRATIVE,
         seedVersion = CURRENT_SEED_VERSION,
-        officialImmigrationUrl = "https://www.exteriores.gob.es/Consulados/"
+        officialImmigrationUrl = "https://www.exteriores.gob.es/en/EmbajadasConsulados/Paginas/index.aspx"
     )
 
     val portugal = DestinationCountry(
@@ -380,12 +380,12 @@ object DestinationConfig {
                     "Dual citizenship permitted — Argentina accepts dual nationality with the US, Canada, Spain, Italy, and most countries"
                 ),
                 estimatedProcessingTime = "6–18 months from consulate filing to Argentine birth certificate issuance",
-                officialUrl = "https://www.cancilleria.gob.ar/en/services/argentinians-abroad/argentine-citizenship"
+                officialUrl = "https://www.cancilleria.gob.ar/es/servicios/nacionalidad-argentina/opcion-de-nacionalidad-argentina-para-hijos-de-argentinos-nativos"
             )
         ),
         defaultVisaTrackId = ARGENTINA_CITIZENSHIP_BY_OPTION,
         seedVersion = CURRENT_SEED_VERSION,
-        officialImmigrationUrl = "https://www.cancilleria.gob.ar/en/services/argentinians-abroad"
+        officialImmigrationUrl = "https://www.cancilleria.gob.ar/es/servicios"
     )
 
     val hungary = DestinationCountry(

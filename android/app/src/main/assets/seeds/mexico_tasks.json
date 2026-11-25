@@ -292,7 +292,7 @@
     "visaTrackId": "mx_temp_resident_economic_solvency",
     "order": 6,
     "links": [
-      { "label": "IMSS", "url": "http://www.imss.gob.mx/" }
+      { "label": "IMSS", "url": "https://www.imss.gob.mx/" }
     ]
   },
   {

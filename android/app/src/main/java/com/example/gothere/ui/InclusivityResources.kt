@@ -111,8 +111,8 @@ object InclusivityResources {
     private fun disabled(countryId: String): ResourceCategory {
         val common = listOf(
             ResourceItem("eu-disab-card", "EU Disability Card",
-                "Mutual recognition across EU member states",
-                "https://employment-social-affairs.ec.europa.eu/policies-and-activities/social-protection-social-inclusion/persons-disabilities/european-disability-card_en",
+                "Adopted in 2024. EU countries issue it from June 2028",
+                "https://commission.europa.eu/strategy-and-policy/policies/justice-and-fundamental-rights/disability/european-disability-card-and-european-parking-card-persons-disabilities_en",
                 "official")
         )
         val specific = when (countryId) {
@@ -189,8 +189,8 @@ object InclusivityResources {
         )
         val specific = when (countryId) {
             "germany" -> listOf(
-                ResourceItem("ramstein-va", "Ramstein VA Outreach", "USAF Ramstein veteran services",
-                    "https://www.benefits.va.gov/persona/veteran-livingabroad.asp", "official")
+                ResourceItem("va-abroad", "VA: Veterans living overseas", "Benefits and care while you live abroad",
+                    "https://www.benefits.va.gov/persona/veteran-abroad.asp", "official")
             )
             "mexico" -> listOf(
                 ResourceItem("ajijic-vets", "American Legion Post 7 Ajijic",
@@ -211,8 +211,8 @@ object InclusivityResources {
     private fun pregnant(countryId: String): ResourceCategory {
         val specific = when (countryId) {
             "spain" -> listOf(
-                ResourceItem("sespa-mat", "Maternity in the SNS", "Public maternity care",
-                    "https://www.sanidad.gob.es/", "official"),
+                ResourceItem("ss-birth", "Birth and childcare benefit", "Seguridad Social paid leave after a birth",
+                    "https://www.seg-social.es/wps/portal/wss/internet/InformacionUtil/44539/de513c99-5885-48bd-8c66-45d2c97ad947", "official"),
                 ResourceItem("elparto-es", "El Parto es Nuestro", "Respectful-birth advocacy",
                     "https://www.elpartoesnuestro.es/", "community")
             )
@@ -228,7 +228,7 @@ object InclusivityResources {
             )
             "ireland" -> listOf(
                 ResourceItem("hse-mat", "HSE Maternity Service", "Public maternity",
-                    "https://www2.hse.ie/services/maternity-services/", "official"),
+                    "https://www2.hse.ie/pregnancy-birth/pregnancy-care/care-options", "official"),
                 ResourceItem("cuidiu", "Cuidiú", "Parent support + antenatal",
                     "https://www.cuidiu.ie/", "community")
             )

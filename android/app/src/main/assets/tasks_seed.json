@@ -7,7 +7,7 @@
     "links": [
       { "label": "Open Visa Wizard in app", "url": "gothere://wizard" },
       { "label": "Compare Spain visas in app", "url": "gothere://compare" },
-      { "label": "Spain Consulates (US)", "url": "https://www.exteriores.gob.es/Consulados/" },
+      { "label": "Spain Consulates (US)", "url": "https://www.exteriores.gob.es/en/EmbajadasConsulados/Paginas/index.aspx" },
       { "label": "Long-stay visa overview", "url": "https://www.schengenvisainfo.com/long-stay-visas/" }
     ]
   },
@@ -17,7 +17,7 @@
     "category": "Phase 1: Research & Planning",
     "completed": false,
     "links": [
-      { "label": "Spain Consulates (US)", "url": "https://www.exteriores.gob.es/Consulados/" }
+      { "label": "Spain Consulates (US)", "url": "https://www.exteriores.gob.es/en/EmbajadasConsulados/Paginas/index.aspx" }
     ]
   },
   {
@@ -88,7 +88,7 @@
     "category": "Phase 2: Documentation & Visa Application",
     "completed": false,
     "links": [
-      { "label": "Spain Consulates (US)", "url": "https://www.exteriores.gob.es/Consulados/" }
+      { "label": "Spain Consulates (US)", "url": "https://www.exteriores.gob.es/en/EmbajadasConsulados/Paginas/index.aspx" }
     ]
   },
   {
@@ -323,7 +323,7 @@
     "category": "Phase 4: Arrival & Settling In Spain",
     "completed": false,
     "links": [
-      { "label": "DGT License Exchange", "url": "https://sede.dgt.gob.es/es/permisos-de-conducir/canje-de-permisos/" }
+      { "label": "DGT License Exchange", "url": "https://sede.dgt.gob.es/es/permisos-de-conducir/canjes-de-permisos/canjes-de-permisos-extranjeros" }
     ]
   },
   {
