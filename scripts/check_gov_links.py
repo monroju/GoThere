@@ -28,7 +28,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC = ROOT / "android" / "app" / "src" / "main"
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
-URL_RE = re.compile(r"https?://[^\s\"'()<>\\,]+")
+URL_RE = re.compile(r"https?://[^\s\"'<>\\,]+")
 BOT_WALL = re.compile(r"captcha|radware|just a moment|attention required|access denied", re.I)
 NOT_FOUND = re.compile(r"page not found|pagina non trovata|página no encontrada|no se encuentra disponible"
                        r"|seite nicht gefunden|\b404\b", re.I)
@@ -68,14 +68,20 @@ def is_gov(url):
     return any(host == s or host.endswith("." + s) for s in GOV_SUFFIXES)
 
 
+EXTS = {".kt", ".json", ".xml", ".swift", ".xcstrings", ".strings", ".html"}
+
+
 def extract(src=SRC):
     found = {}
     for f in sorted(src.rglob("*")):
-        if not f.is_file() or f.suffix not in {".kt", ".json", ".xml"}:
+        if not f.is_file() or f.suffix not in EXTS or "/build/" in f.as_posix():
             continue
         text = f.read_text(encoding="utf-8", errors="ignore")
         for m in URL_RE.findall(text):
+            # Keep balanced parentheses inside a URL, drop a closing one from "(see https://...)".
             url = m.rstrip(".;:")
+            while url.endswith(")") and url.count(")") > url.count("("):
+                url = url[:-1].rstrip(".;:")
             if "." not in host_of(url):
                 continue
             found.setdefault(url, set()).add(f.relative_to(src).as_posix())
@@ -119,13 +125,14 @@ def main():
     ap.add_argument("--list", action="store_true", help="print the URLs and exit")
     ap.add_argument("--urls", help="file with URLs to check instead of extracting from the app")
     ap.add_argument("--workers", type=int, default=12)
+    ap.add_argument("--src", help="folder to scan instead of android/app/src/main (for example the iOS app)")
     a = ap.parse_args()
 
     if a.urls:
         with open(a.urls, encoding="utf-8") as fh:
             urls = {u.strip(): {"(file)"} for u in fh if u.strip() and not u.startswith("#")}
     else:
-        found = extract()
+        found = extract(pathlib.Path(a.src) if a.src else SRC)
         urls = found if a.all else {u: f for u, f in found.items() if is_gov(u)}
     if a.list:
         for u in sorted(urls):
