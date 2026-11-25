@@ -28,27 +28,45 @@ import com.example.gothere.R
  * Official government sources behind the visa and citizenship content, plus the
  * "not a government app" notice. Google Play's Misleading Claims policy requires
  * both for apps that present government information (rejection of 2026-10-31).
- * Keep in sync with the OFFICIAL SOURCES block in the Play store description.
+ * Keep in sync with the OFFICIAL SOURCES block in the Play store description
+ * (every URL must load with HTTP 200 for a plain bot client from a US IP; checked 2026-11-25).
  */
 object OfficialSources {
     val byCountry: Map<String, List<String>> = mapOf(
-        "spain" to listOf("https://www.exteriores.gob.es", "https://www.inclusion.gob.es/web/migraciones"),
-        "canada" to listOf("https://www.canada.ca/en/immigration-refugees-citizenship.html"),
-        "portugal" to listOf("https://vistos.mne.gov.pt", "https://aima.gov.pt"),
+        "spain" to listOf("https://www.exteriores.gob.es/en/ServiciosAlCiudadano/Paginas/Conoce-Espana.aspx"),
+        "canada" to listOf("https://ircc.canada.ca"),
+        "portugal" to listOf(
+            "https://www.gov.pt/guias/migrantes-vistos-e-autorizacoes-para-entrar-e-viver-em-portugal",
+            "https://www.gov.pt/entidades/agencia-para-a-integracao-migracoes-e-asilo"
+        ),
         "mexico" to listOf("https://www.gob.mx/inm"),
-        "italy" to listOf("https://vistoperitalia.esteri.it", "https://www.esteri.it"),
-        "ireland" to listOf("https://www.irishimmigration.ie"),
-        "germany" to listOf("https://www.auswaertiges-amt.de/en"),
-        "poland" to listOf("https://www.gov.pl/web/udsc-en"),
-        "hungary" to listOf("https://enterhungary.gov.hu"),
-        "argentina" to listOf("https://www.argentina.gob.ar/interior/migraciones"),
-        "uk_ancestry" to listOf("https://www.gov.uk/browse/visas-immigration")
+        "italy" to listOf(
+            "https://vistoperitalia.esteri.it",
+            "https://www.interno.gov.it/it/temi/cittadinanza-e-altri-diritti-civili/cittadinanza"
+        ),
+        "ireland" to listOf(
+            "https://www.irishimmigration.ie",
+            "https://www.irishstatutebook.ie/eli/1956/act/26/enacted/en/html"
+        ),
+        "germany" to listOf(
+            "https://www.auswaertiges-amt.de/en",
+            "https://www.bva.bund.de/EN/Services/Citizens/ID-Documents-Law/Citizenship/citizenship_node.html"
+        ),
+        "poland" to listOf(
+            "https://www.gov.pl/web/udsc-en",
+            "https://www.gov.pl/web/usa-en/confirming-polish-citizenship-or-its-loss"
+        ),
+        "hungary" to listOf("https://konzinfo.mfa.gov.hu/en"),
+        "argentina" to listOf(
+            "https://www.argentina.gob.ar/migraciones",
+            "https://www.argentina.gob.ar/interior/renaper"
+        ),
+        "uk_ancestry" to listOf("https://www.gov.uk/ancestry-visa")
     )
 
-    /** US-side steps the task tracker covers (FBI check, SSA abroad, VA care). */
+    /** Apostilles (HCCH) and US veterans' care abroad (VA). */
     val us: List<String> = listOf(
-        "https://www.fbi.gov/how-we-can-help-you/more-fbi-services-and-information/identity-history-summary-checks",
-        "https://www.ssa.gov/international/",
+        "https://www.hcch.net/en/instruments/conventions/specialised-sections/apostille",
         "https://www.va.gov/health-care/foreign-medical-program/"
     )
 }

@@ -130,7 +130,7 @@ object DestinationConfig {
                     "Proof of accommodation"
                 ),
                 estimatedProcessingTime = "2-4 months",
-                officialUrl = "https://www.vistos.mne.gov.pt/"
+                officialUrl = "https://www.gov.pt/guias/migrantes-vistos-e-autorizacoes-para-entrar-e-viver-em-portugal"
             ),
             VisaTrack(
                 id = PORTUGAL_D8,
@@ -146,12 +146,12 @@ object DestinationConfig {
                     "Proof of accommodation"
                 ),
                 estimatedProcessingTime = "2-4 months",
-                officialUrl = "https://www.vistos.mne.gov.pt/"
+                officialUrl = "https://www.gov.pt/guias/migrantes-vistos-e-autorizacoes-para-entrar-e-viver-em-portugal"
             )
         ),
         defaultVisaTrackId = PORTUGAL_D7,
         seedVersion = CURRENT_SEED_VERSION,
-        officialImmigrationUrl = "https://www.vistos.mne.gov.pt/"
+        officialImmigrationUrl = "https://www.gov.pt/guias/migrantes-vistos-e-autorizacoes-para-entrar-e-viver-em-portugal"
     )
 
     val mexico = DestinationCountry(
@@ -305,7 +305,7 @@ object DestinationConfig {
                     "Dual citizenship permitted — you keep your US citizenship"
                 ),
                 estimatedProcessingTime = "18–36 months at Bundesverwaltungsamt",
-                officialUrl = "https://www.bva.bund.de/EN/Services/Citizens/Migration-Citizenship/Citizenship/Restoration-of-citizenship/restoration-of-citizenship_node.html"
+                officialUrl = "https://www.bva.bund.de/EN/Services/Citizens/ID-Documents-Law/Citizenship/citizenship_node.html"
             ),
             VisaTrack(
                 id = GERMANY_STAG_15,
@@ -321,7 +321,7 @@ object DestinationConfig {
                     "No language test, no residency requirement, no fee"
                 ),
                 estimatedProcessingTime = "18–36 months at Bundesverwaltungsamt",
-                officialUrl = "https://www.bva.bund.de/EN/Services/Citizens/Migration-Citizenship/Citizenship/Restoration-of-citizenship/restoration-of-citizenship_node.html"
+                officialUrl = "https://www.bva.bund.de/EN/Services/Citizens/ID-Documents-Law/Citizenship/citizenship_node.html"
             )
         ),
         defaultVisaTrackId = GERMANY_ARTICLE_116,

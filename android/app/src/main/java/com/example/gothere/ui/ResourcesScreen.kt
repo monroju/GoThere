@@ -1039,8 +1039,8 @@ private fun getPortugalResources(): List<ResourceCategory> = listOf(
         title = "Visas & Immigration",
         icon = "passport",
         resources = listOf(
-            ResourceItem("aima", "AIMA (Immigration Agency)", "Portuguese immigration portal", "https://www.aima.gov.pt", "official"),
-            ResourceItem("pt-mne", "Portuguese MFA Visas Portal", "All national visas (D7, D8, D2, etc.)", "https://vistos.mne.gov.pt/en/national-visas/general-information/type-of-visa", "official")
+            ResourceItem("aima", "AIMA (Immigration Agency)", "Portuguese immigration portal", "https://www.gov.pt/entidades/agencia-para-a-integracao-migracoes-e-asilo", "official"),
+            ResourceItem("pt-mne", "gov.pt Visas Guide", "National visas and residence permits", "https://www.gov.pt/guias/migrantes-vistos-e-autorizacoes-para-entrar-e-viver-em-portugal", "official")
         )
     ),
     ResourceCategory(
@@ -1368,7 +1368,7 @@ private fun getGermanyResources(): List<ResourceCategory> = listOf(
         title = "Government & Immigration Portals",
         icon = "passport",
         resources = listOf(
-            ResourceItem("bva", "Bundesverwaltungsamt (BVA)", "Citizenship restoration (Art. 116, StAG §15)", "https://www.bva.bund.de/EN/Services/Citizens/Migration-Citizenship/Citizenship/Restoration-of-citizenship/restoration-of-citizenship_node.html", "official"),
+            ResourceItem("bva", "Bundesverwaltungsamt (BVA)", "Citizenship restoration (Art. 116, StAG §15)", "https://www.bva.bund.de/EN/Services/Citizens/ID-Documents-Law/Citizenship/citizenship_node.html", "official"),
             ResourceItem("make-it-de", "Make it in Germany", "Official visa portal — Blue Card, Freelancer, Chancenkarte, etc.", "https://www.make-it-in-germany.com/en/visa-residence/", "official"),
             ResourceItem("consulates-de", "German Consulates in USA", "Find your assigned consulate", "https://www.germany.info/us-en", "official"),
             ResourceItem("yadvashem", "Yad Vashem", "Persecution evidence research (StAG §15)", "https://www.yadvashem.org/", "official")
@@ -1551,7 +1551,7 @@ private fun getHungaryResources(): List<ResourceCategory> = listOf(
         icon = "passport",
         resources = listOf(
             ResourceItem("allampolgarsag", "Hungarian Citizenship Portal", "Simplified naturalization application", "https://newyork.mfa.gov.hu/en/simplified-naturalization", "official"),
-            ResourceItem("oif-hu", "Office for Immigration (OIF)", "D-Visa, White Card, residence permits", "https://oif.gov.hu/", "official"),
+            ResourceItem("oif-hu", "Hungary MFA Consular Info", "Visas for Hungary, how to apply", "https://konzinfo.mfa.gov.hu/en", "official"),
             ResourceItem("nemzetikartya", "Nemzeti Kártya", "Guest Investor + White Card portal", "https://nemzetikartya.gov.hu/", "official"),
             ResourceItem("kormanyablak", "Kormányablak (Govt Office)", "One-stop government office", "https://kormanyablak.hu/en", "official"),
             ResourceItem("embassy-hu", "Hungarian Embassy USA", "Washington DC consulate", "https://washington.mfa.gov.hu/eng", "official")
