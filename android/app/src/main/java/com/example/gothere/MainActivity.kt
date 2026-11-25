@@ -1,6 +1,7 @@
 package com.example.gothere
 
 import androidx.compose.ui.res.stringResource
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -173,6 +174,12 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var purchaseManager: PurchaseManager
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        com.example.gothere.notify.NotificationOpen.track(intent)
+    }
+
     override fun onResume() {
         super.onResume()
         // Promo codes redeemed in Play (Settings > Redeem a code) only show up in a fresh
@@ -197,6 +204,8 @@ class MainActivity : AppCompatActivity() {
             ).apply { captureApplicationLifecycleEvents = true }
         )
         com.example.gothere.util.Analytics.init(applicationContext)
+        // Opened from a notification? Skip on recreation (rotation) so one tap logs once.
+        if (savedInstanceState == null) com.example.gothere.notify.NotificationOpen.track(intent)
         com.example.gothere.util.InstallAttribution.resolveOnce(applicationContext)
         runCatching {
             com.google.firebase.auth.FirebaseAuth.getInstance().addAuthStateListener { fa ->
